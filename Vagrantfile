@@ -9,7 +9,6 @@ Vagrant.configure("2") do |config|
   config.vm.box = "bento/ubuntu-22.04"
   config.vm.provision "shell", inline: $script
   config.vm.hostname = "mygenai"
-  config.vm.network "forwarded_port", guest: 8888, host: 8888
   config.vm.provider "virtualbox" do |vb|
     vb.name = "mygenai"
   end
