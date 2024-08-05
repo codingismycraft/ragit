@@ -1,0 +1,2 @@
+# mygenai
+GenAi sample code
