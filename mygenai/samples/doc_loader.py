@@ -7,18 +7,12 @@ import langchain_community.document_loaders as loaders
 import langchain_community.document_loaders.csv_loader as csv_loader
 import langchain.text_splitter as txt_splitter
 
-_CURRENT_DIR = os.path.dirname(os.path.realpath(__file__))
-_DATA_DIR = os.path.join(_CURRENT_DIR, "data")
+import mygenai.libs.common as common
 
-
-# from langchain_community.document_loaders import Docx2txtLoader
-# from langchain_community.document_loaders import PyPDFLoader
-# from langchain_community.document_loaders.csv_loader import CSVLoader
-# from langchain.text_splitter import CharacterTextSplitter
 
 def load_csv():
     """Returns all the csv files in the testing directory."""
-    fullpaths = glob.glob(os.path.join(_DATA_DIR, "*.csv"))
+    fullpaths = glob.glob(os.path.join(common.get_data_directory(), "*.csv"))
     for fp in fullpaths:
         loader = csv_loader.CSVLoader(file_path=fp)
         data = loader.load()
@@ -27,8 +21,7 @@ def load_csv():
 
 def load_pdf():
     full_path = os.path.join(
-        _CURRENT_DIR,
-        "data",
+        common.get_data_directory(),
         "principles_of_marketing_book.pdf"
     )
     loader = loaders.PyPDFLoader(full_path)
@@ -38,13 +31,11 @@ def load_pdf():
 
 def load_docx():
     """Splits a document using CharacterTextSplitter."""
-
     text_splitter = txt_splitter.CharacterTextSplitter.from_tiktoken_encoder(
         chunk_size=200, chunk_overlap=0
     )
     full_path = os.path.join(
-        _CURRENT_DIR,
-        "data",
+        common.get_data_directory(),
         "hello-world.docx"
     )
     loader = loaders.Docx2txtLoader(full_path)
@@ -54,6 +45,6 @@ def load_docx():
 
 
 if __name__ == '__main__':
-    # load_pdf()
+    load_pdf()
     # load_csv()
-    load_docx()
+    # load_docx()

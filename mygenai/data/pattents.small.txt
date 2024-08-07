@@ -1,0 +1,126 @@
+
+The Great IP Debate: Do patents do more harm than good?  28 Jul 2016 |
+Viewpoint Patents A formal debate at Euroscience Open Forum in Manchester
+pitted pro- and anti-patent experts. You decide the outcome.
+
+
+Patents have been with us since the 17th century. In exchange for disclosing
+one’s invention, the state grants a limited, legal monopoly over exploitation.
+In theory, the system encourages more innovation, for the good of society. But
+recently, voices of dissent have been rising. Legal costs are high. Specialists
+game the system to their advantage. Life-saving innovations get priced beyond
+the means of the poor.
+
+On July 26 in Manchester, UK, at Euroscience Open Forum, Europe’s biggest
+biennial science conference, Science|Business Editor-in-Chief Richard L. Hudson
+organised a formal pro- and anti-patent debate among four experts, moderated by
+Dame Nancy Rothwell, President and Vice-Chancellor of the University of
+Manchester. Herewith, his paraphrase of the arguments, so you can judge for
+yourself.
+
+The case against patents:
+
+David Levine, economist at the European University Institute in Florence, and
+Alessandro Nuvolari, economist at the Sant’Anna School of Advanced Studies in
+Pisa.
+
+Patents discourage innovation. When Steve Jobs and Steve Wozniak started
+developing the first Apple computers in a garage, they did not worry much about
+patents. They shared and borrowed ideas from their network of fellow geeks. If
+they had had to pay royalties on all the software they borrowed, today we would
+have no email, no smartphones, no What’s App, no Google. The most important
+software innovations in the US happened before the US began allowing software
+patenting (in Europe, software patents as such are not possible.) More
+recently, the pace of innovation slowed.
+
+Today, patents are often used as weapons. In the 1950s, an American inventor
+filed so-called “submarine patents” to claim an early form of machine vision
+technology; when others decades later developed bar code and other machine
+readers he sued to protect his previously unnoticed patents and collected more
+than $1 billion – even though the real development work had been done by
+others.
+
+As another example, big companies today routinely cross-license patents to
+avoid blocking one another – but in the process also block new entrants that
+could disrupt the market, improve services and lower costs. That hurts
+consumers and inventors.
+
+Patents are not necessary for economic growth. While the US and Europe have
+long-established patent systems, China’s high-growth economy does not; only
+recently has its domestic patent system grown, and its purpose is not so much
+to protect inventors as to lend credibility to their work.
+
+In fact, patents actually hurt the economy. In the US, the cost of patent
+trolls – firms that acquire strategic patents and use legal threats to extract
+steep royalties from real innovators – now amounts to 12 per cent of business
+R&D spending. It is, in essence, a new tax on innovation.
+
+Society can be more innovative without patents. One study of the Great
+Exhibition of 1851, the world’s first technology fair in London, found that
+only 10 per cent of the innovations on display had been patented. More
+recently, a Carnegie Mellon survey of companies in the mid-1990s found fewer
+than half of innovations had been patented.  Another survey of European
+companies found just 25 percent of process innovations and 36 per cent of
+product innovations were patented. Most innovations were protected using the
+advantages of a “first mover” or trade secrets.
+
+As the great Victorian engineer Isembard Kingdom Brunel put it, patents are
+“almost an unmixed evil.”
+
+The case for patents
+
+Bruno von Pottelsberghe, an economist and Dean at Solvay Brussels School,
+Université Libre de Bruxelles, and Willem Broekaert, a Flemish bio-entrepreneur
+and managing partner of V-Bio Ventures.
+
+There are two broad arguments for patents. One is based on the concept of
+“natural rights” that it is important, out of fairness to the individual
+inventor, to have a way to recognise and reward innovators. The second is a
+utilitarian theory which holds that society needs innovators to invest time and
+money, and the rewards of their work are far greater to society than to the
+individual – so some method of compensation is needed for the individual.
+
+One case in point is Michelin’s invention of the rubber automobile tyre. The
+company prospered on its patents, of course; but the value to society has been
+far greater than Michelin’s own revenues, as an entire tyre industry developed
+around the invention and that in turn helped advance the automotive sector.
+None of that would have happened had Michelin not had a secure way to recover
+the costs of its R&D and market development work over many years. An
+oft-suggested alternative to private-sector patents is government R&D support;
+but governments are poor at picking market winners.
+
+
+The critics of the system also miss an important point: that patents are a
+necessary but not sufficient condition for innovation. Merely because you can
+cite examples of patent-system failures does not mean you should scrap the
+system. In the same way, you would not argue governments should stop building
+roads merely because some drivers have accidents on them; roads are clearly
+important to society. Further, that some people abuse the system is not a
+reason to scrap it; higher-quality patent examination would help reduce such
+abuses.
+
+There is also no credible evidence that costs outweigh benefits; the data to
+draw such a conclusion simply do not exist. While you may be able to measure
+patent expenses, you cannot measure all patent revenues and benefits; for
+instance, licensing deals are usually private and unreported. (And the Chinese
+example is inaccurate: the system there is growing fast and China is now one of
+the top half-dozen filers of patents with the World Intellectual Property
+Organisation.)
+
+The importance of the patent system depends on the industry. Any sector that
+has long lead-times for development, or requires large sums for R&D, very much
+needs a strong patent system. A prime example is the pharmaceutical industry. A
+new drug can take 10 to 12 years to develop, and costs a few hundred million to
+a billion pounds. There is no way a private investor would take such a mammoth
+R&D risk without a guarantee of return, if technically successful. Without a
+patent system, any competitor could simply wait for the new drug to appear on
+the market, and then quickly reverse-engineer it and undercut the inventor’s
+prices because it was not carrying the accumulated development costs. Result:
+no new medicines.
+
+The patent system has broader, positive effects on competition: it favours
+industrial diversity, rather than concentration. For instance, the beer
+industry is concentrated, with the top three companies controlling about half
+the global market. They do not do much patenting. By contrast, in the pharma
+sector, about 25 companies together control half the global market. They patent
+regularly. As an industry, pharma is more diversified and meritocratic.

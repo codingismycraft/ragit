@@ -4,6 +4,9 @@ import json
 import os
 import pathlib
 
+_CURRENT_DIR = os.path.dirname(os.path.realpath(__file__))
+_DATA_DIR = os.path.join(_CURRENT_DIR, "..", "data")
+
 
 def get_home_dir():
     """Returns the home directory for the current user.
@@ -21,3 +24,12 @@ def init_settings():
         settings = json.load(fin)
         for k, v in settings.items():
             os.environ[k] = v
+
+
+def get_data_directory():
+    """Returns the directory holding the data files to use for samples.
+
+    :return: The directory containing the data files for sample programs.
+    :rtype: str
+    """
+    return _DATA_DIR
