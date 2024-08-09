@@ -30,9 +30,15 @@ _SPLIT_TEXT_FILEPATH = os.path.join(_OUTPUT_DIR, "split_text.json")
 
 def load_pdf(filename):
     """Load a pdf file from the filesystem."""
+    chunk_size = 500
+    chunk_overlap = 40
+    text_splitter = text_splitter_lib.RecursiveCharacterTextSplitter(
+        chunk_size=chunk_size,
+        chunk_overlap=chunk_overlap
+    )
     full_path = os.path.join(common.get_data_directory(), filename)
     loader = loaders.PyPDFLoader(full_path)
-    pages = loader.load_and_split()
+    pages = loader.load_and_split(text_splitter=text_splitter)
     return pages
 
 
@@ -100,7 +106,7 @@ def create_index(filename, chunk_size=200, chunk_overlap=50):
     print(results)
 
 
-def query_index():
+def load_matching_vectors():
     """Loads the FISS index and the user can ask it questions."""
     index = faiss.read_index(_FAISS_INDEX_FILEPATH)
     embeddings = openai.OpenAIEmbeddings()
@@ -119,7 +125,13 @@ def query_index():
         print(results)
 
 
+def query_executor():
+    pass
+
+
 if __name__ == '__main__':
     common.init_settings()
-    create_index("patents.txt")
-    query_index()
+    load_pdf("patents.pdf")
+
+    # create_index("patents.txt")
+    # load_matching_vectors()

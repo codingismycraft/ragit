@@ -6,3 +6,4 @@ tiktoken==0.7.0
 scikit-learn==1.5.1
 faiss-cpu==1.8.0.post1
 openai==1.40.0
+pytest==8.3.2

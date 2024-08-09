@@ -22,10 +22,11 @@ def load_csv():
 def load_pdf():
     full_path = os.path.join(
         common.get_data_directory(),
-        "principles_of_marketing_book.pdf"
+        "patents.pdf"
     )
     loader = loaders.PyPDFLoader(full_path)
     pages = loader.load_and_split()
+    p1 = pages[0]
     print(pages[7])
 
 
