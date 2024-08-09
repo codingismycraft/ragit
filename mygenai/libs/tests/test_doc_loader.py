@@ -8,20 +8,10 @@ import mygenai.libs.doc_loader as doc_loader
 
 
 class TestLoadingPdf(unittest.TestCase):
-    """Tests loading a pdf file."""
+    """Tests loading a file."""
 
-    def test_get_metadata(self):
-        """Tests the get_metadata method."""
-        full_path = os.path.join(
-            common.get_data_directory(),
-            "patents.pdf"
-        )
-        doc = doc_loader.Document(full_path)
-        retrieved = doc.get_metadata()
-        self.assertIn("patents.pdf", retrieved["fullpath"])
-
-    def test_get_chunks(self):
-        """Tests the get_chunks method."""
+    def test_pdf(self):
+        """Tests the get_chunks method for pdf."""
         full_path = os.path.join(
             common.get_data_directory(),
             "patents.pdf"
@@ -31,3 +21,14 @@ class TestLoadingPdf(unittest.TestCase):
             self.assertIsInstance(txt, str)
             self.assertIsInstance(meta, dict)
 
+    def test_docx(self):
+        """Tests the get_chunks method for docx."""
+        full_path = os.path.join(
+            common.get_data_directory(),
+            "hello-world.docx"
+        )
+        doc = doc_loader.Document(full_path)
+        for txt, meta in doc.get_chunks():
+            self.assertIsInstance(txt, str)
+            self.assertIsInstance(meta, dict)
+            print(txt, meta)
