@@ -1,3 +1,4 @@
+#!/bin/bash.
 ##########################################################################
 #
 # Creates the database to hold the embeddings used form the RAG model.

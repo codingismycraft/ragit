@@ -45,3 +45,13 @@ def get_testing_data_directory():
     :rtype: str
     """
     return _TESTING_DATA_DIR
+
+
+def get_db_directory():
+    """Returns the directory containing the database creation files.
+
+    :return: The directory containing the database creation files.
+    :rtype: str
+    """
+    path = os.path.join(_CURRENT_DIR, "..", "db")
+    return path
