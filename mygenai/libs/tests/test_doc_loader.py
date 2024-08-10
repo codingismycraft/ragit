@@ -13,7 +13,7 @@ class TestLoadingPdf(unittest.TestCase):
     def test_pdf(self):
         """Tests the get_chunks method for pdf."""
         full_path = os.path.join(
-            common.get_data_directory(),
+            common.get_testing_data_directory(),
             "patents.pdf"
         )
         doc = doc_loader.Document(full_path)
@@ -24,7 +24,7 @@ class TestLoadingPdf(unittest.TestCase):
     def test_docx(self):
         """Tests the get_chunks method for docx."""
         full_path = os.path.join(
-            common.get_data_directory(),
+            common.get_testing_data_directory(),
             "hello-world.docx"
         )
         doc = doc_loader.Document(full_path)
@@ -35,7 +35,7 @@ class TestLoadingPdf(unittest.TestCase):
     def test_markdown(self):
         """Tests the get_chunks method for markdown."""
         full_path = os.path.join(
-            common.get_data_directory(),
+            common.get_testing_data_directory(),
             "sql-alchemy-sucks.md"
         )
         doc = doc_loader.Document(full_path)

@@ -5,7 +5,7 @@ import os
 import pathlib
 
 _CURRENT_DIR = os.path.dirname(os.path.realpath(__file__))
-_DATA_DIR = os.path.join(_CURRENT_DIR, "..", "data")
+_TESTING_DATA_DIR = os.path.join(_CURRENT_DIR, "tests", "data")
 _CONN_STR = "postgres://myuser:password@localhost:5432/chunks"
 
 
@@ -36,10 +36,10 @@ def init_settings():
             os.environ[k] = v
 
 
-def get_data_directory():
+def get_testing_data_directory():
     """Returns the directory holding the data files to use for samples.
 
     :return: The directory containing the data files for sample programs.
     :rtype: str
     """
-    return _DATA_DIR
+    return _TESTING_DATA_DIR
