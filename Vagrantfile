@@ -2,6 +2,8 @@ $script = <<SCRIPT
 sudo apt update
 sudo apt install python3-pip -y
 sudo apt-get install libpq-dev python3-dev -y
+mkdir -p /home/vagrant/mygen-data
+chown vagrant:vagrant /home/vagrant/mygen-data
 SCRIPT
 
 
