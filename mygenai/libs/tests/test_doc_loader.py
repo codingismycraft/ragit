@@ -42,3 +42,4 @@ class TestLoadingPdf(unittest.TestCase):
         for txt, meta in doc.get_chunks():
             self.assertIsInstance(txt, str)
             self.assertIsInstance(meta, dict)
+            print(txt, meta)

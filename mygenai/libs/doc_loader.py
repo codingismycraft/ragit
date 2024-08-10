@@ -24,7 +24,7 @@ class Document:
         elif location.endswith("docx"):
             self._impl = _DocxDocument(location, chunk_size, chunk_overlap)
         elif location.endswith("md"):
-            self._impl = _MDDocument(location)
+            self._impl = _MDDocument(location, chunk_size, chunk_overlap)
         else:
             raise NotImplementedError
 
@@ -120,7 +120,7 @@ class _MDDocument:
     _fullpath = None
     _chunks = None
 
-    def __init__(self, fullpath):
+    def __init__(self, fullpath, chunk_size, chunk_overlap):
         """Initializes a new instance.
 
         :param str fullpath: The full path to the PDF document
@@ -129,23 +129,16 @@ class _MDDocument:
         assert os.path.isfile(fullpath), f'{fullpath} does not exist'
         self._fullpath = fullpath
 
-        headers_to_split_on = [
-            ("#", "Header 1"),
-            ("##", "Header 2"),
-            ("###", "Header 3"),
-            ("####", "Header 4")
-        ]
-        text_splitter = text_splitter_lib.MarkdownHeaderTextSplitter(
-            headers_to_split_on=headers_to_split_on
+        text_splitter = text_splitter_lib.RecursiveCharacterTextSplitter(
+            chunk_size=chunk_size,
+            chunk_overlap=chunk_overlap
         )
-        md = doc_loaders.UnstructuredMarkdownLoader(
-            self._fullpath, mode="elements", strategy="fast"
+
+        md = doc_loaders.TextLoader(
+            self._fullpath
         )
-        docs = md.load()
-        self._chunks = []
-        for doc in docs:
-            sections = text_splitter.split_text(doc.page_content)
-            self._chunks.extend(sections)
+        pages = md.load()
+        self._chunks = text_splitter.split_documents(pages)
 
     def get_chunks(self):
         """Iterates through the available chunks.
