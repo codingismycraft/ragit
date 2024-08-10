@@ -6,6 +6,16 @@ import pathlib
 
 _CURRENT_DIR = os.path.dirname(os.path.realpath(__file__))
 _DATA_DIR = os.path.join(_CURRENT_DIR, "..", "data")
+_CONN_STR = "postgres://myuser:password@localhost:5432/chunks"
+
+
+def get_connection_string():
+    """Returns the connection string for the postgresql.
+
+    :return: The connection string for the postgresql.
+    :rtype: str
+    """
+    return _CONN_STR
 
 
 def get_home_dir():
