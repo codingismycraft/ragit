@@ -10,6 +10,7 @@ Vagrant.configure("2") do |config|
   config.vm.provision "shell", inline: $script
   config.vm.hostname = "mygenai"
   config.vm.network "forwarded_port", guest: 8501, host: 18501
+  config.vm.synced_folder "/home/john/mygen-data", "/home/vagrant/mygen-data"
   config.vm.provider "virtualbox" do |vb|
     vb.name = "mygenai"
   end

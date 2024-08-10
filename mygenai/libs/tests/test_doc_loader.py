@@ -31,4 +31,14 @@ class TestLoadingPdf(unittest.TestCase):
         for txt, meta in doc.get_chunks():
             self.assertIsInstance(txt, str)
             self.assertIsInstance(meta, dict)
-            print(txt, meta)
+
+    def test_markdown(self):
+        """Tests the get_chunks method for markdown."""
+        full_path = os.path.join(
+            common.get_data_directory(),
+            "sql-alchemy-sucks.md"
+        )
+        doc = doc_loader.Document(full_path)
+        for txt, meta in doc.get_chunks():
+            self.assertIsInstance(txt, str)
+            self.assertIsInstance(meta, dict)

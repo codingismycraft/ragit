@@ -12,11 +12,14 @@ import mygenai.libs.common as common
 
 def load_csv():
     """Returns all the csv files in the testing directory."""
-    fullpaths = glob.glob(os.path.join(common.get_data_directory(), "*.csv"))
-    for fp in fullpaths:
-        loader = csv_loader.CSVLoader(file_path=fp)
-        data = loader.load()
-        print(data)
+    full_path = os.path.join(
+        common.get_data_directory(),
+        "2021 Marketing Performance Report.csv"
+    )
+
+    loader = csv_loader.CSVLoader(file_path=full_path)
+    data = loader.load()
+    print(data)
 
 
 def load_pdf():
@@ -46,6 +49,6 @@ def load_docx():
 
 
 if __name__ == '__main__':
-    load_pdf()
-    # load_csv()
+    # load_pdf()
+    load_csv()
     # load_docx()

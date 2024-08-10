@@ -5,7 +5,6 @@ import os
 import langchain.text_splitter as text_splitter_lib
 import langchain_community.document_loaders as doc_loaders
 
-
 class Document:
     """Holds the information about a document to use in RAG.
 
@@ -14,16 +13,18 @@ class Document:
 
     _impl = None
 
-    def __init__(self, location):
+    def __init__(self, location, chunk_size=500, chunk_overlap=40):
         """Loads and processes the document.
 
         :raises NotImplementedError
         """
         location = location.strip()
         if location.endswith("pdf"):
-            self._impl = _PdfDocument(location)
+            self._impl = _PdfDocument(location, chunk_size, chunk_overlap)
         elif location.endswith("docx"):
-            self._impl = _DocxDocument(location)
+            self._impl = _DocxDocument(location, chunk_size, chunk_overlap)
+        elif location.endswith("md"):
+            self._impl = _MDDocument(location)
         else:
             raise NotImplementedError
 
@@ -48,7 +49,7 @@ class _PdfDocument:
     _fullpath = None
     _chunks = None
 
-    def __init__(self, fullpath, chunk_size=500, chunk_overlap=40):
+    def __init__(self, fullpath, chunk_size, chunk_overlap):
         """Initializes a new instance.
 
         :param str fullpath: The full path to the PDF document
@@ -83,7 +84,7 @@ class _DocxDocument:
     _fullpath = None
     _chunks = None
 
-    def __init__(self, fullpath, chunk_size=500, chunk_overlap=40):
+    def __init__(self, fullpath, chunk_size, chunk_overlap):
         """Initializes a new instance.
 
         :param str fullpath: The full path to the PDF document
@@ -99,6 +100,52 @@ class _DocxDocument:
         docx = doc_loaders.Docx2txtLoader(self._fullpath)
         pages = docx.load()
         self._chunks = text_splitter.split_documents(pages)
+
+    def get_chunks(self):
+        """Iterates through the available chunks.
+
+        :yields: The chunks as strings.
+        """
+        for chunk in self._chunks:
+            yield chunk.page_content, chunk.metadata
+
+
+class _MDDocument:
+    """Holds the information of a markdown document.
+
+    :ivar str _fullpath: The full path to the PDF file.
+    :ivar _chunks: The text chunks from the document split.
+    """
+
+    _fullpath = None
+    _chunks = None
+
+    def __init__(self, fullpath):
+        """Initializes a new instance.
+
+        :param str fullpath: The full path to the PDF document
+        """
+        assert fullpath.endswith("md"), "not a md file"
+        assert os.path.isfile(fullpath), f'{fullpath} does not exist'
+        self._fullpath = fullpath
+
+        headers_to_split_on = [
+            ("#", "Header 1"),
+            ("##", "Header 2"),
+            ("###", "Header 3"),
+            ("####", "Header 4")
+        ]
+        text_splitter = text_splitter_lib.MarkdownHeaderTextSplitter(
+            headers_to_split_on=headers_to_split_on
+        )
+        md = doc_loaders.UnstructuredMarkdownLoader(
+            self._fullpath, mode="elements", strategy="fast"
+        )
+        docs = md.load()
+        self._chunks = []
+        for doc in docs:
+            sections = text_splitter.split_text(doc.page_content)
+            self._chunks.extend(sections)
 
     def get_chunks(self):
         """Iterates through the available chunks.
