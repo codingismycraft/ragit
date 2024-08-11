@@ -6,5 +6,5 @@ CREATE TABLE chunks
     chunk         TEXT NOT NULL,
     embeddings    jsonb default NULL,
     metadata      jsonb default NULL,
-    UNIQUE (location, chunk_index)
+    UNIQUE (fullpath, chunk_index)
 );

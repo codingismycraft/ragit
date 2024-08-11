@@ -55,3 +55,20 @@ def get_db_directory():
     """
     path = os.path.join(_CURRENT_DIR, "..", "db")
     return path
+
+
+class MyGenAIException(Exception):
+    """Generic MyGenAI exception."""
+
+
+def handle_exceptions(foo):
+    """Decorator to handle exceptions and customize it."""
+
+    def inner(*args, **kwargs):
+        """The inner function of the decorator."""
+        try:
+            return foo(*args, **kwargs)
+        except Exception as ex:
+            raise MyGenAIException(str(ex)) from ex
+
+    return inner
