@@ -5,7 +5,7 @@ import os
 import pathlib
 
 _CURRENT_DIR = os.path.dirname(os.path.realpath(__file__))
-_TESTING_DATA_DIR = os.path.join(_CURRENT_DIR, "tests", "data")
+_TESTING_DATA_DIR = os.path.join(_CURRENT_DIR, "testing_data")
 _CONN_STR = "postgres://myuser:password@localhost:5432/{db_name}"
 _DEFAULT_DB_NAME = "dummy"
 
