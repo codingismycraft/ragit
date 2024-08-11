@@ -7,8 +7,8 @@ import mygenai.libs.common as common
 import mygenai.libs.doc_loader as doc_loader
 
 
-class TestLoadingPdf(unittest.TestCase):
-    """Tests loading a file."""
+class TestSplittingToChunks(unittest.TestCase):
+    """Tests the _split_to_chunks function."""
 
     def test_pdf(self):
         """Tests the get_chunks method for pdf."""
@@ -16,8 +16,7 @@ class TestLoadingPdf(unittest.TestCase):
             common.get_testing_data_directory(),
             "patents.pdf"
         )
-        doc = doc_loader.Document(full_path)
-        for txt, meta in doc.get_chunks():
+        for txt, meta in doc_loader._split_to_chunks(full_path):
             self.assertIsInstance(txt, str)
             self.assertIsInstance(meta, dict)
 
@@ -27,8 +26,7 @@ class TestLoadingPdf(unittest.TestCase):
             common.get_testing_data_directory(),
             "hello-world.docx"
         )
-        doc = doc_loader.Document(full_path)
-        for txt, meta in doc.get_chunks():
+        for txt, meta in doc_loader._split_to_chunks(full_path):
             self.assertIsInstance(txt, str)
             self.assertIsInstance(meta, dict)
 
@@ -38,7 +36,6 @@ class TestLoadingPdf(unittest.TestCase):
             common.get_testing_data_directory(),
             "sql-alchemy-sucks.md"
         )
-        doc = doc_loader.Document(full_path)
-        for txt, meta in doc.get_chunks():
+        for txt, meta in doc_loader._split_to_chunks(full_path):
             self.assertIsInstance(txt, str)
             self.assertIsInstance(meta, dict)

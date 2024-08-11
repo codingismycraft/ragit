@@ -5,39 +5,64 @@ import os
 import langchain.text_splitter as text_splitter_lib
 import langchain_community.document_loaders as doc_loaders
 
-class Document:
-    """Holds the information about a document to use in RAG.
 
-    :ivar _impl: Holds the instance that implements the lower level details.
+def process_document(fullpath, chunk_size=500, chunk_overlap=40):
+    """Saves the embeddings for the passed in document to the database.
+
+    :param str fullpath: The fullpath to the document.
+    :param int chunk_size: The chunk size to use.
+    :param int chunk_overlap: The chunk overlap The overlap to use.
     """
 
-    _impl = None
 
-    def __init__(self, location, chunk_size=500, chunk_overlap=40):
-        """Loads and processes the document.
+def find_all_documents(directory):
+    """Discovers all the documents under the given directory.
 
-        :raises NotImplementedError
-        """
-        location = location.strip()
-        if location.endswith("pdf"):
-            self._impl = _PdfDocument(location, chunk_size, chunk_overlap)
-        elif location.endswith("docx"):
-            self._impl = _DocxDocument(location, chunk_size, chunk_overlap)
-        elif location.endswith("md"):
-            self._impl = _MDDocument(location, chunk_size, chunk_overlap)
-        else:
-            raise NotImplementedError
+    :param str directory: The directory containing the documents.
 
-    def get_chunks(self):
-        """Iterates through the available chunks.
+    :return: A list of strings holding the full paths of the documents.
+    :rtype: list[str]
+    """
 
-        :yields: The chunks as strings.
-        """
-        return self._impl.get_chunks()
+
+def find_unprocessed_documents(directory):
+    """Discovers all the documents under the given directory to be processed.
+
+    :param str directory: The directory containing the documents.
+
+    :return: Only documents that are not already processed (meaning having
+    their embeddings stored in the database) will be returned.
+    :rtype: list[str]
+    """
 
 
 # Whatever follows this line is private to the module and should be
 # used from the outside.
+
+_SUPPORTED_DOCS = ["pdf", "docx", "md"]
+
+
+def _split_to_chunks(fullpath, chunk_size=500, chunk_overlap=40):
+    """Breaks down the passed in document to chunks.
+
+    :param str fullpath: The fullpath to the document.
+    :param int chunk_size: The chunk size to use.
+    :param int chunk_overlap: The chunk overlap The overlap to use.
+
+    :yields: A tuple of the text and the metadata for each chunk.
+    """
+    fullpath = fullpath.strip()
+    if fullpath.endswith("pdf"):
+        doc = _PdfDocument(fullpath, chunk_size, chunk_overlap)
+    elif fullpath.endswith("docx"):
+        doc = _DocxDocument(fullpath, chunk_size, chunk_overlap)
+    elif fullpath.endswith("md"):
+        doc = _MDDocument(fullpath, chunk_size, chunk_overlap)
+    else:
+        raise NotImplementedError
+
+    return doc.get_chunks()
+
 
 class _PdfDocument:
     """Holds the information of a PDF document.
