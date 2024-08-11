@@ -5,6 +5,16 @@ import os
 import langchain.text_splitter as text_splitter_lib
 import langchain_community.document_loaders as doc_loaders
 
+
+def get_supported_doc_extensions():
+    """Returns the list of supported document extensions.
+
+    :return: The list of supported document extensions.
+    :rtype: list
+    """
+    return _SUPPORTED_DOCS.copy()
+
+
 def split_to_chunks(fullpath, chunk_size=500, chunk_overlap=40):
     """Breaks down the passed in document to chunks.
 

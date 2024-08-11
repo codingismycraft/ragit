@@ -1,4 +1,9 @@
-"""Discovers and process all the available documents."""
+"""Document Manager (Manages the document storage)."""
+
+import fnmatch
+import os
+
+import mygenai.libs.impl.doc_splitter_impl as doc_splitter_impl
 
 
 def process_document(fullpath, chunk_size=500, chunk_overlap=40):
@@ -18,6 +23,14 @@ def find_all_documents(directory):
     :return: A list of strings holding the full paths of the documents.
     :rtype: list[str]
     """
+    extensions = doc_splitter_impl.get_supported_doc_extensions()
+    matches = []
+    for root, _, files in os.walk(directory):
+        for file in files:
+            for extension in extensions:
+                if file.endswith(extension):
+                    matches.append(os.path.join(root, file))
+    return matches
 
 
 def find_unprocessed_documents(directory):
