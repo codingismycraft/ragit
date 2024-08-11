@@ -4,7 +4,7 @@ import os
 import unittest
 
 import mygenai.libs.common as common
-import mygenai.libs.impl.doc_splitter_impl as doc_splitter_impl
+import mygenai.libs.impl.splitter as splitter
 
 
 class TestSplittingToChunks(unittest.TestCase):
@@ -16,7 +16,7 @@ class TestSplittingToChunks(unittest.TestCase):
             common.get_testing_data_directory(),
             "patents.pdf"
         )
-        for txt, meta in doc_splitter_impl.split(full_path):
+        for txt, meta in splitter.split(full_path):
             self.assertIsInstance(txt, str)
             self.assertIsInstance(meta, dict)
 
@@ -26,7 +26,7 @@ class TestSplittingToChunks(unittest.TestCase):
             common.get_testing_data_directory(),
             "hello-world.docx"
         )
-        for txt, meta in doc_splitter_impl.split(full_path):
+        for txt, meta in splitter.split(full_path):
             self.assertIsInstance(txt, str)
             self.assertIsInstance(meta, dict)
 
@@ -36,6 +36,6 @@ class TestSplittingToChunks(unittest.TestCase):
             common.get_testing_data_directory(),
             "sql-alchemy-sucks.md"
         )
-        for txt, meta in doc_splitter_impl.split(full_path):
+        for txt, meta in splitter.split(full_path):
             self.assertIsInstance(txt, str)
             self.assertIsInstance(meta, dict)
