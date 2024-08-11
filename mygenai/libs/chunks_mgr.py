@@ -4,7 +4,7 @@ import json
 import os
 
 import mygenai.libs.common as common
-import mygenai.libs.embeddings_retriever as embeddings_retriever
+import mygenai.libs.impl.embeddings_retriever as embeddings_retriever
 import mygenai.libs.impl.splitter as splitter
 
 
