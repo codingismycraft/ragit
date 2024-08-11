@@ -1,4 +1,4 @@
-"""Exposes a LLM Wrapper class."""
+"""Exposes a function to retrieve embeddings for a passed in text."""
 
 import openai
 
