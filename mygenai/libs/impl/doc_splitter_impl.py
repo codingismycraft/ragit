@@ -15,7 +15,7 @@ def get_supported_doc_extensions():
     return _SUPPORTED_DOCS.copy()
 
 
-def split_to_chunks(fullpath, chunk_size=500, chunk_overlap=40):
+def split(fullpath, chunk_size=500, chunk_overlap=40):
     """Breaks down the passed in document to chunks.
 
     :param str fullpath: The fullpath to the document.
