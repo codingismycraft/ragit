@@ -4,7 +4,6 @@ import json
 import os
 
 import mygenai.libs.common as common
-import mygenai.libs.dbutil as dbutil
 import mygenai.libs.impl.splitter as splitter
 
 
