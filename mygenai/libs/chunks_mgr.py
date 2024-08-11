@@ -4,7 +4,50 @@ import json
 import os
 
 import mygenai.libs.common as common
+import mygenai.libs.embeddings_retriever as embeddings_retriever
 import mygenai.libs.impl.splitter as splitter
+
+
+@common.handle_exceptions
+def save_embeddings(db, chunk_id):
+    """Retrieves and saves the embeddings for a given chunk.
+
+    The chunk must already exist in the database with the given id.
+
+    :param SimpleSQL db: The database wrapper to use.
+    :param int chunk_id: The id of the chunk to save its embeddings.
+    """
+    # Get the chunk from the database.
+    sql = _SQL_SELECT_CHUNK.format(chunk_id=chunk_id)
+    chunk = None
+    for row in db.execute_query(sql):
+        chunk = row[0]
+    assert chunk is not None
+    # Retrieve the embeddings and store them in the database.
+    embeddings = embeddings_retriever.get_embeddings(chunk)
+    sql = _SQL_UPDATE_EMBEDDINGS.format(
+        embeddings=json.dumps(embeddings),
+        chunk_id=chunk_id
+    )
+    db.execute_non_query(sql)
+
+
+@common.handle_exceptions
+def find_chunks_missing_embeddings(db):
+    """Finds the chunks that are missing embeddings.
+
+    Since the embeddings can be calculated any time, it is quite possible
+    that we will have chunks in the database that will have NULL as
+    embeddings just because they were not calculated yet.
+
+    This function is finding these chunks and yields their chunk_id(s).
+
+    :param SimpleSQL db: The database wrapper to use.
+
+    :yield: The chunk_id of the chunks that are missing embeddings.
+    """
+    for row in db.execute_query(_SQL_FIND_MISSING_EMBEDDINGS):
+        yield row[0]
 
 
 @common.handle_exceptions
@@ -28,7 +71,6 @@ def save_chunks_to_db(db, fullpath, chunk_size=500, chunk_overlap=40):
             txt=chunk,
             meta=meta
         )
-        print(sql)
         db.execute_non_query(sql)
 
 
@@ -74,14 +116,25 @@ def find_documents_to_chunk(db, directory):
 # used from the outside.
 
 _SQL_SELECT_FULLPATHS = """
-Select fullpath from chunks group by fullpath
+sELECT fullpath FROM chunks GROUP BY fullpath
 """
 
 _SQL_INSERT_CHUNK = """
-Insert into chunks (fullpath, chunk_index, chunk, metadata) 
-values ('{filepath}', {chunk_index}, '{txt}', '{meta}')
+INSERT INTO chunks (fullpath, chunk_index, chunk, metadata) 
+VALUES ('{filepath}', {chunk_index}, '{txt}', '{meta}')
 """
 
+_SQL_SELECT_CHUNK = """
+SELECT chunk FROM chunks WHERE chunk_id={chunk_id}
+"""
+
+_SQL_UPDATE_EMBEDDINGS = """
+UPDATE chunks SET embeddings='{embeddings}' WHERE chunk_id={chunk_id}
+"""
+
+_SQL_FIND_MISSING_EMBEDDINGS = """
+SELECT chunk_id FROM chunks WHERE embeddings IS NULL
+"""
 
 def _get_already_chunked_files(db):
     """Returns a list with the files that are already chunked and stored in db.

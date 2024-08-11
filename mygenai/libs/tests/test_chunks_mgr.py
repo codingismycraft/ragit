@@ -71,3 +71,40 @@ class TestModule(unittest.TestCase):
             expected = docs_to_chunk[2:]
             self.assertListEqual(sorted(expected), sorted(retrieved))
 
+    def test_find_chunks_missing_embeddings(self):
+        """Tests the find chunks with missing embeddings."""
+        common.init_settings()
+        conn_str = common.make_local_connection_string(self._DB_NAME)
+        dbutil.SimpleSQL.register_connection_string(conn_str)
+
+        # Verify that there are not chunks in the database.
+        with dbutil.SimpleSQL() as db:
+            db.execute_non_query(self._SQL_CLEAR_CHUNKS)
+
+            directory = common.get_testing_data_directory()
+            docs_to_chunk = chunks_mgr.find_documents_to_chunk(db, directory)
+            docs_to_chunk = sorted(docs_to_chunk)
+
+            # Only save the first two documents.
+            for fullpath in docs_to_chunk[:2]:
+                chunks_mgr.save_chunks_to_db(db, fullpath)
+
+            # Only the above documents should be missing embeddings.
+            chunk_ids_before = list(chunks_mgr.find_chunks_missing_embeddings(db))
+
+            # Save the embeddings only for the first two chunk ids.
+            saved = []
+            for chunk_id in chunk_ids_before[:2]:
+                saved.append(chunk_id)
+                chunks_mgr.save_embeddings(db, chunk_id)
+
+            # Compare before and after.
+            chunk_ids_after = list(chunks_mgr.find_chunks_missing_embeddings(db))
+
+            expected = sorted(chunk_ids_before)
+            retrieved = sorted(chunk_ids_after + saved)
+
+            self.assertListEqual(expected, retrieved)
+
+
+
