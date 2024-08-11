@@ -44,7 +44,7 @@ class TestModule(unittest.TestCase):
         with dbutil.SimpleSQL() as db:
             db.execute_non_query(self._SQL_CLEAR_CHUNKS)
             directory = common.get_testing_data_directory()
-            retrieved = chunks_mgr.find_documents_to_chunk(directory)
+            retrieved = chunks_mgr.find_documents_to_chunk(db, directory)
             expected = chunks_mgr.find_all_documents(
                 common.get_testing_data_directory()
             )
@@ -60,7 +60,14 @@ class TestModule(unittest.TestCase):
             db.execute_non_query(self._SQL_CLEAR_CHUNKS)
 
             directory = common.get_testing_data_directory()
-            docs_to_chunk = chunks_mgr.find_documents_to_chunk(directory)
+            docs_to_chunk = chunks_mgr.find_documents_to_chunk(db, directory)
 
-            for fullpath in docs_to_chunk:
+            # Only save the first two documents.
+            for fullpath in docs_to_chunk[:2]:
                 chunks_mgr.save_chunks_to_db(db, fullpath)
+
+            # Verify that the first two documents are in the database.
+            retrieved = chunks_mgr.find_documents_to_chunk(db, directory)
+            expected = docs_to_chunk[2:]
+            self.assertListEqual(sorted(expected), sorted(retrieved))
+

@@ -53,19 +53,20 @@ def find_all_documents(directory):
 
 
 @common.handle_exceptions
-def find_documents_to_chunk(directory):
+def find_documents_to_chunk(db, directory):
     """Discovers all the documents under the given directory to be chunked.
 
     Discovers all the files that can be chunked and returns only those that
     are not already in the database.
 
+    :param SimpleSQL db: The database wrapper to use.
     :param str directory: The directory containing the documents.
 
     :return: Only documents that are not already chunked will be returned.
     :rtype: list[str]
     """
     all_filepaths = set(find_all_documents(directory))
-    already_chunked = set(_get_already_chunked_files())
+    already_chunked = set(_get_already_chunked_files(db))
     diff = all_filepaths - already_chunked
     return list(diff)
 
@@ -83,14 +84,13 @@ values ('{filepath}', {chunk_index}, '{txt}', '{meta}')
 """
 
 
-def _get_already_chunked_files():
+def _get_already_chunked_files(db):
     """Returns a list with the files that are already chunked and stored in db.
 
     :return: A list with the files that are already chunked.
     :rtype: list[str]
     """
     fullpaths = []
-    with dbutil.SimpleSQL() as db:
-        for row in db.execute_query(_SQL_SELECT_FULLPATHS):
-            fullpaths.append(row[0])
+    for row in db.execute_query(_SQL_SELECT_FULLPATHS):
+        fullpaths.append(row[0])
     return fullpaths
