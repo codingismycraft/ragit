@@ -10,8 +10,8 @@ _CONN_STR = "postgres://myuser:password@localhost:5432/{db_name}"
 _DEFAULT_DB_NAME = "dummy"
 
 
-def get_connection_string(db_name=None):
-    """Returns the connection string for the postgresql.
+def make_local_connection_string(db_name=None):
+    """Makes a connection string to use with the local postgres database.
 
     :return: The connection string for the postgresql.
     :rtype: str

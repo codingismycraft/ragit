@@ -2,16 +2,16 @@
 
 import psycopg2
 
-import mygenai.libs.common as common
 
 class SimpleSQL:
+    _connection_string = None
 
-    def __init__(self, dbname=None):
-        self._dbname = dbname
+    @classmethod
+    def register_connection_string(cls, connection_string):
+        cls._connection_string = connection_string
 
     def __enter__(self):
-        conn_str = common.get_connection_string(self._dbname)
-        self._connection = psycopg2.connect(conn_str)
+        self._connection = psycopg2.connect(self._connection_string)
         return self
 
     def __exit__(self, exc_type, exc_value, trace):

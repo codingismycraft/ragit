@@ -1,6 +1,5 @@
 """Document Manager (Manages the document storage)."""
 
-import fnmatch
 import os
 
 import mygenai.libs.impl.doc_splitter_impl as doc_splitter_impl
@@ -38,7 +37,7 @@ def find_unprocessed_documents(directory):
 
     :param str directory: The directory containing the documents.
 
-    :return: Only documents that are not already processed (meaning having
-    their embeddings stored in the database) will be returned.
+    :return: Only documents that are not already processed (meaning that
+    they do not have embeddings stored in the database) will be returned.
     :rtype: list[str]
     """
