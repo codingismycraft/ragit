@@ -64,6 +64,21 @@ def find_chunks_with_embeddings(db):
 
 
 @common.handle_exceptions
+def load_embeddings(db, chunk_id):
+    """Returns the embeddings for the passed in chunk_id.
+
+    :param SimpleSQL db: The database wrapper to use.
+    :param int chunk_id: The chunk id to fetch.
+
+    :return: A dictionary holding the chunk information.
+    """
+    sql = _SQL_SELECT_EMBEDDINGS.format(chunk_id=chunk_id)
+    for row in db.execute_query(sql):
+        embeddings = row[0]
+        return embeddings
+
+
+@common.handle_exceptions
 def save_chunks_to_db(db, fullpath, chunk_size=500, chunk_overlap=40):
     """Splits the passed in document and saves the chunks into the database.
 
@@ -144,6 +159,10 @@ VALUES ('{filepath}', {chunk_index}, '{txt}', '{meta}')
 
 _SQL_SELECT_CHUNK = """
 SELECT chunk FROM chunks WHERE chunk_id={chunk_id}
+"""
+
+_SQL_SELECT_EMBEDDINGS = """
+SELECT embeddings FROM chunks WHERE chunk_id={chunk_id}
 """
 
 _SQL_UPDATE_EMBEDDINGS = """

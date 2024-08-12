@@ -99,10 +99,12 @@ class TestModule(unittest.TestCase):
                 chunks_mgr.save_embeddings(db, chunk_id)
 
             # Compare before and after.
-            chunk_ids_after = list(chunks_mgr.find_chunks_missing_embeddings(db))
+            chunk_ids_no_embeddings = list(
+                chunks_mgr.find_chunks_missing_embeddings(db)
+            )
 
             expected = sorted(chunk_ids_before)
-            retrieved = sorted(chunk_ids_after + saved)
+            retrieved = sorted(chunk_ids_no_embeddings + saved)
 
             self.assertListEqual(expected, retrieved)
 
@@ -110,8 +112,19 @@ class TestModule(unittest.TestCase):
                 chunks_mgr.find_chunks_with_embeddings(db)
             )
 
-            retrieved = sorted(chunk_ids_after + chunk_id_with_embeddings)
+            retrieved = sorted(
+                chunk_ids_no_embeddings + chunk_id_with_embeddings
+            )
+
             self.assertListEqual(expected, retrieved)
 
+            chunk_id = chunk_id_with_embeddings[0]
+            retrieved = chunks_mgr.load_embeddings(db, chunk_id)
 
+            self.assertIsInstance(retrieved, list)
+            self.assertEqual(len(retrieved), 1536)
+
+            chunk_id = chunk_ids_no_embeddings[0]
+            retrieved = chunks_mgr.load_embeddings(db, chunk_id)
+            self.assertIsNone(retrieved)
 
