@@ -1,5 +1,7 @@
 """Inserts the embeddings to the database."""
 
+import time
+
 import mygenai.libs.common as common
 import mygenai.libs.dbutil as dbutil
 import mygenai.libs.chunks_mgr as chunks_mgr
@@ -26,4 +28,8 @@ def main(max_length=1000):
 
 if __name__ == '__main__':
     common.init_settings()
-    main()
+    c = 0
+    while c < 50:
+        main()
+        time.sleep(60)
+        c += 1
