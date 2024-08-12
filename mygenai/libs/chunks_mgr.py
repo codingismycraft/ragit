@@ -2,6 +2,7 @@
 
 import json
 import os
+import re
 
 import mygenai.libs.common as common
 import mygenai.libs.impl.embeddings_retriever as embeddings_retriever
@@ -62,16 +63,21 @@ def save_chunks_to_db(db, fullpath, chunk_size=500, chunk_overlap=40):
     assert os.path.isfile(fullpath)
     chunk_index = 0
     for chunk, metadata in splitter.split(fullpath, chunk_size, chunk_overlap):
-        chunk = chunk.replace("'", "''")
-        chunk_index += 1
-        meta = json.dumps(metadata)
-        sql = _SQL_INSERT_CHUNK.format(
-            filepath=fullpath,
-            chunk_index=chunk_index,
-            txt=chunk,
-            meta=meta
-        )
-        db.execute_non_query(sql)
+        try:
+            chunk = chunk.replace('"', "'")
+            chunk = chunk.replace("'", "''")
+            chunk = re.sub(r'[^\w\s]', '', chunk)
+            chunk_index += 1
+            meta = json.dumps(metadata)
+            sql = _SQL_INSERT_CHUNK.format(
+                filepath=fullpath,
+                chunk_index=chunk_index,
+                txt=chunk,
+                meta=meta
+            )
+            db.execute_non_query(sql)
+        except Exception as ex:
+            print(ex)
 
 
 @common.handle_exceptions

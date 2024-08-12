@@ -24,6 +24,7 @@ class SimpleSQL:
         :raises psycopg2.DatabaseError: If an error occurs during execution.
         """
         self._connection = psycopg2.connect(self._connection_string)
+        self._connection.autocommit = True
         return self
 
     def __exit__(self, exc_type, exc_value, trace):
@@ -61,6 +62,5 @@ class SimpleSQL:
         :raise:psycopg2.DatabaseError
         """
         assert self._connection
-        self._connection.autocommit = True
         with self._connection.cursor() as cursor:
             cursor.execute(sql)

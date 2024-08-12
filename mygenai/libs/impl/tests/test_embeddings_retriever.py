@@ -2,7 +2,7 @@
 
 import unittest
 
-import mygenai.libs.embeddings_retriever as embeddings_retriever
+import mygenai.libs.impl.embeddings_retriever as embeddings_retriever
 import mygenai.libs.common as common
 
 
