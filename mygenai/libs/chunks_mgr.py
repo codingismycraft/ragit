@@ -52,6 +52,18 @@ def find_chunks_missing_embeddings(db):
 
 
 @common.handle_exceptions
+def find_chunks_with_embeddings(db):
+    """Finds the chunks with embeddings.
+
+    :param SimpleSQL db: The database wrapper to use.
+
+    :yield: The chunk_id of the chunks with embeddings.
+    """
+    for row in db.execute_query(_SQL_FIND_ASSIGNED_EMBEDDINGS):
+        yield row[0]
+
+
+@common.handle_exceptions
 def save_chunks_to_db(db, fullpath, chunk_size=500, chunk_overlap=40):
     """Splits the passed in document and saves the chunks into the database.
 
@@ -141,6 +153,11 @@ UPDATE chunks SET embeddings='{embeddings}' WHERE chunk_id={chunk_id}
 _SQL_FIND_MISSING_EMBEDDINGS = """
 SELECT chunk_id FROM chunks WHERE embeddings IS NULL
 """
+
+_SQL_FIND_ASSIGNED_EMBEDDINGS = """
+SELECT chunk_id FROM chunks WHERE embeddings IS NOT NULL
+"""
+
 
 def _get_already_chunked_files(db):
     """Returns a list with the files that are already chunked and stored in db.

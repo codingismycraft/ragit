@@ -106,5 +106,12 @@ class TestModule(unittest.TestCase):
 
             self.assertListEqual(expected, retrieved)
 
+            chunk_id_with_embeddings = list(
+                chunks_mgr.find_chunks_with_embeddings(db)
+            )
+
+            retrieved = sorted(chunk_ids_after + chunk_id_with_embeddings)
+            self.assertListEqual(expected, retrieved)
+
 
 
