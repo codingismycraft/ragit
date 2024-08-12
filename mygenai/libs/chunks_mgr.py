@@ -74,8 +74,9 @@ def load_embeddings(db, chunk_id):
     """
     sql = _SQL_SELECT_EMBEDDINGS.format(chunk_id=chunk_id)
     for row in db.execute_query(sql):
-        embeddings = row[0]
-        return embeddings
+        chunk = row[0]
+        embeddings = row[1]
+        return chunk, embeddings
 
 
 @common.handle_exceptions
@@ -162,7 +163,7 @@ SELECT chunk FROM chunks WHERE chunk_id={chunk_id}
 """
 
 _SQL_SELECT_EMBEDDINGS = """
-SELECT embeddings FROM chunks WHERE chunk_id={chunk_id}
+SELECT chunk, embeddings FROM chunks WHERE chunk_id={chunk_id}
 """
 
 _SQL_UPDATE_EMBEDDINGS = """

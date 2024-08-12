@@ -119,12 +119,14 @@ class TestModule(unittest.TestCase):
             self.assertListEqual(expected, retrieved)
 
             chunk_id = chunk_id_with_embeddings[0]
-            retrieved = chunks_mgr.load_embeddings(db, chunk_id)
+            chunk, embeddings = chunks_mgr.load_embeddings(db, chunk_id)
 
-            self.assertIsInstance(retrieved, list)
-            self.assertEqual(len(retrieved), 1536)
+            self.assertIsInstance(embeddings, list)
+            self.assertEqual(len(embeddings), 1536)
 
+            self.assertIsInstance(chunk, str)
             chunk_id = chunk_ids_no_embeddings[0]
-            retrieved = chunks_mgr.load_embeddings(db, chunk_id)
-            self.assertIsNone(retrieved)
+            chunk, embeddings = chunks_mgr.load_embeddings(db, chunk_id)
+            self.assertIsInstance(chunk, str)
+            self.assertIsNone(embeddings)
 
