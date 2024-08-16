@@ -16,10 +16,9 @@ def query_vector_db(fullpath_to_db, collection_name):
     """
     vdb = vector_db.VectorDb(fullpath_to_db, collection_name)
     query = "can support vector machines be used to predict dementia?"
-    result = vdb.query(query, k=20)
-    result = list(result)[0]
+    result = vdb.query(query, k=3)
     for row in result:
-        print(row["entity"]["text"])
+        print(row)
         print("===================")
 
 

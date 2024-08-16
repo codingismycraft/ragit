@@ -88,4 +88,9 @@ class VectorDb:
             search_params={"metric_type": "IP", "params": {}},
             output_fields=["text"],  # Return the text field
         )
-        return search_res
+
+        matches = [
+            (res["entity"]["text"], res["distance"]) for res in search_res[0]
+        ]
+
+        return matches
