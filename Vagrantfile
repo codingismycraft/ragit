@@ -15,7 +15,7 @@ Vagrant.configure("2") do |config|
   config.vm.box = "bento/ubuntu-22.04"
   config.vm.provision "shell", inline: $script
   config.vm.provision "shell", path: "install-psql.sh"
-
+  config.vm.network "forwarded_port", guest: 13131, host: 13131
   config.vm.synced_folder "/home/john/mygen-data", "/home/vagrant/mygen-data"
   config.vm.provider "virtualbox" do |vb|
     vb.name = "mygenai"

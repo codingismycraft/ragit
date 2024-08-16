@@ -1,0 +1,57 @@
+body {
+    font-family: sans-serif;
+    margin: 0;
+    padding: 20px;
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 80%;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.history {
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 10px;
+    max-height: 600px;
+    overflow-y: scroll;
+}
+
+
+.search-box {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+.search-button {
+    background-color: #4CAF50; /* Green */
+    border: none;
+    color: white;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin-top: 10px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+#historyList {
+    width: 100%;
+    height: 600px;
+    margin-bottom: 1em;
+}
+
+.history_qa {
+    margin-bottom: .4em;
+    background-color: #f5e1e1;
+    padding: 0.5em;
+}
