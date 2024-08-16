@@ -6,7 +6,10 @@ import openai
 def get_embeddings(txt):
     """Returns the embeddings for the passed in txt.
 
-    :return:
+    :param str txt: The text to create the embeddings for.
+
+    :return: The embeddings for the passed in text.
+    :rtype: list [float]
     """
     assert isinstance(txt, str), "get_embeddings expects a string."
     return _LLMWrapper.get_embeddings(txt)
@@ -16,7 +19,7 @@ def get_embeddings(txt):
 # used from the outside.
 
 class _LLMWrapper:
-    """Wraps the LLM model.
+    """Wraps the functionality to retrieve embeddings.
 
     :cvar _client: Holds the OpenAI instance.
     """
@@ -28,7 +31,10 @@ class _LLMWrapper:
     def get_embeddings(cls, txt):
         """Returns the embeddings for the passed in txt.
 
-        :return:
+        :param str txt: The text to create the embeddings for.
+
+        :return: The embeddings for the passed in text.
+        :rtype: list [float]
         """
         if not cls._client:
             cls._client = openai.OpenAI()
