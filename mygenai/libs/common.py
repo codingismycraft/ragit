@@ -4,6 +4,7 @@ import json
 import os
 import pathlib
 import shutil
+import yaml
 
 _CURRENT_DIR = os.path.dirname(os.path.realpath(__file__))
 _TESTING_DATA_DIR = os.path.join(_CURRENT_DIR, "testing_data")
@@ -122,3 +123,25 @@ def handle_exceptions(foo):
             raise MyGenAIException(str(ex)) from ex
 
     return inner
+
+
+class Configuration:
+    """Holds the configuration that is loaded from a yaml file.
+
+    :ivar _settings: The configuration instance.
+    """
+
+    _settings = None
+
+    def __init__(self, fullpath):
+        """Loads the configuration from a yaml file.
+
+        :param str fullpath: The full path to the configuration yaml file.
+        """
+        with open(fullpath, 'r') as f:
+            self._settings = yaml.safe_load(f)
+
+    @property
+    def settings(self):
+        """Returns the configuration settings object."""
+        return self._settings

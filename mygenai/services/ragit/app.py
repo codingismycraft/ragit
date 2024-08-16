@@ -8,9 +8,9 @@ import aiohttp
 import aiohttp.web as web
 import jinja2
 
-logger = logging.getLogger("ragit")
+import mygenai.libs.common as common
+import mygenai.libs.query_executor as query_executor
 
-_PORT = 13131
 
 _JINJA_ENV = jinja2.Environment(
     loader=jinja2.PackageLoader(
@@ -21,9 +21,9 @@ _JINJA_ENV = jinja2.Environment(
 
 _CURR_DIR = os.path.dirname(os.path.realpath(__file__))
 _PATH_TO_STATIC = os.path.join(_CURR_DIR, 'static')
+_CONFIGURATION = common.Configuration(os.path.join(_CURR_DIR, 'config.yaml'))
 
-APP_NAME = "ragit"
-
+logger = logging.getLogger(_CONFIGURATION.settings["web_service"]["name"])
 
 def _raw_headers_to_dict(raw_headers):
     """Converts raw headers to a dictionary."""
@@ -64,8 +64,8 @@ class Handler:
         :param request: The web request.
         """
         template = _JINJA_ENV.get_template('index.html')
-        title = "Chat Bot"
-        desc = "Specializes in  Alzheimer's diagnosis with MRI using AI."
+        title = _CONFIGURATION.settings["domain"]["title"]
+        desc = _CONFIGURATION.settings["domain"]["description"]
         txt = template.render(host=request.host, title=title, description=desc)
         logger.info("Serving main page.")
         return web.Response(
@@ -75,13 +75,27 @@ class Handler:
 
     @web_handler
     async def query_handler(self, request):
+        """Handles a query that is submitted by the chatbot user.
+
+        :param request: The web request.
+        """
         data = await request.json()
         query = data.get('query')
-        return web.json_response({"response": "not ready yet."})
+        response = query_executor.query(query)
+        return web.json_response({"response": response})
+
+
+def initialize():
+    """Initializes the environment."""
+    common.init_settings()
+    fullpath_to_db = _CONFIGURATION.settings["vector_db"]["full_path"]
+    collection_name = _CONFIGURATION.settings["vector_db"]["collection"]
+    query_executor.initialize(fullpath_to_db, collection_name)
 
 
 def run():
     """Runs the backend service."""
+    initialize()
     app = web.Application()
     handler = Handler()
     app.add_routes(
@@ -90,9 +104,13 @@ def run():
             web.post('/', handler.query_handler),
         ]
     )
+
+    app_name = _CONFIGURATION.settings["web_service"]["app_name"]
+    port = _CONFIGURATION.settings["web_service"]["port"]
+
     app.router.add_static('/static', _PATH_TO_STATIC)
-    logger.info(f"Starting {APP_NAME} on port {_PORT}")
-    web.run_app(app, port=_PORT)
+    logger.info(f"Starting {app_name} on port {port}")
+    web.run_app(app, port=port)
 
 
 if __name__ == '__main__':

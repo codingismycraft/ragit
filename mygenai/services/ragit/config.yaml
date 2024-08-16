@@ -1,0 +1,14 @@
+# Defines the configuration settings for the Ragit application.
+
+vector_db:
+  full_path: /home/vagrant/testing_output/dementia/dementia.db
+  collection: chunks
+
+web_service:
+  name: ragit
+  port: 13131
+  app_name: ragit
+
+domain:
+  title: Alzheimer's Chat Bot
+  description: Specializes in  Alzheimer's diagnosis with MRI using AI.
