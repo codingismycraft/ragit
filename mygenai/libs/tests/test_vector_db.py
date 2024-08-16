@@ -30,7 +30,10 @@ class TestVectorDb(unittest.TestCase):
 
     def test_creation(self):
         """Tests creating a VectorDb."""
-        parent_dir = common.get_testing_output_dir("creating-vector-db")
+        parent_dir = common.get_testing_output_dir(
+            "creating-vector-db",
+            wipe_out=True
+        )
         collection = "dummy"
         fullpath = os.path.join(parent_dir, "test.db")
         vdb = vector_db.VectorDb(fullpath, collection)
