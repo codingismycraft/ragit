@@ -41,8 +41,8 @@ def create_vector_db(fullpath_to_db, collection_name):
 def load_and_query_vector_db(fullpath_to_db, collection_name):
     """Loads and queries the dummy vector database.
 
-    :param str fullpath_to_db: The full path to the database file to create.
-    :param str collection_name: The name of the collection to create.
+    :param str fullpath_to_db: The full path to the database file to query.
+    :param str collection_name: The name of the collection to query.
     """
     vdb = vector_db.VectorDb(fullpath_to_db, collection_name)
     result = vdb.query("Why sqlalchemy is bad?", k=2)
