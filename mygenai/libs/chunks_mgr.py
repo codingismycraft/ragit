@@ -208,7 +208,7 @@ def find_documents_to_chunk(db, directory):
     return list(diff)
 
 
-# Whatever follows this line is private to the module and should be
+# Whatever follows this line is private to the module and should not be
 # used from the outside.
 
 _SQL_SELECT_FULLPATHS = """
