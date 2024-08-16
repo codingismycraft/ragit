@@ -82,3 +82,38 @@ stores the results in the database.
 
 The vector database is built or rebuilt using existing document embeddings. This
 is the step that makes the embeddings accessible for the RAG service.
+
+
+## Installation 
+
+**Build the virtual machine**
+To install and run RAGIT locally the easiest way is to use a virtual machine
+that can be created using vagrant. You will need to have vagrant installed
+on your machine . Assuming you already have vagrant installed then you need to
+follow these steps to install the repository under your home directory (you
+can always install it in any other directory if needed).
+
+```
+cd ~
+git clone git@github.com:codingismycraft/mygenai.git
+mkdir ~/mygen-data
+cd mygenai
+vagrant up
+vagrant ssh
+```
+
+Now you can ssh to the newly created virtual machine which should be ready
+to go. 
+
+**Create the testing database**
+```
+cd /vagrant/mygenai/db
+./create-db.sh
+```
+
+
+**Run the tests**
+```
+cd /vagrant/mygenai/
+pt
+```
