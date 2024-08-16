@@ -12,47 +12,56 @@ import mygenai.libs.impl.splitter as splitter
 
 
 @common.handle_exceptions
-def insert_chunks_to_db(conn_str, directory, max_chunks_to_save=None):
+def insert_chunks_to_db(db, directory, max_count=None, verbose=False):
     """Inserts the chunks to the database.
 
-    :param str conn_str: The connection string to the database to use.
+    :param dbutil.SimpleSQL db: The database wrapper to use.
     :param directory: The directory where the files exist.
-    :param int max_chunks_to_save: The maximum number of chunks to save; by
+    :param int max_count: The maximum number of chunks to save; by
     default None will save all the available chunks.
+    :param bool verbose: If true it will print out messages.
 
     :returns: The number of chunks saved to the database.
     """
-    dbutil.SimpleSQL.register_connection_string(conn_str)
+    if verbose:
+        if max_count is None:
+            print("Will insert all available chunks to the database.")
+        else:
+            print(f"Insert at max {max_count} chunks to the database.")
     counter = 0
-    with dbutil.SimpleSQL() as db:
-        for fullpath in find_documents_to_chunk(db, directory):
-            counter += save_chunks_to_db(db, fullpath)
+    for fullpath in find_documents_to_chunk(db, directory):
+        counter += save_chunks_to_db(db, fullpath)
+        if verbose:
             print(datetime.datetime.now(), counter, fullpath)
-            if max_chunks_to_save and counter >= max_chunks_to_save:
-                break
+        if max_count and counter >= max_count:
+            break
     return counter
 
 
 @common.handle_exceptions
-def insert_embeddings_to_db(conn_str, max_length=None):
+def insert_embeddings_to_db(db, max_count=None, verbose=False):
     """Insert embeddings to the database.
 
-    :param str conn_str: The connection string to the database to use.
-    :param max_length: The number of chunks to calculate embeddings for. By
-    default all the chunks will be processed.
+    :param dbutil.SimpleSQL db: The database wrapper to use.
+    :param int max_count: The maximum number of embeddings to save; by
+    default None will save all the available embeddings.
+    :param bool verbose: If true it will print out messages.
 
     :return: The number of embeddings inserted.
     :rtype: int
     """
-    print(f"Inserting at max {max_length} embeddings to the database.")
-    dbutil.SimpleSQL.register_connection_string(conn_str)
+    if verbose:
+        if max_count is None:
+            print("Will insert all available embeddings to the database.")
+        else:
+            print(f"Insert at max {max_count} embeddings to the database.")
     counter = 0
-    with dbutil.SimpleSQL() as db:
-        for chunk_id in find_chunks_missing_embeddings(db):
-            counter += 1
-            if max_length is not None and counter > max_length:
-                break
-            save_embeddings(db, chunk_id)
+    for chunk_id in find_chunks_missing_embeddings(db):
+        counter += 1
+        if max_count is not None and counter > max_count:
+            break
+        save_embeddings(db, chunk_id)
+        if verbose:
             print(f"Embeddings count: {counter}")
     return counter
 
