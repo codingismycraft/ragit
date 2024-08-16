@@ -7,7 +7,7 @@ import mygenai.libs.dbutil as dbutil
 import mygenai.libs.chunks_mgr as chunks_mgr
 
 
-class TestModule(unittest.TestCase):
+class TestChunksMgr(unittest.TestCase):
     """Tests the chunks_mgr module."""
 
     _DB_NAME = "dummy"
