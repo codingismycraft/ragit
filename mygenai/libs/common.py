@@ -30,7 +30,7 @@ def get_home_dir():
     return pathlib.Path.home()
 
 
-def get_testing_output_dir(relative_path, wipe_out=True):
+def get_testing_output_dir(relative_path, wipe_out=False):
     """Returns a directory containing temporary output used for testing.
 
     As an example of what can go to this directory you can think of a
