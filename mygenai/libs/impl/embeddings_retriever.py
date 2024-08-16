@@ -15,7 +15,7 @@ def get_embeddings(txt):
     return _LLMWrapper.get_embeddings(txt)
 
 
-# Whatever follows this line is private to the module and should be
+# Whatever follows this line is private to the module and should not be
 # used from the outside.
 
 class _LLMWrapper:
