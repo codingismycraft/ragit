@@ -3,9 +3,7 @@
 import os
 
 import mygenai.libs.common as common
-import mygenai.libs.dbutil as dbutil
 import mygenai.libs.vector_db as vector_db
-import mygenai.samples.dementia.settings as settings
 
 
 def query_vector_db(fullpath_to_db, collection_name):
@@ -24,8 +22,6 @@ def query_vector_db(fullpath_to_db, collection_name):
 
 if __name__ == '__main__':
     common.init_settings()
-    conn_str = common.make_local_connection_string(settings.DBNAME)
-    dbutil.SimpleSQL.register_connection_string(conn_str)
 
     # Create the filepath and the collection name for the vectordb.
     folder_path = common.get_testing_output_dir("dementia", wipe_out=False)
