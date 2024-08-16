@@ -69,7 +69,7 @@ if __name__ == '__main__':
     dbutil.SimpleSQL.register_connection_string(conn_str)
 
     # Create the filepath and the collection name for the vectordb.
-    folder_path = common.get_testing_output_dir("dummy-app")
+    folder_path = common.get_testing_output_dir("dummy-app", wipe_out=True)
     fullpath_to_db = os.path.join(folder_path, "dummy.db")
     collection_name = "dummy"
 
