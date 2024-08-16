@@ -37,7 +37,7 @@ def split(fullpath, chunk_size=500, chunk_overlap=40):
     return doc.get_chunks()
 
 
-# Whatever follows this line is private to the module and should be
+# Whatever follows this line is private to the module and should not be
 # used from the outside.
 
 _SUPPORTED_DOCS = ["pdf", "docx", "md"]
