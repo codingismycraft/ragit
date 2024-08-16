@@ -8,7 +8,7 @@ import mygenai.libs.chunks_mgr as chunks_mgr
 import mygenai.samples.dementia.settings as settings
 
 
-def main(max_length=1000):
+def main(max_length=2000):
     """Inserts the chunks to the database.
 
     :param max_length: The number of chunks to calculate embeddings for.
@@ -31,5 +31,5 @@ if __name__ == '__main__':
     c = 0
     while c < 50:
         main()
-        time.sleep(60)
+        time.sleep(30)
         c += 1
