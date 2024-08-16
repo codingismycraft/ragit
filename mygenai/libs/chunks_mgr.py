@@ -1,12 +1,60 @@
 """Document Manager (Manages the document storage)."""
 
+import datetime
 import json
 import os
 import re
 
 import mygenai.libs.common as common
+import mygenai.libs.dbutil as dbutil
 import mygenai.libs.impl.embeddings_retriever as embeddings_retriever
 import mygenai.libs.impl.splitter as splitter
+
+
+@common.handle_exceptions
+def insert_chunks_to_db(conn_str, directory, max_chunks_to_save=None):
+    """Inserts the chunks to the database.
+
+    :param str conn_str: The connection string to the database to use.
+    :param directory: The directory where the files exist.
+    :param int max_chunks_to_save: The maximum number of chunks to save; by
+    default None will save all the available chunks.
+
+    :returns: The number of chunks saved to the database.
+    """
+    dbutil.SimpleSQL.register_connection_string(conn_str)
+    counter = 0
+    with dbutil.SimpleSQL() as db:
+        for fullpath in find_documents_to_chunk(db, directory):
+            counter += save_chunks_to_db(db, fullpath)
+            print(datetime.datetime.now(), counter, fullpath)
+            if max_chunks_to_save and counter >= max_chunks_to_save:
+                break
+    return counter
+
+
+@common.handle_exceptions
+def insert_embeddings_to_db(conn_str, max_length=None):
+    """Insert embeddings to the database.
+
+    :param str conn_str: The connection string to the database to use.
+    :param max_length: The number of chunks to calculate embeddings for. By
+    default all the chunks will be processed.
+
+    :return: The number of embeddings inserted.
+    :rtype: int
+    """
+    print(f"Inserting at max {max_length} embeddings to the database.")
+    dbutil.SimpleSQL.register_connection_string(conn_str)
+    counter = 0
+    with dbutil.SimpleSQL() as db:
+        for chunk_id in find_chunks_missing_embeddings(db):
+            counter += 1
+            if max_length is not None and counter > max_length:
+                break
+            save_embeddings(db, chunk_id)
+            print(f"Embeddings count: {counter}")
+    return counter
 
 
 @common.handle_exceptions
@@ -70,7 +118,8 @@ def load_embeddings(db, chunk_id):
     :param SimpleSQL db: The database wrapper to use.
     :param int chunk_id: The chunk id to fetch.
 
-    :return: A dictionary holding the chunk information.
+    :return: A tuple consisting with the chunk Text and the embeddings.
+    :rtype: tuple
     """
     sql = _SQL_SELECT_EMBEDDINGS.format(chunk_id=chunk_id)
     for row in db.execute_query(sql):
@@ -87,6 +136,9 @@ def save_chunks_to_db(db, fullpath, chunk_size=500, chunk_overlap=40):
     :param str fullpath: The fullpath to the document.
     :param int chunk_size: The chunk size to use.
     :param int chunk_overlap: The chunk overlap The overlap to use.
+
+    :returns: The number of chunks saved.
+    :rtype: int
     """
     assert os.path.isfile(fullpath)
     chunk_index = 0
@@ -106,6 +158,7 @@ def save_chunks_to_db(db, fullpath, chunk_size=500, chunk_overlap=40):
             db.execute_non_query(sql)
         except Exception as ex:
             print(ex)
+    return chunk_index
 
 
 @common.handle_exceptions
