@@ -1,7 +1,7 @@
 # Defines the configuration settings for the Ragit application.
 
 vector_db:
-  full_path: /home/vagrant/testing_output/dementia/dementia.db
+  full_path: /home/vagrant/testing_output/dementia/dementia-vector.db
   collection: chunks
 
 web_service:
