@@ -38,7 +38,11 @@ class RagManager:
         :param str rag_name: The name of the RAG collection.
         """
         self._rag_name = rag_name
-        self._base_dir = os.path.join(self._SHARED_DIR, self._rag_name)
+        self._base_dir = os.path.join(
+            common.get_home_dir(),
+            self._SHARED_DIR,
+            self._rag_name
+        )
         common.create_directory_if_not_exists(self._base_dir)
 
         homedir = common.get_home_dir()
