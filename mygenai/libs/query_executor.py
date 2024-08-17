@@ -20,9 +20,16 @@ def initialize(fullpath_to_db, collection_name, model_name=DEFAULT_MODEL):
 
 
 @common.handle_exceptions
-def query(question):
-    """Asks a question."""
-    return _QueryExecutor.execute_query(question)
+def query(question, k=3):
+    """Uses the RAG collection to enhance the LLM to answer the question.
+
+    :param str question: The question to answer.
+    :param int k: The number of vector matches to use.
+
+    :return: The LLM generated answer using the vector db matches.
+    :rtype: str
+    """
+    return _QueryExecutor.execute_query(question, k=k)
 
 
 # Whatever follows this line is private to the module and should not be

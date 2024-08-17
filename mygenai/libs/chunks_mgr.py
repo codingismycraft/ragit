@@ -121,6 +121,38 @@ def find_chunks_with_embeddings(db):
 
 
 @common.handle_exceptions
+def get_chunk_ids_to_insert_to_vector_db(db):
+    """Finds the chunks with embeddings that are not in the vector db yet.
+
+    Yields the chunk_id(s) that are ready to be inserted into the
+    vector database, meaning that they have stored their embeddings but
+    were not stored in the vector db yet.
+
+    :param SimpleSQL db: The database wrapper to use.
+
+    :yield: The chunk_id of the chunks with embeddings.
+    """
+    for row in db.execute_query(_SQL_FIND_ASSIGNED_EMBEDDINGS_NOT_IN_VECTOR_DB):
+        yield row[0]
+
+
+def set_vectorized(db, chunk_ids):
+    """Updates the psql database setting the stored_in_vdb flag.
+
+    Once this function will be called all the passed in chunk_ids will
+    be marked as already been part of the vector db and they will not
+    be reconsidered in a subsequent call of vector update.
+
+    :param SimpleSQL db: The database wrapper to use.
+
+    :param list [int] chunk_ids: The list of the chunk ids to update.
+    """
+    ids = ', '.join([str(chunk_id) for chunk_id in chunk_ids])
+    sql = _SQL_UPDATE_STORED_IN_VDB.format(chunk_ids=ids)
+    db.execute_non_query(sql)
+
+
+@common.handle_exceptions
 def load_embeddings(db, chunk_id):
     """Returns the embeddings for the passed in chunk_id.
 
@@ -240,6 +272,15 @@ _SQL_FIND_ASSIGNED_EMBEDDINGS = """
 SELECT chunk_id FROM chunks WHERE embeddings IS NOT NULL
 """
 
+_SQL_FIND_ASSIGNED_EMBEDDINGS_NOT_IN_VECTOR_DB = """
+SELECT chunk_id FROM chunks WHERE embeddings IS NOT NULL and stored_in_vdb=0
+"""
+
+_SQL_UPDATE_STORED_IN_VDB = """
+UPDATE chunks
+SET stored_in_vdb = 1
+WHERE chunk_id IN ( {chunk_ids} );
+"""
 
 def _get_already_chunked_files(db):
     """Returns a list with the files that are already chunked and stored in db.
