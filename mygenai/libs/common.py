@@ -54,13 +54,7 @@ def get_testing_output_dir(relative_path, wipe_out=False):
     """
     output_dir = os.path.join(get_home_dir(), "testing_output")
 
-    # If pointing to a file raise an exception.
-    if os.path.isfile(output_dir):
-        raise NotADirectoryError
-
-    # If the base output directory does not exist then create it.
-    if not os.path.isdir(output_dir):
-        os.makedirs(output_dir)
+    create_directory_if_not_exists(output_dir)
 
     fullpath = os.path.join(output_dir, relative_path)
 
@@ -96,16 +90,6 @@ def get_testing_data_directory():
     :rtype: str
     """
     return _TESTING_DATA_DIR
-
-
-def get_db_directory():
-    """Returns the directory containing the database creation files.
-
-    :return: The directory containing the database creation files.
-    :rtype: str
-    """
-    path = os.path.join(_CURRENT_DIR, "..", "db")
-    return path
 
 
 class MyGenAIException(Exception):
@@ -145,3 +129,22 @@ class Configuration:
     def settings(self):
         """Returns the configuration settings object."""
         return self._settings
+
+
+def create_directory_if_not_exists(fullpath):
+    """Creates the passed in directory if it doesn't.
+
+    :param str fullpath: The full path to the directory to create.
+
+    :raises NotADirectoryError: The full path is pointing to an
+    existing file instead of a directory.
+    """
+    # If pointing to a file raise an exception.
+    if os.path.isfile(fullpath):
+        raise NotADirectoryError
+    # If the base output directory does not exist then create it.
+    if not os.path.isdir(fullpath):
+        os.makedirs(fullpath)
+
+# Whatever follows this line is private to the module and should not be
+# used from the outside.
