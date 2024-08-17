@@ -1,30 +1,25 @@
 """Queries the dementia vector database."""
 
-import os
-
 import mygenai.libs.common as common
-import mygenai.libs.vector_db as vector_db
+import mygenai.libs.rag_mgr as rag_mgr
+import mygenai.samples.dementia.settings as settings
 
 
-def query_vector_db(fullpath_to_db, collection_name):
+def query_vector_db():
     """Loads and queries the vector database.
 
     :param str fullpath_to_db: The full path to the database file to query.
     :param str collection_name: The name of the collection to query.
     """
-    vdb = vector_db.VectorDb(fullpath_to_db, collection_name)
+    common.init_settings()
+
+    ragger = rag_mgr.RagManager(settings.RAG_COLLECTION_NAME)
     query = "can support vector machines be used to predict dementia?"
-    result = vdb.query(query, k=3)
-    for row in result:
-        print(row)
-        print("===================")
+    answer = ragger.query(query)
+    print(query)
+    print(answer)
 
 
 if __name__ == '__main__':
     common.init_settings()
-
-    # Create the filepath and the collection name for the vectordb.
-    folder_path = common.get_testing_output_dir("dementia", wipe_out=False)
-    fullpath_to_db = os.path.join(folder_path, "dementia.db")
-    collection_name = "chunks"
-    query_vector_db(fullpath_to_db, collection_name)
+    query_vector_db()
