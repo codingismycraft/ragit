@@ -93,7 +93,8 @@ def initialize():
     """Initializes the environment."""
     common.init_settings()
     print("Loading vector db")
-    GlobalState.ragger = rag_mgr.RagManager("dementia")
+    name = _CONFIGURATION.settings["domain"]["name"]
+    GlobalState.ragger = rag_mgr.RagManager(name)
     response = GlobalState.ragger.query("what is this about?")
     print("Loading vector db done..", response)
 

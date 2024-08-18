@@ -6,5 +6,6 @@ web_service:
   app_name: ragit
 
 domain:
-  title: Alzheimer's Chat Bot
-  description: Specializes in  Alzheimer's diagnosis with MRI using AI.
+  title: ΤΟ ΘΡΗΣΚΕΥΤΙΚΟ ΣΤΟΙΧΕΙΟ ΣΤΟΥΣ ΟΛΥΜΠΙΑΚΟΥΣ ΑΓΩΝΕΣ ΚΑΤΑ ΤΗΝ ΑΡΧΑΙΟΤΗΤΑ
+  description: ΑΡΙΣΤΟΤΕΛΕΙΟ ΠΑΝΕΠΙΣΤΗΜΙΟ ΘΕΣΣΑΛΟΝΙΚΗΣ ΤΜΗΜΑ ΠΟΙΜΑΝΤΙΚΗΣ ΚΑΙ ΚΟΙΝΩΝΙΚΗΣ ΘΕΟΛΟΓΙΑΣ
+  name: greek
