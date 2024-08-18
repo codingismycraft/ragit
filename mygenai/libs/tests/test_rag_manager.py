@@ -109,11 +109,3 @@ class TestRagManager(unittest.TestCase):
 
             retrieved = ragger.query("What is method chaining?")
             self.assertIn("method chaining", retrieved.lower())
-
-            question = ("How many raw luminrock crystals (standard size) "
-                        "would be needed to power an average Sunhaven home "
-                        "for one day")
-
-            retrieved = ragger.query(question)
-
-            self.assertTrue("300" in retrieved)

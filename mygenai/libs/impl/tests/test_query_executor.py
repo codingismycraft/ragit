@@ -4,11 +4,11 @@ import os
 
 import unittest
 
-import mygenai.libs.chunks_mgr as chunks_mgr
+import mygenai.libs.impl.chunks_mgr as chunks_mgr
 import mygenai.libs.common as common
 import mygenai.libs.dbutil as dbutil
-import mygenai.libs.query_executor as query_executor
-import mygenai.libs.vector_db as vector_db
+import mygenai.libs.impl.query_executor as query_executor
+import mygenai.libs.impl.vector_db as vector_db
 
 
 class TestQueryExecutor(unittest.TestCase):
