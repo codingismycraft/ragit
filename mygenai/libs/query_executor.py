@@ -3,7 +3,7 @@
 import openai
 
 import mygenai.libs.common as common
-import mygenai.libs.vector_db as vector_db
+import mygenai.libs.impl.vector_db as vector_db
 
 DEFAULT_MODEL = "gpt-3.5-turbo"
 

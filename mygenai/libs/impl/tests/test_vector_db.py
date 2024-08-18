@@ -6,7 +6,7 @@ import unittest
 import mygenai.libs.impl.chunks_mgr as chunks_mgr
 import mygenai.libs.common as common
 import mygenai.libs.dbutil as dbutil
-import mygenai.libs.vector_db as vector_db
+import mygenai.libs.impl.vector_db as vector_db
 
 
 class TestVectorDb(unittest.TestCase):
