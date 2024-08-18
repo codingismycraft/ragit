@@ -9,28 +9,63 @@ import mygenai.libs.impl.query_executor as query_executor
 
 
 class RagManager:
-    """Provides the paths to the directories for data files for a specific RAG.
+    """Encapsulates the lower level details for the creation of RAG.
 
-    Returns the shared directory used for RAG creation and management.
+    Exposes the functionality to:
+
+    - Insert chunks of texts into the database.
+    - To save the embeddings for each chunk and store them in the database.
+    - To update the vector database for each chunk and its embedding.
+    - Query the LLM for a question.
+
+    The data for each RAG collection should be placed under a subdirectory
+    inside the shared directory following the same structure outlined above.
 
     Under a development/ local machine this directory is mapped from
     the host to the Vagrant guest while when running the service directly
     on the host machine the shared directory must be under the home directory
     and called mygen-data.
 
-    The data for each RAG collection should be placed under a subdirectory
-    inside the shared directory following the same structure outlined above.
-
-    This RAG collection specific directory should have following structure:
+    Each RAG collection is managed by a specific directory under the mygen-data
+    directory with the same name as the RAG collection having the following
+    structure:
 
     - **documents**: Source files (PDF, DOCX, MD, etc.) for RAG creation.
 
     - **vectordb: Stores the vector database.
 
     - **backups:** Contains backups of the PostgreSQL.
+
+    This class should be used as the high-level abstraction of all the
+    lower level details that are implemented under the impl directory which
+    can be changed at any time without having any dependencies to other
+    clients except this class.
+
+    :ivar str _rag_name: The name of the RAG collection.
+
+    :ivar str _base_dir: The root directory holding the data for the collection.
+
+    :ivar str _documents_dir: The root directory holding the documents for
+    the collection.
+
+    :ivar str _vectordb_fullpath: The full path to the vectordb database file.
+
+    :ivar str _backups_dir: The directory holding the backups for
+    the collection.
+
+    :cvar str _SHARED_DIR: The shared directory for documents.
+
+    :cvar str _VECTOR_COLLECTION_NAME: The name of the collection inside the
+    vector database.
     """
     _SHARED_DIR = "mygen-data"
     _VECTOR_COLLECTION_NAME = "chunk_embeddings"
+
+    _rag_name = None
+    _base_dir = None
+    _documents_dir = None
+    _vectordb_fullpath = None
+    _backups_dir = None
 
     def __init__(self, rag_name):
         """Initializer.
