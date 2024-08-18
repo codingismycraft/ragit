@@ -2,7 +2,7 @@
 
 import os
 
-import mygenai.libs.chunks_mgr as chunks_mgr
+import mygenai.libs.impl.chunks_mgr as chunks_mgr
 import mygenai.libs.common as common
 import mygenai.libs.vector_db as vector_db
 import mygenai.libs.query_executor as query_executor

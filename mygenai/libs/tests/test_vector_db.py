@@ -3,7 +3,7 @@
 import os
 import unittest
 
-import mygenai.libs.chunks_mgr as chunks_mgr
+import mygenai.libs.impl.chunks_mgr as chunks_mgr
 import mygenai.libs.common as common
 import mygenai.libs.dbutil as dbutil
 import mygenai.libs.vector_db as vector_db
