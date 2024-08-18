@@ -111,6 +111,16 @@ vagrant ssh
 Now you can ssh to the newly created virtual machine which should be ready
 to go. 
 
+**Store a valid OpenAI API key**
+A valid OpenAI API key stored in a `settings.json` file within your home
+  directory in the following format:
+-
+```json
+{
+    "OPENAI_API_KEY": "<valid-open-ai-key>"
+}
+```
+
 **Create the testing database**
 ```
 cd /vagrant/mygenai/db
@@ -123,3 +133,77 @@ cd /vagrant/mygenai/db
 cd /vagrant/mygenai/
 pt
 ```
+
+## Creating a Custom RAG Collection
+
+### Overview
+
+A RAG collection is a fundamental component of the mygenai system. It is
+uniquely identified by a `collection name` or simply `name`. This document
+outlines the steps involved in creating and managing a custom RAG collection.
+
+### Prerequisites
+- A cloned copy of this repository.
+
+- A valid OpenAPI key stored in the `~/settings.json` directory as described
+above.
+
+- A working postgress installation (if using a vagrant box this is installed
+automatically).
+
+
+### Creating a New Collection
+
+1. **Create the Database:**
+   Navigate to the `db` directory within the `mygenai` project directory and
+   execute the `create-db.sh` script:
+
+   ```bash
+   cd /vagrant/mygenai/db
+   ./create-db.sh
+   ```
+   This will create a PostgreSQL database with the same name as your collection.
+
+2. **Prepare the Documents Directory:**
+   Create a directory to store your collection's documents:
+   ```bash
+   mkdir -p ~/mygen-data/<collection-name>/documents
+   ```
+   Replace `<collection-name>` with the desired name for your collection.
+
+3. **Populate with Documents:**
+   Copy all relevant documents into the newly created documents directory.
+
+4. **Process Documents and Create Index:**
+   Navigate to the `utilities` directory and run the `process_docs.py` script:
+   ```bash
+   cd mygenai/utilities
+   python3 process_docs.py -n <name> -v
+   ```
+
+   Replace `<name>` with your collection name. The `-v` flag provides verbose
+   output. This step processes your documents and creates a vector database for
+   efficient retrieval.
+
+### Updating the Index
+To incorporate new documents into an existing collection:
+
+1. Add the new documents to the collection's documents directory.
+
+2. Re-run the `process_docs.py` script with the same collection name and `-v`
+   flag. The script will append the new documents to the vector database without
+   affecting existing data.
+
+### Additional Notes
+
+- Ensure you have the necessary dependencies installed for
+  running `process_docs.py`.
+
+- For optimal performance, consider organizing your documents effectively (you
+can always nest them under the documents directory to make them easier to
+navigate)
+
+- Regularly review and update your collection to maintain its relevance.
+
+By following these steps, you can successfully create and manage custom RAG
+collections within the mygenai system.
