@@ -60,7 +60,8 @@ to go.
 
 A valid OpenAI API key stored in a `settings.json` file within your home
 directory in the following format:
--
+
+
 ```json
 {
     "OPENAI_API_KEY": "<valid-open-ai-key>"
