@@ -111,7 +111,7 @@ def run():
         ]
     )
 
-    app_name = _CONFIGURATION.settings["web_service"]["app_name"]
+    app_name = _CONFIGURATION.settings["web_service"]["name"]
     port = _CONFIGURATION.settings["web_service"]["port"]
 
     app.router.add_static('/static', _PATH_TO_STATIC)

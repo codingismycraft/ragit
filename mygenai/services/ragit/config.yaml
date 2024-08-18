@@ -3,7 +3,6 @@
 web_service:
   name: ragit
   port: 13131
-  app_name: ragit
 
 domain:
   title: ΤΟ ΘΡΗΣΚΕΥΤΙΚΟ ΣΤΟΙΧΕΙΟ ΣΤΟΥΣ ΟΛΥΜΠΙΑΚΟΥΣ ΑΓΩΝΕΣ ΚΑΤΑ ΤΗΝ ΑΡΧΑΙΟΤΗΤΑ
