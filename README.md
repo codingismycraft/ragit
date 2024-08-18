@@ -37,7 +37,7 @@ is the step that makes the embeddings accessible for the RAG service.
 
 # Installation
 
-**Build the virtual machine**
+### Build the virtual machine
 To install and run RAGIT locally the easiest way is to use a virtual machine
 that can be created using vagrant. You will need to have vagrant installed
 on your machine . Assuming you already have vagrant installed then you need to
@@ -56,7 +56,8 @@ vagrant ssh
 Now you can ssh to the newly created virtual machine which should be ready
 to go.
 
-**Store a valid OpenAI API key**
+### Store a valid OpenAI API key
+
 A valid OpenAI API key stored in a `settings.json` file within your home
 directory in the following format:
 -
@@ -87,19 +88,9 @@ A RAG collection is a fundamental component of the mygenai system. It is
 uniquely identified by a `collection name` or simply `name`. This document
 outlines the steps involved in creating and managing a custom RAG collection.
 
-### Prerequisites
-- A cloned copy of this repository.
 
-- A valid OpenAPI key stored in the `~/settings.json` directory as described
-above.
+### 1. Create the Database
 
-- A working postgress installation (if using a vagrant box this is installed
-automatically).
-
-
-### Creating a New Collection
-
-1. **Create the Database:**
    Navigate to the `db` directory within the `mygenai` project directory and
    execute the `create-db.sh` script:
 
@@ -109,17 +100,18 @@ automatically).
    ```
    This will create a PostgreSQL database with the same name as your collection.
 
-2. **Prepare the Documents Directory:**
+### 2. Prepare the Documents Directory
+
    Create a directory to store your collection's documents:
    ```bash
    mkdir -p ~/mygen-data/<collection-name>/documents
    ```
    Replace `<collection-name>` with the desired name for your collection.
 
-3. **Populate with Documents:**
+### 3. Populate with Documents
    Copy all relevant documents into the newly created documents directory.
 
-4. **Process Documents and Create Index:**
+### 4. Process Documents and Create Index
    Navigate to the `utilities` directory and run the `process_docs.py` script:
    ```bash
    cd mygenai/utilities
