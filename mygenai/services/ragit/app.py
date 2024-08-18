@@ -94,7 +94,8 @@ def initialize():
     common.init_settings()
     print("Loading vector db")
     GlobalState.ragger = rag_mgr.RagManager("dementia")
-    print("Loading vector db done..")
+    response = GlobalState.ragger.query("what is this about?")
+    print("Loading vector db done..", response)
 
 
 def run():
