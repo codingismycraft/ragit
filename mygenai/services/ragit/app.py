@@ -9,8 +9,7 @@ import aiohttp.web as web
 import jinja2
 
 import mygenai.libs.common as common
-import mygenai.libs.query_executor as query_executor
-
+import mygenai.libs.rag_mgr as rag_mgr
 
 _JINJA_ENV = jinja2.Environment(
     loader=jinja2.PackageLoader(
@@ -24,6 +23,11 @@ _PATH_TO_STATIC = os.path.join(_CURR_DIR, 'static')
 _CONFIGURATION = common.Configuration(os.path.join(_CURR_DIR, 'config.yaml'))
 
 logger = logging.getLogger(_CONFIGURATION.settings["web_service"]["name"])
+
+
+class GlobalState:
+    ragger = None
+
 
 def _raw_headers_to_dict(raw_headers):
     """Converts raw headers to a dictionary."""
@@ -81,16 +85,16 @@ class Handler:
         """
         data = await request.json()
         query = data.get('query')
-        response = query_executor.query(query)
+        response = GlobalState.ragger.query(query)
         return web.json_response({"response": response})
 
 
 def initialize():
     """Initializes the environment."""
     common.init_settings()
-    fullpath_to_db = _CONFIGURATION.settings["vector_db"]["full_path"]
-    collection_name = _CONFIGURATION.settings["vector_db"]["collection"]
-    query_executor.initialize(fullpath_to_db, collection_name)
+    print("Loading vector db")
+    GlobalState.ragger = rag_mgr.RagManager("dementia")
+    print("Loading vector db done..")
 
 
 def run():
