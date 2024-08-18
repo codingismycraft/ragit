@@ -2,69 +2,15 @@
 <img src="mygenai/services/ragit/static/ragit.jpeg"  width="100" height="100">
 </p>
 
-## RAGIT
+# Summary
 
-**Customizable Chat Box**
+This project allows for the creation of a custom RAG collection that can
+be used from a chatbot that is served through the internet.
 
-### Overview
+Users can build their own vector database using any desired documents and
+connect it to the frontend. This approach offers a generic solution adaptable to
+various backend data collections.
 
-RAGIT is a basic HTML-based chat box framework that provides a foundation for
-building custom chat interfaces. It includes the core structure, styling, and
-basic functionality for displaying messages, sending messages, and handling
-user input. The backend integration is left flexible to accommodate various
-custom implementations.
-
-### Customization
-
-This project is designed for maximum flexibility and can be easily integrated
-with a custom backend. Users can build their own vector database using any
-desired documents and connect it to the frontend. This approach offers a generic
-solution adaptable to various backend data collections.
-
-### Ragit Configuration File
-
-**Structure**
-
-The configuration file is divided into three main sections:
-
-* **vector_db:** Specifies the location and name of the vector database.
-    * `full_path`: The complete path to the database file.
-    * `collection`: The name of the collection within the database.
-* **web_service:** Defines the web service parameters.
-    * `name`: The name of the web service.
-    * `port`: The port number for the web service to listen on.
-    * `app_name`: The application name for the web service.
-* **domain:** Describes the application's domain and purpose.
-    * `title`: The title of the application.
-    * `description`: A brief description of the application's functionality.
-
-**Usage**
-
-This configuration file is typically used to set up the environment for the
-Ragit application. It provides essential information about the database
-location, web service settings, and application details.
-
-**Example**
-
-```yaml
-vector_db:
-  full_path: /home/vagrant/testing_output/dementia/dementia.db
-  collection: chunks
-
-web_service:
-  name: ragit
-  port: 13131
-  app_name: ragit
-
-domain:
-  title: Alzheimer's Chat Bot
-  description: Specializes in  Alzheimer's diagnosis with MRI using AI.
-```
-
-By modifying the values in this file, you can customize the Ragit application to
-your specific requirements.
-
-## Document Storage
 
 **Document Collection**
 
@@ -89,8 +35,7 @@ stores the results in the database.
 The vector database is built or rebuilt using existing document embeddings. This
 is the step that makes the embeddings accessible for the RAG service.
 
-
-## Installation 
+# Installation
 
 **Build the virtual machine**
 To install and run RAGIT locally the easiest way is to use a virtual machine
@@ -109,11 +54,11 @@ vagrant ssh
 ```
 
 Now you can ssh to the newly created virtual machine which should be ready
-to go. 
+to go.
 
 **Store a valid OpenAI API key**
 A valid OpenAI API key stored in a `settings.json` file within your home
-  directory in the following format:
+directory in the following format:
 -
 ```json
 {
@@ -134,7 +79,7 @@ cd /vagrant/mygenai/
 pt
 ```
 
-## Creating a Custom RAG Collection
+# Creating a Custom RAG Collection
 
 ### Overview
 
@@ -185,14 +130,6 @@ automatically).
    output. This step processes your documents and creates a vector database for
    efficient retrieval.
 
-### Updating the Index
-To incorporate new documents into an existing collection:
-
-1. Add the new documents to the collection's documents directory.
-
-2. Re-run the `process_docs.py` script with the same collection name and `-v`
-   flag. The script will append the new documents to the vector database without
-   affecting existing data.
 
 ### Additional Notes
 
@@ -207,3 +144,65 @@ navigate)
 
 By following these steps, you can successfully create and manage custom RAG
 collections within the mygenai system.
+
+
+# RAGIT
+
+### Overview
+
+RAGIT is a web application that used a vector database to allow for a RAG 
+based chat-bot.  
+
+### Ragit Configuration File
+
+Ragit is back-end agnostic in the sense that it can use any RAG collection 
+that is available in the backend. We can customize the vector db by changing
+the `config.yaml` under the same directory as the ragit application.
+
+An example of a configuration yaml file is the following:
+
+```yaml
+web_service:
+  name: ragit
+  port: <PORT-NUMBER>
+
+domain:
+  title: <site title goes here>
+  description: <site description goes here>
+  name: <collection name goes here>
+```
+
+#### web_service
+* **name**: The name of the web service.
+    * Type: string
+* **port**: The port number for the web service.
+    * Type: integer
+
+#### domain
+* **title**: The title of the website.
+    * Type: string
+* **description**: A description of the website.
+    * Type: string
+* **name**: The name of the RAG collection.
+    * Type: string
+
+
+### Notes
+* All fields within `web_service` and `domain` are required.
+* The `port` number should be replaced with the desired port for the web service.
+
+### Ragit Configuration File
+Having the proper configuration yaml file to point to the desired RAG collection
+we can now start the ragit server as follows:
+
+```bash
+cd mygenai/services/ragit
+python3 app.py
+```
+
+you should now be able to access it by using this URL from your browser:
+
+```url
+localhost:<port>
+```
+
