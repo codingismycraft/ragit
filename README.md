@@ -1,4 +1,10 @@
-## RAGIT: Customizable HTML Chat Box
+<p align="center">
+<img src="mygenai/services/ragit/static/ragit.jpeg"  width="100" height="100">
+</p>
+
+## RAGIT
+
+**Customizable Chat Box**
 
 ### Overview
 
