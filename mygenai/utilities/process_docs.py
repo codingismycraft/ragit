@@ -77,16 +77,20 @@ def main():
     conn_str = common.make_local_connection_string(args.name)
     dbutil.SimpleSQL.register_connection_string(conn_str)
     ragger = rag_mgr.RagManager(args.name)
+    verbose = args.verbose
 
     with dbutil.SimpleSQL() as db:
-        count = ragger.insert_chunks_to_db(db, verbose=True)
-        print(f"Inserted {count} chunks.")
+        count = ragger.insert_chunks_to_db(db, verbose=verbose)
+        if verbose:
+            print(f"Inserted {count} chunks.")
 
-        count = ragger.insert_embeddings_to_db(db, verbose=True)
-        print(f"Inserted {count} embeddings.")
+        count = ragger.insert_embeddings_to_db(db, verbose=verbose)
+        if verbose:
+            print(f"Inserted {count} embeddings.")
 
-        count = ragger.update_vector_db(db, verbose=True)
-        print(f"Inserted {count} chunks to the vector db.")
+        count = ragger.update_vector_db(db, verbose=verbose)
+        if verbose:
+            print(f"Inserted {count} chunks to the vector db.")
 
 
 if __name__ == '__main__':
