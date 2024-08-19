@@ -13,14 +13,16 @@ CREATE TABLE chunks
 CREATE INDEX idx_stored_in_vdb ON chunks (stored_in_vdb);
 
 
-CREATE TABLE question
+CREATE TABLE user_msg
 {
-    question_id SERIAL PRIMARY KEY,
-    user_id INTEGER NOT NULL,
-    question TEXT NOT NULL,
-    answer TEXT NOT NULL,
-    asked_time timestamp,
-    answered_time timestamp,
-    stars INTEGER DEFAULT NULL,
-    stared_time timestamp
+    user_msg_id         UUID PRIMARY KEY DEFAULT uuid_generate_v4()
+    user_id             INTEGER,
+    received_at         TIMESTAMP,
+    message             TEXT NOT NULL,
+    response            TEXT DEFAULT NULL,
+    responded_at        TIMESTAMP DEFAULT NULL,
+    thumps_up           BOOL DEFAULT NULL,
+    thumped_up_at       TIMESTAMP DEFAULT NULL
 };
+
+CREATE INDEX idx_user_msg_by_user ON user_msg (user_id);
