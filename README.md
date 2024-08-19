@@ -45,38 +45,38 @@ By adhering to these principles, RAGit aims to accelerate the development of
 effective and robust RAG solutions. 
    
 
-## Data Pipeline
+# Data Pipeline
 
 A high level view of the pipeline associated with RAGit is the following:
 
-**Document Collection**
+### Document Collection
 
 The backend process begins by gathering all supported documents (PDF, DOCX, and
 Markdown) from a designated directory. These documents serve as the foundation
 for RAG creation.
 
-**Document Splitting and Database Insertion**
+### Document Splitting and Database Insertion
 
 Each document is divided into smaller chunks, which are then stored in the
 database. This process is incremental, allowing for database updates without
 requiring all documents upfront.
 
-**Embedding Calculation and Insertion**
+### Embedding Calculation and Insertion
 
 To enable vector search, embeddings are computed for each database chunk. A
 dedicated process identifies chunks lacking embeddings, calculates them, and
 stores the results in the database.
 
-**Vector Database Construction**
+### Vector Database Construction
 
 The vector database is built or rebuilt using existing document embeddings. This
 is the step that makes the embeddings accessible for the RAG service.
 
-**Front End**
+### Front End
 The vector database and the front end web service are deployed to a web server
 making them available to the public.
 
-**Evaluation and improvements**
+### Evaluation and improvements
 The front end collects user information to allow for the evalution of the
 solution (for example thumps up - down) which results to the backend working on
 a peridodic re-creation of the vector database, the prompts and other component
