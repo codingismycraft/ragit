@@ -5,6 +5,6 @@ web_service:
   port: 13131
 
 domain:
-  title: ΤΟ ΘΡΗΣΚΕΥΤΙΚΟ ΣΤΟΙΧΕΙΟ ΣΤΟΥΣ ΟΛΥΜΠΙΑΚΟΥΣ ΑΓΩΝΕΣ ΚΑΤΑ ΤΗΝ ΑΡΧΑΙΟΤΗΤΑ
-  description: ΑΡΙΣΤΟΤΕΛΕΙΟ ΠΑΝΕΠΙΣΤΗΜΙΟ ΘΕΣΣΑΛΟΝΙΚΗΣ ΤΜΗΜΑ ΠΟΙΜΑΝΤΙΚΗΣ ΚΑΙ ΚΟΙΝΩΝΙΚΗΣ ΘΕΟΛΟΓΙΑΣ
-  name: greek
+  title: Dummy
+  description: Dummy
+  name: dummy
