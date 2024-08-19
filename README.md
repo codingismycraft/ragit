@@ -43,15 +43,9 @@ By adhering to these principles, RAGit aims to accelerate the development of
 effective and robust RAG solutions. 
    
 
-# Summary
+## Data Pipeline
 
-This project allows for the creation of a custom RAG collection that can
-be used from a chatbot that is served through the internet.
-
-Users can build their own vector database using any desired documents and
-connect it to the frontend. This approach offers a generic solution adaptable to
-various backend data collections.
-
+A high level view of the pipeline associated with RAGit is the following:
 
 **Document Collection**
 
@@ -75,6 +69,16 @@ stores the results in the database.
 
 The vector database is built or rebuilt using existing document embeddings. This
 is the step that makes the embeddings accessible for the RAG service.
+
+**Front End**
+The vector database and the front end web service are deployed to a web server
+making them available to the public.
+
+**Evaluation and improvements**
+The front end collects user information to allow for the evalution of the
+solution (for example thumps up - down) which results to the backend working on
+a peridodic re-creation of the vector database, the prompts and other component
+that might affect the quality of the solution.
 
 # Installation
 
