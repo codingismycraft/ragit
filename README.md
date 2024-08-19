@@ -184,7 +184,7 @@ By following these steps, you can successfully create and manage custom RAG
 collections within the mygenai system.
 
 
-# RAGIT
+# RAGIT Web Application
 
 ### Overview
 
@@ -229,7 +229,7 @@ domain:
 * All fields within `web_service` and `domain` are required.
 * The `port` number should be replaced with the desired port for the web service.
 
-### Ragit Configuration File
+### Running the web-server
 Having the proper configuration yaml file to point to the desired RAG collection
 we can now start the ragit server as follows:
 
