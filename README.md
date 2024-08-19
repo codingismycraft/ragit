@@ -7,9 +7,11 @@
 RAGit is an open-source framework designed to simplify the creation and
 management of Retrieval Augmented Generation (RAG) solutions. By abstracting
 away the complexities of data management, model selection, and infrastructure,
-RAGit empowers developers to focus on application logic and customization. The
-core principles behind RAGit can be summarized as follows:
+RAGit empowers developers to focus on application logic and customization. 
 
+# Core Principles
+
+The core principles behind RAGit can be summarized as follows:
 
 ### Generality
 
