@@ -18,7 +18,7 @@ CREATE INDEX idx_stored_in_vdb ON chunks (stored_in_vdb);
 
 CREATE TABLE query
 (
-    query_id            uuid PRIMARY KEY DEFAULT get_random_uuid(),
+    query_id            uuid PRIMARY KEY,
     user_id             uuid,    -- The user who made the query.
     received_at         TIMESTAMP, -- When the query was received
     question            TEXT NOT NULL, -- The question / message of the query

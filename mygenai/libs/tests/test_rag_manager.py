@@ -6,6 +6,7 @@ import unittest
 
 import mygenai.libs.common as common
 import mygenai.libs.dbutil as dbutil
+import mygenai.libs.impl.metrics as metrics
 import mygenai.libs.rag_mgr as rag_mgr
 
 
@@ -81,7 +82,7 @@ class TestRagManager(unittest.TestCase):
             # Insert the chunks.
             ragger.insert_chunks_to_db(db, verbose=True)
 
-            counter = ragger.count_missing_embeddings(db)
+            counter = metrics.get_chunks_without_embeddings(db)
             assert counter > 10, "Too few documents, add some and try again"
 
             # Insert 5 of the missing embeddings.
@@ -92,7 +93,7 @@ class TestRagManager(unittest.TestCase):
             ragger.insert_embeddings_to_db(db, max_count=c1)
 
             # Verify the counter.
-            missing_count = ragger.count_missing_embeddings(db)
+            missing_count = metrics.get_chunks_without_embeddings(db)
             self.assertEqual(missing_count, c2)
 
             retrieved = ragger.update_vector_db(db)
@@ -101,7 +102,7 @@ class TestRagManager(unittest.TestCase):
 
             # Insert the missing embeddings,
             ragger.insert_embeddings_to_db(db)
-            counter = ragger.count_missing_embeddings(db)
+            counter = metrics.get_chunks_without_embeddings(db)
             self.assertEqual(counter, 0)
 
             retrieved = ragger.update_vector_db(db)
@@ -109,3 +110,8 @@ class TestRagManager(unittest.TestCase):
 
             retrieved = ragger.query("What is method chaining?")
             self.assertIn("method chaining", retrieved.lower())
+
+            coll_metrics = ragger.get_metrics(db)
+            self.assertEqual(
+                coll_metrics.total_chunks, coll_metrics.inserted_to_vectordb
+            )

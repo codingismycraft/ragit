@@ -67,6 +67,19 @@ def insert_embeddings_to_db(db, max_count=None, verbose=False):
 
 
 @common.handle_exceptions
+def get_already_chunked_files(db):
+    """Returns a list with the files that are already chunked and stored in db.
+
+    :return: A list with the files that are already chunked.
+    :rtype: list[str]
+    """
+    fullpaths = []
+    for row in db.execute_query(_SQL_SELECT_FULLPATHS):
+        fullpaths.append(row[0])
+    return fullpaths
+
+
+@common.handle_exceptions
 def save_embeddings(db, chunk_id):
     """Retrieves and saves the embeddings for a given chunk.
 
@@ -235,7 +248,7 @@ def find_documents_to_chunk(db, directory):
     :rtype: list[str]
     """
     all_filepaths = set(find_all_documents(directory))
-    already_chunked = set(_get_already_chunked_files(db))
+    already_chunked = set(get_already_chunked_files(db))
     diff = all_filepaths - already_chunked
     return list(diff)
 
@@ -281,14 +294,3 @@ UPDATE chunks
 SET stored_in_vdb = 1
 WHERE chunk_id IN ( {chunk_ids} );
 """
-
-def _get_already_chunked_files(db):
-    """Returns a list with the files that are already chunked and stored in db.
-
-    :return: A list with the files that are already chunked.
-    :rtype: list[str]
-    """
-    fullpaths = []
-    for row in db.execute_query(_SQL_SELECT_FULLPATHS):
-        fullpaths.append(row[0])
-    return fullpaths

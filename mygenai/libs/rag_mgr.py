@@ -1,11 +1,13 @@
 """RagManager is a wrapper for the data handling for RAG creation and update."""
 
+import dataclasses
 import os
 
-import mygenai.libs.impl.chunks_mgr as chunks_mgr
 import mygenai.libs.common as common
-import mygenai.libs.impl.vector_db as vector_db
+import mygenai.libs.impl.chunks_mgr as chunks_mgr
+import mygenai.libs.impl.metrics as metrics
 import mygenai.libs.impl.query_executor as query_executor
+import mygenai.libs.impl.vector_db as vector_db
 
 
 class RagManager:
@@ -149,6 +151,30 @@ class RagManager:
         """
         return self._backups_dir
 
+    def get_metrics(self, db):
+        """Finds the metrics for the collection.
+
+        :returns: The metrics for collection.
+        :rtype: RagMetrics
+        """
+        total_documents = metrics.get_total_documents(self._documents_dir)
+        total_documents_in_db = metrics.get_total_documents_in_db(db)
+        total_chunks = metrics.get_total_chunks(db)
+        with_embeddings = metrics.get_chunks_with_embeddings(db)
+        without_embeddings = metrics.get_chunks_without_embeddings(db)
+        inserted_to_vectordb = metrics.get_chunks_inserted_in_vectordb(db)
+        to_insert_to_vector_db = metrics.get_chunks_to_insert_to_vector_db(db)
+
+        return RagMetrics(
+            total_documents=total_documents,
+            total_documents_in_db=total_documents_in_db,
+            total_chunks=total_chunks,
+            with_embeddings=with_embeddings,
+            without_embeddings=without_embeddings,
+            inserted_to_vectordb=inserted_to_vectordb,
+            to_insert_to_vector_db=to_insert_to_vector_db
+        )
+
     def insert_chunks_to_db(self, db, max_count=None, verbose=False):
         """Inserts the chunks to the database.
 
@@ -168,24 +194,6 @@ class RagManager:
             max_count=max_count,
             verbose=verbose
         )
-
-    def count_missing_embeddings(self, db):
-        """Returns the number of chunks lacking embeddings.
-
-        To optimize embedding generation, this function calculates the
-        count of chunks without associated embeddings. As embedding
-        creation can be computationally intensive, this is why we allow for
-        incremental processing without requiring a full batch operation.
-
-        :param SimpleSQL db: The database wrapper to use.
-
-        :return: The number of embeddings that need to be evaluated and stored.
-        :rtype: int
-
-        :raises MyGenAIException
-        """
-        chunk_ids = list(chunks_mgr.find_chunks_missing_embeddings(db))
-        return len(chunk_ids)
 
     def insert_embeddings_to_db(self, db, max_count=None, verbose=False):
         """Insert embeddings to the database.
@@ -265,3 +273,25 @@ class RagManager:
             print(f"Totally inserted records: {total_inserted_counter}")
 
         return total_inserted_counter
+
+
+@dataclasses.dataclass(frozen=True)
+class RagMetrics:
+    """Represents the metrics of a collection of documents.
+
+    int total_documents: The total number of available documents.
+    int total_documents_in_db: The total number of available documents in db.
+    int total_chunks: The total number of existing chunks.
+    int with_embeddings: The number of chunks with embeddings.
+    int without_embeddings: The number of chunks without embeddings.
+    int inserted_to_vectordb: The number of chunks in the vector db.
+    int to_insert_to_vector_db: The chunks to insert into the vector db.
+    """
+
+    total_documents: int
+    total_documents_in_db: int
+    total_chunks: int
+    with_embeddings: int
+    without_embeddings: int
+    inserted_to_vectordb: int
+    to_insert_to_vector_db: int

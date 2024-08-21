@@ -63,9 +63,15 @@ def parse_args():
         help='The name of the RAG collection.'
     )
     parser.add_argument(
+        '-p',
+        '--process_it',
+        action='store_true',
+        help='Insert missing embeddings and insert into vector db.'
+    )
+    parser.add_argument(
         '-v',
         '--verbose',
-        action='store_true',
+        action='store_false',
         help='If true will print information about its progress.'
     )
     parsed_args = parser.parse_args()
@@ -82,17 +88,21 @@ def main():
     verbose = args.verbose
 
     with dbutil.SimpleSQL() as db:
-        count = ragger.insert_chunks_to_db(db, verbose=verbose)
-        if verbose:
-            print(f"Inserted {count} chunks.")
+        if args.process_it:
+            count = ragger.insert_chunks_to_db(db, verbose=verbose)
+            if verbose:
+                print(f"Inserted {count} chunks.")
 
-        count = ragger.insert_embeddings_to_db(db, verbose=verbose)
-        if verbose:
-            print(f"Inserted {count} embeddings.")
+            count = ragger.insert_embeddings_to_db(db, verbose=verbose)
+            if verbose:
+                print(f"Inserted {count} embeddings.")
 
-        count = ragger.update_vector_db(db, verbose=verbose)
-        if verbose:
-            print(f"Inserted {count} chunks to the vector db.")
+            count = ragger.update_vector_db(db, verbose=verbose)
+            if verbose:
+                print(f"Inserted {count} chunks to the vector db.")
+        else:
+            stats = ragger.get_metrics(db)
+            print(stats)
 
 
 if __name__ == '__main__':
