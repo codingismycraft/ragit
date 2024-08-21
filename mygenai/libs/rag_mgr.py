@@ -157,6 +157,8 @@ class RagManager:
         :returns: The metrics for collection.
         :rtype: RagMetrics
         """
+        name = self._rag_name
+        full_path = self._documents_dir
         total_documents = metrics.get_total_documents(self._documents_dir)
         total_documents_in_db = metrics.get_total_documents_in_db(db)
         total_chunks = metrics.get_total_chunks(db)
@@ -166,6 +168,8 @@ class RagManager:
         to_insert_to_vector_db = metrics.get_chunks_to_insert_to_vector_db(db)
 
         return RagMetrics(
+            name=name,
+            full_path=full_path,
             total_documents=total_documents,
             total_documents_in_db=total_documents_in_db,
             total_chunks=total_chunks,
@@ -279,6 +283,8 @@ class RagManager:
 class RagMetrics:
     """Represents the metrics of a collection of documents.
 
+    str name: The name of the collection.
+    str full_path: The full path to the collection.
     int total_documents: The total number of available documents.
     int total_documents_in_db: The total number of available documents in db.
     int total_chunks: The total number of existing chunks.
@@ -288,6 +294,8 @@ class RagMetrics:
     int to_insert_to_vector_db: The chunks to insert into the vector db.
     """
 
+    name: str
+    full_path: str
     total_documents: int
     total_documents_in_db: int
     total_chunks: int
