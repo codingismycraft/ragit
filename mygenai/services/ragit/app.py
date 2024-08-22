@@ -151,14 +151,12 @@ class RagitHandler:
 
         :param request: The web request.
         """
-
         try:
             auth_token = request.cookies.get('ragit_auth_token')
             user_name = request.cookies.get('user_name')
             Globals.validate_token(auth_token, user_name)
         except AuthenticationError:
             return web.HTTPFound('/login')
-
         try:
             data = await request.json()
             query = data.get('query')
@@ -170,7 +168,12 @@ class RagitHandler:
             msg_id = UserRegistry.insert_message(
                 user_name, t1, query, response, t2
             )
-            return web.json_response({"response": response})
+            return web.json_response(
+                {
+                    "response": response,
+                    "message_id": msg_id
+                }
+            )
         except Exception as ex:
             return web.json_response({"response": str(ex)})
 
@@ -191,6 +194,36 @@ class RagitHandler:
             body=txt.encode(),
             content_type='text/html'
         )
+
+    @web_handler
+    async def vote(self, request):
+        """Casts the user's vote (thumps up - down).
+
+        :param request: The web request.
+        """
+        try:
+            auth_token = request.cookies.get('ragit_auth_token')
+            user_name = request.cookies.get('user_name')
+            Globals.validate_token(auth_token, user_name)
+        except AuthenticationError:
+            return web.HTTPFound('/login')
+        try:
+            data = await request.json()
+            message_id = data.get('message_id')
+            vote = data.get('vote')
+
+            if vote == 1:
+                UserRegistry.set_thumps_up(message_id)
+            elif vote == 0:
+                UserRegistry.set_thumps_down(message_id)
+
+            return web.json_response(
+                {
+                    "response": "ok"
+                }
+            )
+        except Exception as ex:
+            return web.json_response({"response": str(ex)})
 
     @web_handler
     async def signup_new_acount(self, request):
@@ -275,6 +308,7 @@ def run():
             web.post('/ragit', ragit_handler.query_handler),
             web.get('/signup', ragit_handler.signup_screen),
             web.post('/signup', ragit_handler.signup_new_acount),
+            web.post('/vote', ragit_handler.vote),
 
         ]
     )
