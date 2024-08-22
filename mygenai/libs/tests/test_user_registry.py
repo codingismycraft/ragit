@@ -1,5 +1,5 @@
 """Tests the User Registry module."""
-
+import datetime
 import unittest
 
 import mygenai.libs.common as common
@@ -46,7 +46,8 @@ class TestUserRegistry(unittest.TestCase):
 
         # Try inserting very long password.
         with self.assertRaises(common.MyGenAIException):
-            UserRegistry.add_new_user(user_name_1, email_address_1, password * 50)
+            UserRegistry.add_new_user(user_name_1, email_address_1,
+                                      password * 50)
 
         # Try getting the email for existing user.
         retrieved_email = UserRegistry.get_email_address(user_name)
@@ -87,3 +88,34 @@ class TestUserRegistry(unittest.TestCase):
                 UserRegistry.add_new_user(name, "junk@junk.com", password)
             except common.MyGenAIException as ex:
                 self.assertIn("Invalid Name", str(ex))
+
+    def test_inserting_messages(self):
+        """Tests the inserting of messages to the db."""
+        UserRegistry.create_db_if_needed()
+        user_name = "john"
+        email_address = "someone@someserver.com"
+        password = "mypassword"
+        UserRegistry.add_new_user(user_name, email_address, password)
+        t1 = datetime.datetime.now()
+        t2 = datetime.datetime.now()
+        question = "what time it is?"
+        response = "i have no idea.."
+        msg_id = UserRegistry.insert_message(
+            user_name, t1, question, response, t2
+        )
+        expected = 1
+        self.assertEqual(msg_id, expected)
+
+        thumps_up, t1 = UserRegistry.get_thumps_up(msg_id)
+        self.assertIsNone(thumps_up)
+        self.assertIsNone(t1)
+
+        UserRegistry.set_thumps_up(msg_id)
+        thumps_up, t2 = UserRegistry.get_thumps_up(msg_id)
+        self.assertEqual(thumps_up, 1)
+        self.assertIsInstance(t2, str)
+
+        UserRegistry.set_thumps_down(msg_id)
+        thumps_up, t3 = UserRegistry.get_thumps_up(msg_id)
+        self.assertEqual(thumps_up, 0)
+        self.assertIsInstance(t3, str)
