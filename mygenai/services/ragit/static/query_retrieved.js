@@ -4,7 +4,7 @@ function askQuestion() {
     const userQuery = document.getElementById("userQuery").value;
      document.body.style.cursor = 'wait';
     $.ajax({
-        url: "/",
+        url: "/ragit",
         type: "POST",
         data: JSON.stringify({query: userQuery}),
         dataType: "json",

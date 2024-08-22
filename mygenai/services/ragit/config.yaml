@@ -5,6 +5,6 @@ web_service:
   port: 13131
 
 domain:
-  title: Dummy
-  description: Dummy
-  name: dummy
+  title: wiki
+  description: wiki
+  name: wiki
