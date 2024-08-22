@@ -74,3 +74,16 @@ class TestUserRegistry(unittest.TestCase):
         # Set invalid base directory.
         with self.assertRaises(common.MyGenAIException):
             UserRegistry.set_base_dir("junk")
+
+        invalid_user_names = [
+            " asdf",
+            "asdf*",
+            "asdf_+",
+            "Aadfa asdf"
+        ]
+
+        for name in invalid_user_names:
+            try:
+                UserRegistry.add_new_user(name, "junk@junk.com", password)
+            except common.MyGenAIException as ex:
+                self.assertIn("Invalid Name", str(ex))

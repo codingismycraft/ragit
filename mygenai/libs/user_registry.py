@@ -33,9 +33,11 @@ class UserRegistry:
     _MAX_PASSWORD_LENGTH = 32
 
     _EMAIL_VALIDATOR = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,7}\b'
+    _NAME_VALIDATOR = r"^[a-zA-Z][a-zA-Z0-9_]*$"
 
-    _SQL_CREATE_TABLE = """
+    _SQL_CREATE_USER_TABLE = """
         CREATE TABLE users (
+                    USER_ID INTEGER PRIMARY KEY AUTOINCREMENT,
                     user_name TEXT UNIQUE NOT NULL,
                     email     TEXT UNIQUE NOT NULL,
                     hashed_password  BLOB NOT NULL
@@ -75,6 +77,8 @@ class UserRegistry:
 
         if len(user_name) >= cls._MAX_USER_NAME_LENGTH:
             raise ValueError("Too long User name")
+
+        cls._validate_name(user_name)
 
         if len(email_address) >= cls._MAX_EMAIL_ADDRESS_LENGTH:
             raise ValueError("Too long email address")
@@ -163,7 +167,7 @@ class UserRegistry:
             cursor = None
             try:
                 cursor = conn.cursor()
-                cursor.execute(cls._SQL_CREATE_TABLE)
+                cursor.execute(cls._SQL_CREATE_USER_TABLE)
             finally:
                 if cursor:
                     cursor.close()
@@ -203,3 +207,17 @@ class UserRegistry:
         """
         if not re.fullmatch(cls._EMAIL_VALIDATOR, email_address):
             raise ValueError("Invalid email.")
+
+    @classmethod
+    def _validate_name(cls, name):
+        """Validates a user name.
+
+        Ensure it contains only alphanumerics and underscores, and starts
+        with a letter.
+
+        :param str name: The name to validate.
+
+        :raises: ValueError if the passed in name address is invalid.
+        """
+        if not re.match(cls._NAME_VALIDATOR, name):
+            raise ValueError("Invalid Name.")
