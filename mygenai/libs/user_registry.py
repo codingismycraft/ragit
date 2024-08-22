@@ -87,14 +87,17 @@ class UserRegistry:
         salt = bcrypt.gensalt()
         hashed_password = bcrypt.hashpw(password.encode('utf-8'), salt)
 
-        conn = sqlite3.connect(cls._get_full_path())
-        cursor = conn.cursor()
-        cursor.execute(
-            cls._SQL_INSERT_USER,
-            (user_name, email_address, hashed_password)
-        )
-        conn.commit()
-        conn.close()
+        with sqlite3.connect(cls._get_full_path()) as conn:
+            cursor = None
+            try:
+                cursor = conn.cursor()
+                cursor.execute(
+                    cls._SQL_INSERT_USER,
+                    (user_name, email_address, hashed_password)
+                )
+            finally:
+                if cursor:
+                    cursor.close()
 
     @classmethod
     @common.handle_exceptions
@@ -107,6 +110,7 @@ class UserRegistry:
         :raises: MyGenAIException
         """
         with sqlite3.connect(cls._get_full_path()) as conn:
+            cursor = None
             try:
                 cursor = conn.cursor()
                 for row in cursor.execute(cls._SQL_SELECT_PASSWD, (user_name,)):
@@ -119,7 +123,8 @@ class UserRegistry:
                     else:
                         return
             finally:
-                cursor.close()
+                if cursor:
+                    cursor.close()
         raise ValueError(f"User {user_name} not found.")
 
     @classmethod
@@ -134,12 +139,14 @@ class UserRegistry:
         :raises: MyGenAIException
         """
         with sqlite3.connect(cls._get_full_path()) as conn:
+            cursor = None
             try:
                 cursor = conn.cursor()
                 for row in cursor.execute(cls._SQL_SELECT_EMAIL, (user_name,)):
                     return row[0]
             finally:
-                cursor.close()
+                if cursor:
+                    cursor.close()
         raise ValueError(f"User {user_name} not found.")
 
     @classmethod
@@ -152,11 +159,14 @@ class UserRegistry:
         fullpath = cls._get_full_path()
         if os.path.exists(fullpath):
             raise FileExistsError
-        conn = sqlite3.connect(fullpath)
-        cursor = conn.cursor()
-        cursor.execute(cls._SQL_CREATE_TABLE)
-        conn.commit()
-        conn.close()
+        with sqlite3.connect(fullpath) as conn:
+            cursor = None
+            try:
+                cursor = conn.cursor()
+                cursor.execute(cls._SQL_CREATE_TABLE)
+            finally:
+                if cursor:
+                    cursor.close()
 
     @classmethod
     @common.handle_exceptions
