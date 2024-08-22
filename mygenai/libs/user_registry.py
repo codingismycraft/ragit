@@ -37,11 +37,24 @@ class UserRegistry:
 
     _SQL_CREATE_USER_TABLE = """
         CREATE TABLE users (
-                    USER_ID INTEGER PRIMARY KEY AUTOINCREMENT,
-                    user_name TEXT UNIQUE NOT NULL,
-                    email     TEXT UNIQUE NOT NULL,
+                    user_id          INTEGER PRIMARY KEY AUTOINCREMENT,
+                    user_name        TEXT UNIQUE NOT NULL,
+                    email            TEXT UNIQUE NOT NULL,
                     hashed_password  BLOB NOT NULL
                 )
+    """
+
+    _SQL_CREATE_MSG_TABLE = """
+        CREATE TABLE messages (
+                    msg_id        INTEGER PRIMARY KEY AUTOINCREMENT,
+                    user_id       INTEGER,
+                    received_at   TEXT, 
+                    question      TEXT,
+                    response      TEXT    DEFAULT NULL, 
+                    responded_at  TEXT    DEFAULT NULL, 
+                    thumps_up     INTEGER DEFAULT NULL, 
+                    thumped_up_at TEXT    DEFAULT NULL 
+        )
     """
 
     _SQL_INSERT_USER = """
@@ -168,6 +181,7 @@ class UserRegistry:
             try:
                 cursor = conn.cursor()
                 cursor.execute(cls._SQL_CREATE_USER_TABLE)
+                cursor.execute(cls._SQL_CREATE_MSG_TABLE)
             finally:
                 if cursor:
                     cursor.close()
