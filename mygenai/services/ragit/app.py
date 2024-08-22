@@ -151,10 +151,28 @@ class RagitHandler:
 
         :param request: The web request.
         """
-        data = await request.json()
-        query = data.get('query')
-        response = Globals.rag_manager.query(query)
-        return web.json_response({"response": response})
+
+        try:
+            auth_token = request.cookies.get('ragit_auth_token')
+            user_name = request.cookies.get('user_name')
+            Globals.validate_token(auth_token, user_name)
+        except AuthenticationError:
+            return web.HTTPFound('/login')
+
+        try:
+            data = await request.json()
+            query = data.get('query')
+            t1 = datetime.datetime.now()
+            response = Globals.rag_manager.query(query)
+
+            t2 = datetime.datetime.now()
+
+            msg_id = UserRegistry.insert_message(
+                user_name, t1, query, response, t2
+            )
+            return web.json_response({"response": response})
+        except Exception as ex:
+            return web.json_response({"response": str(ex)})
 
     @web_handler
     async def default_handler(self, request):
