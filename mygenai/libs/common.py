@@ -31,6 +31,16 @@ def get_home_dir():
     return pathlib.Path.home()
 
 
+def get_shared_directory():
+    """Returns the directory which is used as the root for all collections.
+
+    :return: The directory which is used as the root for all collections.
+    :rtype: str
+    """
+    shared_dir = os.path.join( get_home_dir(), _SHARED_DIR)
+    return shared_dir
+
+
 def get_testing_output_dir(relative_path, wipe_out=False):
     """Returns a directory containing temporary output used for testing.
 
@@ -148,3 +158,5 @@ def create_directory_if_not_exists(fullpath):
 
 # Whatever follows this line is private to the module and should not be
 # used from the outside.
+
+_SHARED_DIR = "mygen-data"
