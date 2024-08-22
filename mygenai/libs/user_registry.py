@@ -57,7 +57,7 @@ class UserRegistry:
 
     @classmethod
     @common.handle_exceptions
-    def save(cls, user_name, email_address, password):
+    def add_new_user(cls, user_name, email_address, password):
         """Saves the info for the passed in user to the database.
 
         :param str user_name: The name of the user to save, it must be unique.
@@ -151,14 +151,14 @@ class UserRegistry:
 
     @classmethod
     @common.handle_exceptions
-    def create_db(cls):
+    def create_db_if_needed(cls):
         """Creates the database file if it does not exist.
 
         :raises: MyGenAIException
         """
         fullpath = cls._get_full_path()
         if os.path.exists(fullpath):
-            raise FileExistsError
+            return
         with sqlite3.connect(fullpath) as conn:
             cursor = None
             try:

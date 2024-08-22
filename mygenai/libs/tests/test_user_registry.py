@@ -19,34 +19,34 @@ class TestUserRegistry(unittest.TestCase):
 
     def test_user_registry(self):
         """Tests inserting a new user."""
-        UserRegistry.create_db()
+        UserRegistry.create_db_if_needed()
         user_name = "john"
         email_address = "someone@someserver.com"
         password = "mypassword"
-        UserRegistry.save(user_name, email_address, password)
+        UserRegistry.add_new_user(user_name, email_address, password)
 
         user_name_1 = "someone else"
         email_address_1 = "someoneelse@someserver.com"
 
         # Try inserting same name.
         with self.assertRaises(common.MyGenAIException):
-            UserRegistry.save(user_name, email_address_1, password)
+            UserRegistry.add_new_user(user_name, email_address_1, password)
 
         # Try inserting same email.
         with self.assertRaises(common.MyGenAIException):
-            UserRegistry.save(user_name_1, email_address, password)
+            UserRegistry.add_new_user(user_name_1, email_address, password)
 
         # Try inserting very long user name.
         with self.assertRaises(common.MyGenAIException):
-            UserRegistry.save(user_name * 30, email_address_1, password)
+            UserRegistry.add_new_user(user_name * 30, email_address_1, password)
 
         # Try inserting very long email address.
         with self.assertRaises(common.MyGenAIException):
-            UserRegistry.save(user_name_1, email_address * 50, password)
+            UserRegistry.add_new_user(user_name_1, email_address * 50, password)
 
         # Try inserting very long password.
         with self.assertRaises(common.MyGenAIException):
-            UserRegistry.save(user_name_1, email_address_1, password * 50)
+            UserRegistry.add_new_user(user_name_1, email_address_1, password * 50)
 
         # Try getting the email for existing user.
         retrieved_email = UserRegistry.get_email_address(user_name)
@@ -69,7 +69,7 @@ class TestUserRegistry(unittest.TestCase):
 
         # Try invalid email.
         with self.assertRaises(common.MyGenAIException):
-            UserRegistry.save("new_user", "invalid-email", password)
+            UserRegistry.add_new_user("new_user", "invalid-email", password)
 
         # Set invalid base directory.
         with self.assertRaises(common.MyGenAIException):
