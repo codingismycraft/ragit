@@ -1,19 +1,6 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ask Me Anything</title>
-    <link rel="stylesheet" href="/static/style.css">
-    <script src="/static/query_retrieved.js"></script>
-    <script src="https://code.jquery.com/jquery-latest.min.js"></script>
-    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
-</head>
-<body>
-
-
+{% extends "base.html" %}
+{% block content %}
 <div class="container">
-    <img src="/static/ragit.jpeg" width="100px" height="100px">
     <h1>{{title}}</h1>
     <h3>{{description}}</h3>
     <div class="history" id="historyList"></div>
@@ -21,5 +8,4 @@
            placeholder="Enter your question here">
     <button class="search-button" onclick="askQuestion()">Ask</button>
 </div>
-</body>
-</html>
+{% endblock %}

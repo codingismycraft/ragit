@@ -2,9 +2,45 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Ragit</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/static/style.css">
+    <script src="/static/query_retrieved.js"></script>
+    <script src="https://code.jquery.com/jquery-latest.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+    <script type="text/javascript"
+            src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
 </head>
 <body>
+
+<div class="top_bar">
+    <span id="logo">
+    <img src="/static/ragit.jpeg" width="100px" height="100px">
+    </span>
+
+    <span id="user_name_span"></span>
+
+    <button id="logout_button" onclick="logout()">Log Out</button>
+</div>
+<br>
+<hr>
+
+
+{% block content %}
+{% endblock %}
+
+<script>
+    $(document).ready(function () {
+        const user_name = $.cookie('user_name');
+        if (user_name != null) {
+            $('#user_name_span').text("User name: " + user_name);
+        } else {
+            $('#user_name_span').hide();
+            $('#logout_button').hide();
+        }
+    });
+</script>
 
 </body>
 </html>

@@ -34,3 +34,10 @@ function updateHistoryList() {
         historyListElement.appendChild(historyItem);
     }
 }
+
+function logout() {
+    $.removeCookie('user_name', { path: '/' });
+    $.removeCookie('ragit_auth_token', { path: '/' });
+    location.reload();
+}
+
