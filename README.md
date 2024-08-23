@@ -225,10 +225,6 @@ domain:
     * Type: integer
 
 #### domain
-* **title**: The title of the website.
-    * Type: string
-* **description**: A description of the website.
-    * Type: string
 * **name**: The name of the RAG collection.
     * Type: string
 
