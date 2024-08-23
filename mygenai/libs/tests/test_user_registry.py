@@ -15,6 +15,7 @@ class TestUserRegistry(unittest.TestCase):
     def setUp(self):
         """Set the root directory for the registry db."""
         base_dir = common.get_testing_output_dir("sqlite_db", wipe_out=True)
+        UserRegistry.set_rag_collection_name("some-rag-collection")
         UserRegistry.set_base_dir(base_dir)
 
     def test_user_registry(self):

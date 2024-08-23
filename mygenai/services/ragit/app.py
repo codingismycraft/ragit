@@ -291,6 +291,7 @@ def initialize():
     Globals.rag_manager = rag_mgr.RagManager(name)
     response = Globals.rag_manager.query("what is this about?")
     print("Loading vector db done..", response)
+    UserRegistry.set_rag_collection_name(name)
     UserRegistry.create_db_if_needed()
 
 

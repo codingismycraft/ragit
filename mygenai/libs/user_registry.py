@@ -27,8 +27,10 @@ class UserRegistry:
 
     :cvar str _base_dir: The parent directory holding the sqlite db file. By
     default the shared directory will be used.
+
+    :cvar str _rag_collection_name: The name of the RAG Collection.
     """
-    _DB_FILENAME = "user_registry.sqlite.db"
+    _DB_FILENAME = "{rag_collection}.user_registry.sqlite.db"
     _MAX_USER_NAME_LENGTH = 32
     _MAX_EMAIL_ADDRESS_LENGTH = 64
     _MAX_PASSWORD_LENGTH = 32
@@ -92,6 +94,12 @@ class UserRegistry:
     _THUMPS_DOWN_FLAG = 0
 
     _base_dir = None  # By default, will be the shared directory.
+    _rag_collection_name = None  # The name of the RAG collection.
+
+    @classmethod
+    def set_rag_collection_name(cls, name):
+        """Sets the name of the RAG Collection."""
+        cls._rag_collection_name = name
 
     @classmethod
     @common.handle_exceptions
@@ -114,7 +122,7 @@ class UserRegistry:
 
         :raises: MyGenAIException
         """
-        with sqlite3.connect(cls._get_full_path()) as conn:
+        with sqlite3.connect(cls._get_full_path_to_db()) as conn:
             cursor = None
             try:
                 cursor = conn.cursor()
@@ -150,7 +158,7 @@ class UserRegistry:
         :returns: The newly created message id.
         :rtype: int
         """
-        with sqlite3.connect(cls._get_full_path()) as conn:
+        with sqlite3.connect(cls._get_full_path_to_db()) as conn:
             cursor = None
             try:
                 cursor = conn.cursor()
@@ -214,7 +222,7 @@ class UserRegistry:
         salt = bcrypt.gensalt()
         hashed_password = bcrypt.hashpw(password.encode('utf-8'), salt)
 
-        with sqlite3.connect(cls._get_full_path()) as conn:
+        with sqlite3.connect(cls._get_full_path_to_db()) as conn:
             cursor = None
             try:
                 cursor = conn.cursor()
@@ -236,7 +244,7 @@ class UserRegistry:
 
         :raises: MyGenAIException
         """
-        with sqlite3.connect(cls._get_full_path()) as conn:
+        with sqlite3.connect(cls._get_full_path_to_db()) as conn:
             cursor = None
             try:
                 cursor = conn.cursor()
@@ -265,7 +273,7 @@ class UserRegistry:
 
         :raises: MyGenAIException
         """
-        with sqlite3.connect(cls._get_full_path()) as conn:
+        with sqlite3.connect(cls._get_full_path_to_db()) as conn:
             cursor = None
             try:
                 cursor = conn.cursor()
@@ -283,7 +291,7 @@ class UserRegistry:
 
         :raises: MyGenAIException
         """
-        fullpath = cls._get_full_path()
+        fullpath = cls._get_full_path_to_db()
         if os.path.exists(fullpath):
             return
         with sqlite3.connect(fullpath) as conn:
@@ -311,14 +319,23 @@ class UserRegistry:
         cls._base_dir = base_dir
 
     @classmethod
-    def _get_full_path(cls):
+    def _get_full_path_to_db(cls):
         """Returns the full path to the sqlite db file.
 
         :return: The full path to the sqlite db file.
         :rtype: str
+
+        :raises: ValueError.
         """
+        if not cls._rag_collection_name:
+            raise ValueError("You must set the RAG Collection name.")
         base_dir = cls._base_dir or common.get_shared_directory()
-        fullpath = os.path.join(base_dir, cls._DB_FILENAME)
+        filename = cls._DB_FILENAME.format(
+            rag_collection=cls._rag_collection_name
+        )
+        root = os.path.join(base_dir, cls._rag_collection_name, "registry")
+        common.create_directory_if_not_exists(root)
+        fullpath = os.path.join(root, filename)
         return fullpath
 
     @classmethod
@@ -353,7 +370,7 @@ class UserRegistry:
         :param int msg_id: The message id to update.
         :param int thump_up_or_down: The value to set, must be 0 or 1.
         """
-        with sqlite3.connect(cls._get_full_path()) as conn:
+        with sqlite3.connect(cls._get_full_path_to_db()) as conn:
             cursor = None
             try:
                 cursor = conn.cursor()
