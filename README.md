@@ -1,5 +1,5 @@
 <p align="center">
-<img src="mygenai/services/ragit/static/ragit.jpeg"  width="100" height="100">
+<img src="ragit/services/ragit/static/ragit.jpeg"  width="100" height="100">
 </p>
 
 # RAGit: A Framework for Generalized RAG Solutions
@@ -143,7 +143,7 @@ outlines the steps involved in creating and managing a custom RAG collection.
    execute the `create-db.sh` script:
 
    ```bash
-   cd /vagrant/mygenai/db
+   cd /vagrant/ragit/db
    ./create-db.sh
    ```
    This will create a PostgreSQL database with the same name as your collection.
@@ -162,7 +162,7 @@ outlines the steps involved in creating and managing a custom RAG collection.
 ### 4. Process Documents and Create Index
    Navigate to the `utilities` directory and run the `process_docs.py` script:
    ```bash
-   cd mygenai/utilities
+   cd ragit/utilities
    python3 process_docs.py -n <name> -v
    ```
 
@@ -236,7 +236,7 @@ Having the proper configuration yaml file to point to the desired RAG collection
 we can now start the ragit server as follows:
 
 ```bash
-cd mygenai/services/ragit
+cd ragit/services/ragit
 python3 app.py
 ```
 

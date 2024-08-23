@@ -18,9 +18,9 @@ Vagrant.configure("2") do |config|
   config.vm.network "forwarded_port", guest: 13131, host: 13131
   config.vm.synced_folder "/home/john/mygen-data", "/home/vagrant/mygen-data"
   config.vm.provider "virtualbox" do |vb|
-    vb.name = "mygenai"
+    vb.name = "ragit"
     vb.memory = 8192
     vb.cpus = 2
   end
-  config.vm.hostname = "mygenai"
+  config.vm.hostname = "ragit"
 end
