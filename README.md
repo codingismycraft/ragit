@@ -215,8 +215,6 @@ web_service:
   port: <PORT-NUMBER>
 
 domain:
-  title: <site title goes here>
-  description: <site description goes here>
   name: <collection name goes here>
 ```
 

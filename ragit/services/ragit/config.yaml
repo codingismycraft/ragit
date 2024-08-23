@@ -5,6 +5,4 @@ web_service:
   port: 13131
 
 domain:
-  title: wiki
-  description: wiki
   name: wiki
