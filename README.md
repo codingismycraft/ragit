@@ -101,9 +101,9 @@ can always install it in any other directory if needed).
 
 ```
 cd ~
-git clone git@github.com:codingismycraft/mygenai.git
+git clone git@github.com:codingismycraft/ragit.git
 mkdir ~/mygen-data
-cd mygenai
+cd ragit
 vagrant up
 vagrant ssh
 ```
@@ -125,14 +125,14 @@ directory in the following format:
 
 **Create the testing database**
 ```
-cd /vagrant/mygenai/db
+cd /vagrant/ragit/db
 ./create-db.sh
 ```
 
 
 **Run the tests**
 ```
-cd /vagrant/mygenai/
+cd /vagrant/ragit/
 pt
 ```
 
@@ -140,14 +140,14 @@ pt
 
 ### Overview
 
-A RAG collection is a fundamental component of the mygenai system. It is
+A RAG collection is a fundamental component of the ragit system. It is
 uniquely identified by a `collection name` or simply `name`. This document
 outlines the steps involved in creating and managing a custom RAG collection.
 
 
 ### 1. Create the Database
 
-   Navigate to the `db` directory within the `mygenai` project directory and
+   Navigate to the `db` directory within the `ragit` project directory and
    execute the `create-db.sh` script:
 
    ```bash
@@ -191,7 +191,7 @@ navigate)
 - Regularly review and update your collection to maintain its relevance.
 
 By following these steps, you can successfully create and manage custom RAG
-collections within the mygenai system.
+collections within the ragit system.
 
 
 # RAGIT Web Application
