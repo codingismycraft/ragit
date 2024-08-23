@@ -131,10 +131,9 @@ class RagitHandler:
             return web.HTTPFound('/login')
         else:
             template = _JINJA_ENV.get_template('index.html')
-            title = _CONFIGURATION.settings["domain"]["title"]
-            desc = _CONFIGURATION.settings["domain"]["description"]
+            collection_name = _CONFIGURATION.settings["domain"]["name"]
             txt = template.render(
-                host=request.host, title=title, description=desc
+                host=request.host, collection_name=collection_name
             )
             response = web.Response(
                 body=txt.encode(),
