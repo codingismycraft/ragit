@@ -85,6 +85,14 @@ that might affect the quality of the solution.
 # Installation
 
 ### Build the virtual machine
+
+Currently, the installation requires 
+[vagrant](https://developer.hashicorp.com/vagrant/install#darwin)
+and virtual box thus mac M3 users
+will not be able to install it using this approach. In the case of the mac M3
+you can try either using virtual environment of just installing it natively;
+either way we will shortly have more details instructions about how to do this.
+
 To install and run RAGIT locally the easiest way is to use a virtual machine
 that can be created using vagrant. You will need to have vagrant installed
 on your machine . Assuming you already have vagrant installed then you need to
