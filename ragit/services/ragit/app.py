@@ -50,7 +50,7 @@ class Globals:
     _secret_key = str(uuid.uuid4())
 
     @classmethod
-    def generate_token(cls, user_name, expiration_minutes=30):
+    def generate_token(cls, user_name, expiration_minutes=3600):
         """Creates a JSON Web Token (JWT) for the given user.
 
         :param str user_name: The user's username.

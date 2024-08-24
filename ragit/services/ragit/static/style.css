@@ -1,33 +1,37 @@
 body {
     font-family: sans-serif;
-    margin: 0;
+    margin: 0 auto;
     padding: 20px;
+    width: 800px;
 }
 
 .container {
     display: flex;
     flex-direction: column;
     align-items: center;
-    width: 80%;
-    max-width: 600px;
     margin: 0 auto;
+    background-color: #f8f8f3;
+    border-color: black;
+    border-width: 2px;
 }
 
 .history {
     border: 1px solid #ddd;
     border-radius: 5px;
     padding: 10px;
-    max-height: 600px;
+    max-height: 900px;
     overflow-y: scroll;
 }
 
 
 .search-box {
-    width: 100%;
+    width: 650px;
     padding: 10px;
     border: 1px solid #ccc;
     border-radius: 5px;
     font-size: 16px;
+    margin-top: 0.6em;
+    margin-left: 8px;
 }
 
 .search-button {
@@ -40,13 +44,14 @@ body {
     display: inline-block;
     font-size: 16px;
     margin-top: 10px;
+    margin-right: 10px;
     cursor: pointer;
     border-radius: 5px;
 }
 
 #historyList {
-    width: 100%;
-    height: 600px;
+    width: 90%;
+    height: 900px;
     margin-bottom: 1em;
 }
 
@@ -61,12 +66,37 @@ body {
     clear: left;
     width: 100%;
     height: 120px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    position: relative;
+}
+
+.right_child {
+}
+
+.left_child {
+}
+
+.bottom-right {
+    position: absolute; /* Position relative to its nearest positioned ancestor */
+    bottom: 10px; /* 10px from the bottom of the container */
+    right: 10px; /* 10px from the right side of the container */
+    /* Optional: Add additional styling for the button */
+    padding: 10px 15px;
 }
 
 #user_name_span {
     float: right;
     padding-right: 2em;
     padding-top: 0.8em;
+}
+
+.collection_name_span {
+    float: right;
+    padding-right: 0.2em;
+    padding-top: 0.8em;
+    font-size: xx-large;
+    font-weight: bold;
 }
 
 
@@ -80,30 +110,37 @@ body {
 
 .chat_message {
     border-width: thick;
-    border-color: black;
-    background-color: #4CAF50;
+    border-color: #4d4b4b;
+    border: 1px solid;
     margin: 0.2em 0.2em 1em 0.2em;
 }
 
 .chat_question {
-    padding: 2em;
+    padding: 0.2em;
     background-color: whitesmoke;
 }
 
 .chat_answer {
-    padding: 2em;
-    background-color: #b8e1ba;
+    padding: 0.6em;
 }
 
 .chat_vote {
-    padding: 0.8em;
+    padding: 0.8px;
     background-color: #dddddd;
+    margin-top: 6px;
+    padding-top: 6px;
+    padding-left: 6px;
 }
 
 .chat_vote_up {
-   background-color: lightgreen;
+   background-color: #daebda;
 }
 
 .chat_vote_down {
-    background-color: #cb7a7a;
+    background-color: #edd2d2
+}
+
+.search_section {
+    display: flex;
+    margin-bottom: 8px;
 }

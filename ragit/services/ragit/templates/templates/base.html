@@ -15,12 +15,21 @@
 <body>
 
 <div class="top_bar">
+    <div class="left_child">
     <span id="logo">
     <img src="/static/ragit.jpeg" width="100px" height="100px">
     </span>
-    <span>Collection Name: <b> {{ collection_name }} </b> </span>
-    <span id="user_name_span"></span>
-    <button id="logout_button" onclick="logout()">Log Out</button>
+     <span class="collection_name_span">
+         {{ collection_name }}
+     </span>
+    </div>
+
+    <div class="right_child">
+        <span id="user_name_span"></span>
+        <div class="bottom-right">
+            <button id="logout_button" onclick="logout()">Log Out</button>
+        </div>
+    </div>
 </div>
 <br>
 <hr>
@@ -33,7 +42,7 @@
     $(document).ready(function () {
         const user_name = $.cookie('user_name');
         if (user_name != null) {
-            $('#user_name_span').text("User name: " + user_name);
+            $('#user_name_span').html("User:  <b>" + user_name + "</b>");
         } else {
             $('#user_name_span').hide();
             $('#logout_button').hide();
