@@ -8,10 +8,7 @@ sudo apt install postgresql postgresql-contrib -y
 echo "export PYTHONPATH='/vagrant' " >> /home/vagrant/.bashrc
 echo "alias pt=/vagrant/pt.sh" >> /home/vagrant/.bashrc
 sudo pip3 install -r /vagrant/requirements.txt
-SCRIPT
-
-
-$script_vim_install = <<INSTALL_VIM_9_SCRIPT
+# install vim9.0
 cd
 sudo apt-get purge vim
 sudo apt-get autoremove
@@ -25,13 +22,12 @@ cd vim90
 ./configure --with-features=huge --enable-multibyte --enable-rubyinterp --enable-python3interp --with-python-config-dir=/usr/lib/python3.9/config-3.9-x86_64-linux-gnu --enable-perlinterp --enable-luainterp --enable-gui=gtk2 --enable-cscope --prefix=/usr
 sudo make install
 cd
-INSTALL_VIM_9_SCRIPT
+SCRIPT
 
 
 Vagrant.configure("2") do |config|
   config.vm.box = "bento/ubuntu-22.04"
   config.vm.provision "shell", inline: $script
-  config.vm.provision "shell", inline: $script_script_vim_install
   config.vm.provision "shell", path: "install-psql.sh"
   config.vm.network "forwarded_port", guest: 13131, host: 13131
   config.vm.synced_folder "/home/john/mygen-data", "/home/vagrant/mygen-data"
