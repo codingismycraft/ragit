@@ -18,14 +18,16 @@ sudo apt install xclip -y
 sudo apt install vim-gtk3 -y
 
 # Clone dotfiles if needed
-DOTFILES_DIR=$HOME_DIR/dotfiles
+
+DOTFILES_DIR=/home/vagrant/dotfiles
 if [ ! -d "$DOTFILES_DIR" ]; then
-  git clone https://github.com/codingismycraft/ragit.git $DOTFILES_DIR
+  cd /home/vagrant
+  git clone https://github.com/codingismycraft/dotfiles.git 
+  cd dotfiles
+  ./install_light.sh
+  cd
 fi
 
-cd dotfiles
-./install_light.sh
-cd
 SCRIPT
 
 
