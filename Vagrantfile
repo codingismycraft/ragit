@@ -20,7 +20,7 @@ sudo apt install vim-gtk3 -y
 # Clone dotfiles if needed
 DOTFILES_DIR=$HOME_DIR/dotfiles
 if [ ! -d "$DOTFILES_DIR" ]; then
-  git clone git@github.com:codingismycraft/dotfiles.git $DOTFILES_DIR
+  git clone https://github.com/codingismycraft/ragit.git $DOTFILES_DIR
 fi
 
 cd dotfiles
