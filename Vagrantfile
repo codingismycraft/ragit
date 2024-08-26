@@ -5,8 +5,6 @@ sudo apt-get install libpq-dev python3-dev -y
 mkdir -p /home/vagrant/mygen-data
 chown vagrant:vagrant /home/vagrant/mygen-data
 sudo apt install postgresql postgresql-contrib -y
-echo "export PYTHONPATH='/vagrant' " >> /home/vagrant/.bashrc
-echo "alias pt=/vagrant/pt.sh" >> /home/vagrant/.bashrc
 sudo pip3 install -r /vagrant/requirements.txt
 # install vim gtk to make clipboard interaction simpler.
 cd
@@ -23,11 +21,18 @@ DOTFILES_DIR=/home/vagrant/dotfiles
 if [ ! -d "$DOTFILES_DIR" ]; then
   cd /home/vagrant
   git clone https://github.com/codingismycraft/dotfiles.git 
+  sudo chown -R vagrant:vagrant /home/vagrant/dotfiles
   cd dotfiles
-  ./install_light.sh
+  ./install_light.sh /home/vagrant
   cd
 fi
 
+sudo chown -R vagrant:vagrant /home/vagrant/.vim
+sudo chown vagrant:vagrant /home/vagrant/.bashrc
+sudo chown vagrant:vagrant /home/vagrant/.vimrc
+
+echo "export PYTHONPATH='/vagrant' " >> /home/vagrant/.bashrc
+echo "alias pt=/vagrant/pt.sh" >> /home/vagrant/.bashrc
 SCRIPT
 
 
