@@ -33,6 +33,7 @@ sudo chown vagrant:vagrant /home/vagrant/.vimrc
 
 echo "export PYTHONPATH='/vagrant' " >> /home/vagrant/.bashrc
 echo "alias pt=/vagrant/pt.sh" >> /home/vagrant/.bashrc
+echo "alias ragit=/vagrant/ragit/utilities/process_docs.py" >> /home/vagrant/.bashrc
 SCRIPT
 
 
