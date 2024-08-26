@@ -151,6 +151,26 @@ class RagManager:
         """
         return self._backups_dir
 
+    @classmethod
+    def get_all_rag_collections(cls):
+        """Returns a list with all the available RAG collection names.
+
+        Be design all the collection must be located under the share directory
+        and contain a subdirectory called documents holding the corresponding
+        documents that can be in any nested directory. This function returns
+        all the available collection names.
+
+        :return: A list with the names of all the available collection names.
+        :rtype: list [str]
+        """
+        base_dir = os.path.join(common.get_home_dir(), cls._SHARED_DIR)
+        rag_collections = []
+        for item in os.listdir(base_dir):
+            item_path = os.path.join(base_dir, item)
+            if os.path.isdir(item_path):
+                rag_collections.append(item)
+        return rag_collections
+
     def get_metrics(self, db):
         """Finds the metrics for the collection.
 
