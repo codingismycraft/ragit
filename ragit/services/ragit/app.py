@@ -4,6 +4,7 @@ import datetime
 import functools
 import logging
 import os
+import sys
 import uuid
 
 import aiohttp
@@ -131,7 +132,7 @@ class RagitHandler:
             return web.HTTPFound('/login')
         else:
             template = _JINJA_ENV.get_template('index.html')
-            collection_name = _CONFIGURATION.settings["domain"]["name"]
+            collection_name = Globals.rag_manager.get_rag_collection_name()
             txt = template.render(
                 host=request.host, collection_name=collection_name
             )
@@ -285,12 +286,15 @@ class RagitHandler:
 def initialize():
     """Initializes the environment."""
     common.init_settings()
+    try:
+        collection_name = sys.argv[1]
+    except IndexError:
+        raise ValueError("You must provide a valid collection name.")
     print("Loading vector db")
-    name = _CONFIGURATION.settings["domain"]["name"]
-    Globals.rag_manager = rag_mgr.RagManager(name)
+    Globals.rag_manager = rag_mgr.RagManager(collection_name)
     response = Globals.rag_manager.query("what is this about?")
     print("Loading vector db done..", response)
-    UserRegistry.set_rag_collection_name(name)
+    UserRegistry.set_rag_collection_name(collection_name)
     UserRegistry.create_db_if_needed()
 
 

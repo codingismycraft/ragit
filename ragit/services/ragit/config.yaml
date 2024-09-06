@@ -3,6 +3,3 @@
 web_service:
   name: ragit
   port: 13131
-
-domain:
-  name: dummy
