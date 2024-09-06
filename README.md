@@ -113,9 +113,8 @@ to go.
 
 ### Store a valid OpenAI API key
 
-A valid OpenAI API key stored in a `settings.json` file within your home
-directory in the following format:
-
+Under your home directory `/home/vagrant` create a new file called
+`settings.json` and store into it a valid OpenAI key in the following format:
 
 ```json
 {
@@ -144,40 +143,84 @@ A RAG collection is a fundamental component of the ragit system. It is
 uniquely identified by a `collection name` or simply `name`. This document
 outlines the steps involved in creating and managing a custom RAG collection.
 
+### Definition: RAG Collection (or simply Collection)
+
+A `Rag Collection` is  collection of documents that is stored under the shared
+directory (mygen-data).  Assuming that we have a collection called mydata then
+its related data will exist under the following directory:
+
+```~/mygen-data/mydata/documents```
+
+
+# Installation and Collection Creation
 
 ### 1. Create the Database
 
-   Navigate to the `db` directory within the `ragit` project directory and
-   execute the `create-db.sh` script:
+Navigate to the `db` directory within the `ragit` project directory and
+execute the `create-db.sh` script:
 
-   ```bash
-   cd /vagrant/ragit/db
-   ./create-db.sh
-   ```
-   This will create a PostgreSQL database with the same name as your collection.
+```bash
+cd /vagrant/ragit/db
+./create-db.sh
+```
+This will create a PostgreSQL database with the same name as your collection.
 
 ### 2. Prepare the Documents Directory
 
-   Create a directory to store your collection's documents:
-   ```bash
-   mkdir -p ~/mygen-data/<collection-name>/documents
-   ```
-   Replace `<collection-name>` with the desired name for your collection.
+Create a directory to store your collection's documents:
+```bash
+mkdir -p ~/mygen-data/<collection-name>/documents
+```
+Replace `<collection-name>` with the desired name for your collection.
 
 ### 3. Populate with Documents
-   Copy all relevant documents into the newly created documents directory.
+Copy all relevant documents into the newly created documents directory.
 
 ### 4. Process Documents and Create Index
-   Navigate to the `utilities` directory and run the `process_docs.py` script:
-   ```bash
-   cd ragit/utilities
-   python3 process_docs.py -n <name> -v
-   ```
+The command `ragit` is available from anywhere under the VM and can be 
+used to interact with the back-end of the ragit service. 
+   
+More precisely the following is the available functionality:
 
-   Replace `<name>` with your collection name. The `-v` flag provides verbose
-   output. This step processes your documents and creates a vector database for
-   efficient retrieval.
+#### Display the available RAG collections
+`ragit -l`
 
+Example output:
+```
+dummy
+mycode
+stories
+```
+
+#### Show the statistics for a RAG collection
+`ragit -n stories`
+
+Example output:
+```
+name.....................: stories
+full path................: /home/vagrant/mygen-data/stories/documents
+total documents..........: 4
+total documents in db....: 4
+total chunks.............: 21
+with embeddings..........: 21
+without embeddings.......: 0
+inserted to vectordb.....: 21
+to insert to vector db...: 0
+```
+
+#### Process the data for a RAG collection
+`ragit -n stories -p`
+
+Example output:
+```
+Will insert all available chunks to the database.
+Inserted 0 chunks.
+Will insert all available embeddings to the database.
+Inserted 0 embeddings.
+updating the vector db.
+Totally inserted records: 0
+Inserted 0 chunks to the vector db.
+```
 
 ### Additional Notes
 
