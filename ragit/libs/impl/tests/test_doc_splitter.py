@@ -39,3 +39,13 @@ class TestSplittingToChunks(unittest.TestCase):
         for txt, meta in splitter.split(full_path):
             self.assertIsInstance(txt, str)
             self.assertIsInstance(meta, dict)
+
+    def test_python_file(self):
+        """Tests the get_chunks method for python code."""
+        full_path = os.path.join(
+            common.get_testing_data_directory(),
+            "hello_world.py"
+        )
+        for txt, meta in splitter.split(full_path):
+            self.assertIsInstance(txt, str)
+            self.assertIsInstance(meta, dict)
