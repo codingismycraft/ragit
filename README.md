@@ -176,10 +176,19 @@ Replace `<collection-name>` with the desired name for your collection.
 ### 3. Populate with Documents
 Copy all relevant documents into the newly created documents directory.
 
-### 4. Process Documents and Create Index
-The command `ragit` is available from anywhere under the VM and can be 
+#### Create the database.
+To update a RAG collection named mydata you must have a postgres database
+with the same name available which you can do as follows:
+
+```bash
+cd /vagrant/ragit/db
+./create-db.sh <collection-name>
+```
+
+## Process Documents and Create Index
+
+The command `ragit` is available from anywhere under the VM and can be
 used to interact with the back-end of the ragit service. 
-   
 More precisely the following is the available functionality:
 
 #### Display the available RAG collections
@@ -256,9 +265,6 @@ An example of a configuration yaml file is the following:
 web_service:
   name: ragit
   port: <PORT-NUMBER>
-
-domain:
-  name: <collection name goes here>
 ```
 
 #### web_service
@@ -267,22 +273,18 @@ domain:
 * **port**: The port number for the web service.
     * Type: integer
 
-#### domain
-* **name**: The name of the RAG collection.
-    * Type: string
-
-
 ### Notes
-* All fields within `web_service` and `domain` are required.
+* All fields within `web_service` are required.
 * The `port` number should be replaced with the desired port for the web service.
 
 ### Running the web-server
 Having the proper configuration yaml file to point to the desired RAG collection
-we can now start the ragit server as follows:
+we can now start the ragit server passing the RAG collection in the command 
+line as follows:
 
 ```bash
 cd ragit/services/ragit
-python3 app.py
+python3 app.py <collection-name>
 ```
 
 you should now be able to access it by using this URL from your browser:
