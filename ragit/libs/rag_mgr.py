@@ -106,6 +106,14 @@ class RagManager:
             self._VECTOR_COLLECTION_NAME
         )
 
+    def get_rag_collection_name(self):
+        """Returns the collection name.
+
+        :returns: The collection name.
+        :rtype: str
+        """
+        return self._rag_name
+
     def query(self, question, k=3):
         """Uses the RAG collection to enhance the LLM to answer the question.
 

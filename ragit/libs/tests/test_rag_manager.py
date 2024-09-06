@@ -61,6 +61,7 @@ class TestRagManager(unittest.TestCase):
         base_dir = self._get_base_dir()
         self.assertFalse(os.path.exists(base_dir))
         ragger = rag_mgr.RagManager(self._RAG_NAME)
+        self.assertEqual(ragger.get_rag_collection_name(), self._RAG_NAME)
         self.assertTrue(os.path.exists(base_dir))
         self.assertTrue(os.path.exists(ragger.get_backups_dir()))
         self.assertTrue(os.path.exists(ragger.get_documents_dir()))

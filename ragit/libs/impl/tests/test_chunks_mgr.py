@@ -86,7 +86,7 @@ class TestChunksMgr(unittest.TestCase):
             docs_to_chunk = sorted(docs_to_chunk)
 
             # Only save the first two documents.
-            for fullpath in docs_to_chunk[:2]:
+            for fullpath in docs_to_chunk[:3]:
                 chunks_mgr.save_chunks_to_db(db, fullpath)
 
             # Only the above documents should be missing embeddings.
