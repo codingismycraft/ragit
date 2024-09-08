@@ -51,7 +51,7 @@ class TestRagManager(unittest.TestCase):
         :rtype: str
         """
         fullpath = os.path.join(
-            common.get_home_dir(), "mygen-data", self._RAG_NAME
+            common.get_home_dir(), "ragit-data", self._RAG_NAME
         )
         return fullpath
 

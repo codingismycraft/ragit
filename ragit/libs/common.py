@@ -198,4 +198,4 @@ def create_directory_if_not_exists(fullpath):
 # Whatever follows this line is private to the module and should not be
 # used from the outside.
 
-_SHARED_DIR = "mygen-data"
+_SHARED_DIR = "ragit-data"

@@ -26,9 +26,9 @@ class RagManager:
     Under a development/ local machine this directory is mapped from
     the host to the Vagrant guest while when running the service directly
     on the host machine the shared directory must be under the home directory
-    and called mygen-data.
+    and called ragit-data.
 
-    Each RAG collection is managed by a specific directory under the mygen-data
+    Each RAG collection is managed by a specific directory under the ragit-data
     directory with the same name as the RAG collection having the following
     structure:
 
@@ -60,7 +60,7 @@ class RagManager:
     :cvar str _VECTOR_COLLECTION_NAME: The name of the collection inside the
     vector database.
     """
-    _SHARED_DIR = "mygen-data"
+    _SHARED_DIR = "ragit-data"
     _VECTOR_COLLECTION_NAME = "chunk_embeddings"
 
     _rag_name = None
