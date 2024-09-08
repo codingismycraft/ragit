@@ -99,12 +99,36 @@ def get_testing_output_dir(relative_path, wipe_out=False):
 
 
 def init_settings():
-    """Initializes the project's settings."""
-    filepath = os.path.join(get_home_dir(), "settings.json")
-    with open(filepath) as fin:
-        settings = json.load(fin)
-        for k, v in settings.items():
-            os.environ[k] = v
+    """Initializes the project's settings.
+
+    Tries to load the settings from the corresponding file under the
+    home directory.  If the file is not available then it checks the
+    environment settings to verify that the OPENAI_API_KEY is already set;
+    we are doing so to allow multiple ways to set it something that
+    is also useful in the case of running the application inside docker.
+
+    :raises: ValueError
+    """
+    try:
+        filepath = os.path.join(get_home_dir(), "settings.json")
+        with open(filepath) as fin:
+            settings = json.load(fin)
+            for k, v in settings.items():
+                os.environ[k] = v
+    except FileNotFoundError:
+        # The settings file was not found, this should happen when running
+        # the application from insider docker..
+        pass
+    finally:
+        # At this point the OPENAI_API_KEY must be ready even if the
+        # settings file was not found (in this case as assume that somehow
+        # it has to be set from the caller).
+        if not os.environ.get("OPENAI_API_KEY"):
+            raise ValueError(
+                "OPENAI_API_KEY is not available. You need to either place it "
+                "in the settings.json file under the home directory or to "
+                "manually add it to the environment settings."
+            )
 
 
 def get_testing_data_directory():
