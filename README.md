@@ -202,7 +202,7 @@ we can now start the ragit server passing the RAG collection in the command
 line as follows:
 
 ```bash
-cd ragit/services/ragit
+cd ragit/front_end
 python3 app.py <collection-name>
 ```
 
