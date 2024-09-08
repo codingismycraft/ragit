@@ -2,6 +2,64 @@
 
 import psycopg2
 
+import ragit.libs.common as common
+
+
+def create_db_if_needed(db_name, schema=None):
+    """Creates the database with the passed in name if it does not exist.
+
+    :param str db_name: The name of the database to create.
+    :param str schema: The db schema to use; if None it will be ignored.
+    """
+    assert len(db_name) <= 20, "Dbname is too long."
+    try:
+        conn_str = common.make_local_connection_string("postgres")
+        SimpleSQL.register_connection_string(conn_str)
+        with SimpleSQL() as db:
+            # If the db already exists do nothing and exit.
+            sql = _SQL_CHECK_DB_EXISTS.format(db_name=db_name)
+            for row in db.execute_query(sql):
+                counter = row[0]
+                if counter == 1:
+                    return
+
+            # The db does not exist, create it and exit.
+            sql = _SQL_CREATE_DB.format(db_name=db_name)
+            db.execute_non_query(sql)
+
+        # Create the schema if it was passed.
+        if schema:
+            conn_str = common.make_local_connection_string(db_name)
+            SimpleSQL.register_connection_string(conn_str)
+            with SimpleSQL() as db:
+                db.execute_non_query(schema)
+    finally:
+        SimpleSQL.register_connection_string(None)
+
+
+def delete_db_if_exists(db_name):
+    """Deletes the passed in database if it exists.
+
+    :param str db_name: The name of the database to delete.
+    """
+    assert len(db_name) <= 20, "Dbname is too long."
+    try:
+        conn_str = common.make_local_connection_string("postgres")
+        SimpleSQL.register_connection_string(conn_str)
+        with SimpleSQL() as db:
+            # If the db does not already exist do nothing and exit.
+            sql = _SQL_CHECK_DB_EXISTS.format(db_name=db_name)
+            for row in db.execute_query(sql):
+                counter = row[0]
+                if counter == 0:
+                    return
+
+            # The db does not exist, create it and exit.
+            sql = _SQL_DELETE_DB.format(db_name=db_name)
+            db.execute_non_query(sql)
+    finally:
+        SimpleSQL.register_connection_string(None)
+
 
 class SimpleSQL:
     """Provides a simplified interface for interacting with PostgreSQL."""
@@ -64,3 +122,15 @@ class SimpleSQL:
         assert self._connection
         with self._connection.cursor() as cursor:
             cursor.execute(sql)
+
+
+# Whatever follows this line is private to the module and should not be
+# used from the outside.
+
+_SQL_CHECK_DB_EXISTS = """ 
+SELECT count(*) FROM pg_database WHERE datname = '{db_name}' 
+"""
+
+_SQL_CREATE_DB = """CREATE DATABASE {db_name} """
+
+_SQL_DELETE_DB = """DROP DATABASE {db_name}"""

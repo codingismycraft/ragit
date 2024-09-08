@@ -90,6 +90,9 @@ def main():
         for collection in rag_collections:
             print(collection)
     elif args.name:
+        # Create the database for the collection name if it is not available.
+        dbutil.create_db_if_needed(args.name, common.get_rag_db_schema())
+
         conn_str = common.make_local_connection_string(args.name)
         dbutil.SimpleSQL.register_connection_string(conn_str)
         ragger = rag_mgr.RagManager(args.name)

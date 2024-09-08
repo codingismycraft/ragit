@@ -44,44 +44,6 @@ easy switching between different components and services.
 By adhering to these principles, RAGit aims to accelerate the development of
 effective and robust RAG solutions. 
    
-
-# Data Pipeline
-
-A high level view of the pipeline associated with RAGit is the following:
-
-### Document Collection
-
-The backend process begins by gathering all supported documents (PDF, DOCX, and
-Markdown) from a designated directory. These documents serve as the foundation
-for RAG creation.
-
-### Document Splitting and Database Insertion
-
-Each document is divided into smaller chunks, which are then stored in the
-database. This process is incremental, allowing for database updates without
-requiring all documents upfront.
-
-### Embedding Calculation and Insertion
-
-To enable vector search, embeddings are computed for each database chunk. A
-dedicated process identifies chunks lacking embeddings, calculates them, and
-stores the results in the database.
-
-### Vector Database Construction
-
-The vector database is built or rebuilt using existing document embeddings. This
-is the step that makes the embeddings accessible for the RAG service.
-
-### Front End
-The vector database and the front end web service are deployed to a web server
-making them available to the public.
-
-### Evaluation and improvements
-The front end collects user information to allow for the evalution of the
-solution (for example thumps up - down) which results to the backend working on
-a peridodic re-creation of the vector database, the prompts and other component
-that might affect the quality of the solution.
-
 # Installation
 
 ### Build the virtual machine
@@ -122,13 +84,6 @@ Under your home directory `/home/vagrant` create a new file called
 }
 ```
 
-**Create the testing database**
-```
-cd /vagrant/ragit/db
-./create-db.sh
-```
-
-
 **Run the tests**
 ```
 cd /vagrant/ragit/
@@ -154,18 +109,7 @@ its related data will exist under the following directory:
 
 # Installation and Collection Creation
 
-### 1. Create the Database
-
-Navigate to the `db` directory within the `ragit` project directory and
-execute the `create-db.sh` script:
-
-```bash
-cd /vagrant/ragit/db
-./create-db.sh
-```
-This will create a PostgreSQL database with the same name as your collection.
-
-### 2. Prepare the Documents Directory
+### Prepare the Documents Directory
 
 Create a directory to store your collection's documents:
 ```bash
@@ -173,17 +117,8 @@ mkdir -p ~/mygen-data/<collection-name>/documents
 ```
 Replace `<collection-name>` with the desired name for your collection.
 
-### 3. Populate with Documents
-Copy all relevant documents into the newly created documents directory.
-
-#### Create the database.
-To update a RAG collection named mydata you must have a postgres database
-with the same name available which you can do as follows:
-
-```bash
-cd /vagrant/ragit/db
-./create-db.sh <collection-name>
-```
+After you create the above directory you should copy all relevant documents into
+the newly created documents directory.
 
 ## Process Documents and Create Index
 
@@ -230,20 +165,6 @@ updating the vector db.
 Totally inserted records: 0
 Inserted 0 chunks to the vector db.
 ```
-
-### Additional Notes
-
-- Ensure you have the necessary dependencies installed for
-  running `process_docs.py`.
-
-- For optimal performance, consider organizing your documents effectively (you
-can always nest them under the documents directory to make them easier to
-navigate)
-
-- Regularly review and update your collection to maintain its relevance.
-
-By following these steps, you can successfully create and manage custom RAG
-collections within the ragit system.
 
 
 # RAGIT Web Application
@@ -292,4 +213,41 @@ you should now be able to access it by using this URL from your browser:
 ```url
 localhost:<port>
 ```
+
+# Data Pipeline
+
+A high level view of the pipeline associated with RAGit is the following:
+
+### Document Collection
+
+The backend process begins by gathering all supported documents (PDF, DOCX, and
+Markdown) from a designated directory. These documents serve as the foundation
+for RAG creation.
+
+### Document Splitting and Database Insertion
+
+Each document is divided into smaller chunks, which are then stored in the
+database. This process is incremental, allowing for database updates without
+requiring all documents upfront.
+
+### Embedding Calculation and Insertion
+
+To enable vector search, embeddings are computed for each database chunk. A
+dedicated process identifies chunks lacking embeddings, calculates them, and
+stores the results in the database.
+
+### Vector Database Construction
+
+The vector database is built or rebuilt using existing document embeddings. This
+is the step that makes the embeddings accessible for the RAG service.
+
+### Front End
+The vector database and the front end web service are deployed to a web server
+making them available to the public.
+
+### Evaluation and improvements
+The front end collects user information to allow for the evalution of the
+solution (for example thumps up - down) which results to the backend working on
+a peridodic re-creation of the vector database, the prompts and other component
+that might affect the quality of the solution.
 

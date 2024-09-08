@@ -10,8 +10,13 @@ import ragit.libs.impl.chunks_mgr as chunks_mgr
 class TestChunksMgr(unittest.TestCase):
     """Tests the chunks_mgr module."""
 
-    _DB_NAME = "dummy"
+    _DB_NAME = "testingchunks"
     _SQL_CLEAR_CHUNKS = "DElETE FROM chunks"
+
+    def setUp(self):
+        """Creates the testing database."""
+        dbutil.delete_db_if_exists(self._DB_NAME)
+        dbutil.create_db_if_needed(self._DB_NAME, common.get_rag_db_schema())
 
     def tearDown(self):
         """Cleans up the environment upon finishing a test."""
@@ -90,7 +95,8 @@ class TestChunksMgr(unittest.TestCase):
                 chunks_mgr.save_chunks_to_db(db, fullpath)
 
             # Only the above documents should be missing embeddings.
-            chunk_ids_before = list(chunks_mgr.find_chunks_missing_embeddings(db))
+            chunk_ids_before = list(
+                chunks_mgr.find_chunks_missing_embeddings(db))
 
             # Save the embeddings only for the first two chunk ids.
             saved = []
@@ -129,4 +135,3 @@ class TestChunksMgr(unittest.TestCase):
             chunk, embeddings = chunks_mgr.load_embeddings(db, chunk_id)
             self.assertIsInstance(chunk, str)
             self.assertIsNone(embeddings)
-

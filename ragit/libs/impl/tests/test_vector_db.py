@@ -11,14 +11,24 @@ import ragit.libs.impl.vector_db as vector_db
 
 class TestVectorDb(unittest.TestCase):
     """Tests the VectorDb class."""
+    _DB_NAME = "testingvectordb"
     _SQL_CLEAR_CHUNKS = "DElETE FROM chunks"
 
     @classmethod
     def setUpClass(cls):
         """Class - level setup."""
-        conn_str = common.make_local_connection_string("dummy")
-        dbutil.SimpleSQL.register_connection_string(conn_str)
         common.init_settings()
+
+    def setUp(self):
+        """Creates the testing database."""
+        dbutil.delete_db_if_exists(self._DB_NAME)
+        dbutil.create_db_if_needed(self._DB_NAME, common.get_rag_db_schema())
+        conn_str = common.make_local_connection_string(self._DB_NAME)
+        dbutil.SimpleSQL.register_connection_string(conn_str)
+
+    def tearDown(self):
+        """Cleans up the environment upon finishing a test."""
+        dbutil.SimpleSQL.register_connection_string(None)
 
     def _insert_chunks_to_db(self, db):
         """Inserts the chunks to the database."""

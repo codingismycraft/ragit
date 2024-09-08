@@ -14,8 +14,17 @@ import ragit.libs.impl.vector_db as vector_db
 class TestQueryExecutor(unittest.TestCase):
     """Tests the chunks_mgr module."""
 
-    _DB_NAME = "dummy"
+    _DB_NAME = "testqueries"
     _SQL_CLEAR_CHUNKS = "DElETE FROM chunks"
+
+    def setUp(self):
+        """Creates the testing database."""
+        dbutil.delete_db_if_exists(self._DB_NAME)
+        dbutil.create_db_if_needed(self._DB_NAME, common.get_rag_db_schema())
+
+    def tearDown(self):
+        """Cleans up the environment upon finishing a test."""
+        dbutil.SimpleSQL.register_connection_string(None)
 
     @classmethod
     def _initialize_env(cls):
@@ -66,5 +75,11 @@ class TestQueryExecutor(unittest.TestCase):
         query_executor.initialize(fullpath_to_db, collection_name)
         retrieved = query_executor.query("What is method chaining?")
         self.assertIn("method chaining", retrieved.lower())
+
+    def test_invalid_full_path_to_db(self):
+        """Tests passing invalid path to db to initialize."""
+        with self.assertRaises(common.MyGenAIException):
+            query_executor.initialize("junk", "junk")
+
 
 

@@ -22,6 +22,20 @@ def make_local_connection_string(db_name=None):
     return _CONN_STR.format(db_name=db_name)
 
 
+def get_rag_db_schema():
+    """Returns the schema of the RAG database.
+
+    By default the db schema of the RAG database exists under the following
+    directory: ./impl/db_schema.sql
+
+    :returns: The schema of the database.
+    :rtype: str
+    """
+    fullpath = os.path.join(_CURRENT_DIR, "impl", "db_schema.sql")
+    with open(fullpath) as fin:
+        return fin.read()
+
+
 def get_home_dir():
     """Returns the home directory for the current user.
 
@@ -37,7 +51,7 @@ def get_shared_directory():
     :return: The directory which is used as the root for all collections.
     :rtype: str
     """
-    shared_dir = os.path.join( get_home_dir(), _SHARED_DIR)
+    shared_dir = os.path.join(get_home_dir(), _SHARED_DIR)
     return shared_dir
 
 
@@ -155,6 +169,7 @@ def create_directory_if_not_exists(fullpath):
     # If the base output directory does not exist then create it.
     if not os.path.isdir(fullpath):
         os.makedirs(fullpath)
+
 
 # Whatever follows this line is private to the module and should not be
 # used from the outside.

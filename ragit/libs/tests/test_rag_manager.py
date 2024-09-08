@@ -16,19 +16,33 @@ class TestRagManager(unittest.TestCase):
     Assumes that the dummy psql database exists.
     """
 
+    _DB_NAME = "testragmgr"
     _RAG_NAME = "dummy"
     _SQL_CLEAR_CHUNKS = "DElETE FROM chunks"
 
     @classmethod
     def setUpClass(cls):
-        """Class - level setup.
-
-        - Sets the connection string to point to the dummy db.
-        - Initializes the openai key.
-        """
-        conn_str = common.make_local_connection_string("dummy")
-        dbutil.SimpleSQL.register_connection_string(conn_str)
+        """Class - level setup."""
         common.init_settings()
+
+    def setUp(self):
+        """Creates the testing database."""
+        dbutil.delete_db_if_exists(self._DB_NAME)
+        dbutil.create_db_if_needed(self._DB_NAME, common.get_rag_db_schema())
+        conn_str = common.make_local_connection_string(self._DB_NAME)
+        dbutil.SimpleSQL.register_connection_string(conn_str)
+
+        # If the directory for the rag data exists then delete it."""
+        fullpath = self._get_base_dir()
+
+        if os.path.isdir(fullpath):
+            shutil.rmtree(fullpath)
+        elif os.path.isfile(fullpath):
+            os.remove(fullpath)
+
+    def tearDown(self):
+        """Cleans up the environment upon finishing a test."""
+        dbutil.SimpleSQL.register_connection_string(None)
 
     def _get_base_dir(self):
         """Returns the base directory for the collection used in the test.
@@ -41,14 +55,10 @@ class TestRagManager(unittest.TestCase):
         )
         return fullpath
 
-    def setUp(self):
-        """If the directory for the rag data exists then delete it."""
-        fullpath = self._get_base_dir()
-
-        if os.path.isdir(fullpath):
-            shutil.rmtree(fullpath)
-        elif os.path.isfile(fullpath):
-            os.remove(fullpath)
+    def test_get_all_rag_collections(self):
+        """Tests the get_all_rag_collections function."""
+        retrieved = rag_mgr.RagManager.get_all_rag_collections()
+        self.assertIsInstance(retrieved, list)
 
     def test_creation(self):
         """Tests the creation of the Rag Collection.
@@ -106,7 +116,7 @@ class TestRagManager(unittest.TestCase):
             counter = metrics.get_chunks_without_embeddings(db)
             self.assertEqual(counter, 0)
 
-            retrieved = ragger.update_vector_db(db)
+            retrieved = ragger.update_vector_db(db, batch_size=2)
             self.assertEqual(retrieved, c2)
 
             retrieved = ragger.query("What is method chaining?")
