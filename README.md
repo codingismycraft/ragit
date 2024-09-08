@@ -107,8 +107,6 @@ its related data will exist under the following directory:
 ```~/mygen-data/mydata/documents```
 
 
-# Installation and Collection Creation
-
 ### Prepare the Documents Directory
 
 Create a directory to store your collection's documents:
