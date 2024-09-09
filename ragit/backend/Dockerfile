@@ -10,5 +10,4 @@ RUN pip3 install --no-cache-dir -r /ragit/requirements.txt
 
 ENV PYTHONPATH="/"
 
-CMD ["python3.10", "/ragit/backend/process_docs.py", "-l"]
-# -MD ["ls", "/ragit"]
+CMD ["python3.10", "/ragit/backend/ragit_cmd.py"]

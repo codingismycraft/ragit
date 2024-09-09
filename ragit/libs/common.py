@@ -8,18 +8,25 @@ import yaml
 
 _CURRENT_DIR = os.path.dirname(os.path.realpath(__file__))
 _TESTING_DATA_DIR = os.path.join(_CURRENT_DIR, "testing_data")
-_CONN_STR = "postgres://myuser:password@localhost:5432/{db_name}"
 _DEFAULT_DB_NAME = "dummy"
 
 
 def make_local_connection_string(db_name=None):
     """Makes a connection string to use with the local postgres database.
 
+    :param str db_name: The name of the database to use.
+
     :return: The connection string for the postgresql.
     :rtype: str
     """
     db_name = db_name or _DEFAULT_DB_NAME
-    return _CONN_STR.format(db_name=db_name)
+    user = os.environ.get("POSTGRES_USER") or "myuser"
+    password = os.environ.get("POSTGRES_PASSWORD") or "password"
+    host = os.environ.get("POSTGRES_HOST") or "localhost"
+    port = os.environ.get("POSTGRES_PORT") or 5432
+
+    conn_str = f"postgres://{user}:{password}@{host}:{port}/{db_name}"
+    return conn_str
 
 
 def get_rag_db_schema():

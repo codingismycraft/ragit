@@ -249,3 +249,29 @@ solution (for example thumps up - down) which results to the backend working on
 a peridodic re-creation of the vector database, the prompts and other component
 that might affect the quality of the solution.
 
+# Running from Docker
+
+Build the docker composed images.
+```
+docker compose build
+```
+
+Run the backend.
+```
+docker compose up -d db_host
+docker compose run backend
+```
+
+If you need to delete all images / containers:
+
+```
+docker stop  $(docker ps -aq)
+docker rm $(docker ps -aq)
+docker image rm  $(docker images -q)
+```
+or all in one command:
+
+```
+docker stop  $(docker ps -aq); docker rm $(docker ps -aq); docker image rm  $(docker images -q)
+```
+

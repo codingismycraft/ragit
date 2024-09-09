@@ -1,16 +1,23 @@
 version: "3.8"
 
 services:
-    backend:
-        build: 
-            context: .
-            dockerfile: ragit/backend/Dockerfile 
-        env_file:
-              - .env
-        volumes:
-              - /home/john/ragit-data:/root/ragit-data
-
-        
-
-
-  
+  backend:
+    build:
+      context: .
+      dockerfile: ragit/backend/Dockerfile
+    env_file:
+      - .ragit-env
+    volumes:
+      - /home/john/ragit-data:/root/ragit-data
+    stdin_open: true  # Keep stdin open even if not attached
+    tty: true         # Allocate a pseudo-TTY
+  db_host:
+    image: postgres:latest
+    env_file:
+      - .ragit-env
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+volumes:
+  pgdata:
