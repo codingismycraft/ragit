@@ -73,6 +73,8 @@ class RagManager:
         """Initializer.
 
         :param str rag_name: The name of the RAG collection.
+
+        :raises: NotADirectoryError
         """
         self._rag_name = rag_name
         self._base_dir = os.path.join(
@@ -80,6 +82,9 @@ class RagManager:
             self._SHARED_DIR,
             self._rag_name
         )
+        if not os.path.isdir(self._base_dir):
+            raise NotADirectoryError(f"Not a directory {self._base_dir}")
+
         common.create_directory_if_not_exists(self._base_dir)
 
         homedir = common.get_home_dir()
