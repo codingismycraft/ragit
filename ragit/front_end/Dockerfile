@@ -10,4 +10,4 @@ RUN pip3 install --no-cache-dir -r /ragit/requirements.txt
 EXPOSE 13131/tcp
 ENV PYTHONPATH="/"
 
-CMD ["python3.10", "/ragit/front_end/app.py", "stories"]
+CMD ["python3.10", "/ragit/front_end/app.py"]

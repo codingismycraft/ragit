@@ -26,6 +26,7 @@ _JINJA_ENV = jinja2.Environment(
 _CURR_DIR = os.path.dirname(os.path.realpath(__file__))
 _PATH_TO_STATIC = os.path.join(_CURR_DIR, 'static')
 _CONFIGURATION = common.Configuration(os.path.join(_CURR_DIR, 'config.yaml'))
+_DEFAULT_PORT = 13131
 
 logger = logging.getLogger(_CONFIGURATION.settings["web_service"]["name"])
 
@@ -286,11 +287,13 @@ class RagitHandler:
 def initialize():
     """Initializes the environment."""
     common.init_settings()
-    try:
-        collection_name = sys.argv[1]
-    except IndexError:
-        raise ValueError("You must provide a valid collection name.")
-    print("Loading vector db")
+    collection_name = os.environ.get("RAG_COLLECTION")
+    if not collection_name:
+        try:
+            collection_name = sys.argv[1]
+        except IndexError:
+            raise ValueError("You must provide a valid collection name.")
+    print(f"Loading vector db, using collection {collection_name}")
     Globals.rag_manager = rag_mgr.RagManager(collection_name)
     response = Globals.rag_manager.query("what is this about?")
     print("Loading vector db done..", response)
@@ -318,8 +321,8 @@ def run():
     )
 
     app_name = _CONFIGURATION.settings["web_service"]["name"]
-    port = _CONFIGURATION.settings["web_service"]["port"]
-
+    port = os.environ.get("SERVICE_PORT") or _DEFAULT_PORT
+    port = int(port)
     app.router.add_static('/static', _PATH_TO_STATIC)
     logger.info(f"Starting {app_name} on port {port}")
     web.run_app(app, host="0.0.0.0", port=port)
