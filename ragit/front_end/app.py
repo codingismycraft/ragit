@@ -28,6 +28,8 @@ _PATH_TO_STATIC = os.path.join(_CURR_DIR, 'static')
 _CONFIGURATION = common.Configuration(os.path.join(_CURR_DIR, 'config.yaml'))
 _DEFAULT_PORT = 13131
 
+logging.basicConfig(level=logging.INFO,
+                    format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(_CONFIGURATION.settings["web_service"]["name"])
 
 # Aliases.
@@ -287,16 +289,20 @@ class RagitHandler:
 def initialize():
     """Initializes the environment."""
     common.init_settings()
-    collection_name = os.environ.get("RAG_COLLECTION")
-    if not collection_name:
+    if common.running_inside_docker_container():
+        collection_name = os.environ.get("RAG_COLLECTION")
+    else:
         try:
             collection_name = sys.argv[1]
         except IndexError:
             raise ValueError("You must provide a valid collection name.")
     print(f"Loading vector db, using collection {collection_name}")
+    logger.info(f"Loading vector db, using collection {collection_name}")
+
     Globals.rag_manager = rag_mgr.RagManager(collection_name)
     response = Globals.rag_manager.query("what is this about?")
-    print("Loading vector db done..", response)
+    logger.info("Loading vector db done.. %s", response)
+
     UserRegistry.set_rag_collection_name(collection_name)
     UserRegistry.create_db_if_needed()
 
@@ -329,4 +335,5 @@ def run():
 
 
 if __name__ == '__main__':
+    x = os.environ.get("RAG_COLLECTION")
     run()

@@ -20,10 +20,17 @@ def make_local_connection_string(db_name=None):
     :rtype: str
     """
     db_name = db_name or _DEFAULT_DB_NAME
-    user = os.environ.get("POSTGRES_USER") or "myuser"
-    password = os.environ.get("POSTGRES_PASSWORD") or "password"
-    host = os.environ.get("POSTGRES_HOST") or "localhost"
-    port = os.environ.get("POSTGRES_PORT") or 5432
+
+    if running_inside_docker_container():
+        user = os.environ.get("POSTGRES_USER")
+        password = os.environ.get("POSTGRES_PASSWORD")
+        host = os.environ.get("POSTGRES_HOST")
+        port = os.environ.get("POSTGRES_PORT")
+    else:
+        user = "myuser"
+        password = "password"
+        host = "localhost"
+        port = 5432
 
     conn_str = f"postgres://{user}:{password}@{host}:{port}/{db_name}"
     return conn_str
@@ -114,28 +121,22 @@ def init_settings():
     we are doing so to allow multiple ways to set it something that
     is also useful in the case of running the application inside docker.
 
-    :raises: ValueError
+    :raises: ValueError, FileNotFoundError
     """
-    try:
+    if not running_inside_docker_container():
         filepath = os.path.join(get_home_dir(), "settings.json")
         with open(filepath) as fin:
             settings = json.load(fin)
             for k, v in settings.items():
                 os.environ[k] = v
-    except FileNotFoundError:
-        # The settings file was not found, this should happen when running
-        # the application from insider docker..
-        pass
-    finally:
-        # At this point the OPENAI_API_KEY must be ready even if the
-        # settings file was not found (in this case as assume that somehow
-        # it has to be set from the caller).
-        if not os.environ.get("OPENAI_API_KEY"):
-            raise ValueError(
-                "OPENAI_API_KEY is not available. You need to either place it "
-                "in the settings.json file under the home directory or to "
-                "manually add it to the environment settings."
-            )
+
+    # At this point the OPENAI_API_KEY environment value must exist.
+    if not os.environ.get("OPENAI_API_KEY"):
+        raise ValueError(
+            "OPENAI_API_KEY is not available. You need to either place it "
+            "in the settings.json file under the home directory or to "
+            "manually add it to the environment settings."
+        )
 
 
 def get_testing_data_directory():
@@ -200,6 +201,15 @@ def create_directory_if_not_exists(fullpath):
     # If the base output directory does not exist then create it.
     if not os.path.isdir(fullpath):
         os.makedirs(fullpath)
+
+
+def running_inside_docker_container():
+    """Checks if the application is running insider docker.
+
+    :returns: True if the application is running inside a docker container.
+    :rtype: bool
+    """
+    return bool(os.path.exists('/.dockerenv'))
 
 
 # Whatever follows this line is private to the module and should not be
