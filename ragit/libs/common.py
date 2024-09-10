@@ -116,10 +116,11 @@ def init_settings():
     """Initializes the project's settings.
 
     Tries to load the settings from the corresponding file under the
-    home directory.  If the file is not available then it checks the
-    environment settings to verify that the OPENAI_API_KEY is already set;
-    we are doing so to allow multiple ways to set it something that
-    is also useful in the case of running the application inside docker.
+    home directory.  If the file is not available then it assumes that
+    it is running within a docker container meaning that the settings
+    must already be available.
+
+    Before it exits, verifies that the OPENAI_API_KEY is available.
 
     :raises: ValueError, FileNotFoundError
     """
