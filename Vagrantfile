@@ -59,6 +59,8 @@ cd /home/vagrant
 SCRIPT
 
 
+USER_NAME = ENV['USER'] || ENV['USERNAME']
+
 Vagrant.configure("2") do |config|
       # Use the official Bento Ubuntu 22.04 base box
       config.vm.box = "bento/ubuntu-22.04"
@@ -79,10 +81,10 @@ Vagrant.configure("2") do |config|
       # Set the correct host path format based on the host OS.
       if Vagrant::Util::Platform.windows?
             # Is Windows, set the path using Windows-style backslashes.
-            host_path = "C:\\Users\\john\\ragit-data"
+            host_path = "C:\\Users\\#{USER_NAME}\\ragit-data"
       else
             # Not Windows (assuming Linux/Mac), use Unix-style forward slashes.
-            host_path = "/home/john/ragit-data"
+            host_path = "/home/#{USER_NAME}/ragit-data"
       end
       config.vm.synced_folder host_path, "/home/vagrant/ragit-data"
 
