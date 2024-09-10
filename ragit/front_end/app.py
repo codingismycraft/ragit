@@ -322,7 +322,7 @@ def run():
 
     app.router.add_static('/static', _PATH_TO_STATIC)
     logger.info(f"Starting {app_name} on port {port}")
-    web.run_app(app, port=port)
+    web.run_app(app, host="0.0.0.0", port=port)
 
 
 if __name__ == '__main__':

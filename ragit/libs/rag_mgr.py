@@ -1,6 +1,7 @@
 """RagManager is a wrapper for the data handling for RAG creation and update."""
 
 import dataclasses
+import logging
 import os
 
 import ragit.libs.common as common
@@ -8,6 +9,9 @@ import ragit.libs.impl.chunks_mgr as chunks_mgr
 import ragit.libs.impl.metrics as metrics
 import ragit.libs.impl.query_executor as query_executor
 import ragit.libs.impl.vector_db as vector_db
+
+# Aliases.
+logger = logging.getLogger(__name__)
 
 
 class RagManager:
@@ -83,6 +87,7 @@ class RagManager:
             self._rag_name
         )
         if not os.path.isdir(self._base_dir):
+            logger.error("There is no RAG collection directory: %s", self._base_dir)
             raise NotADirectoryError(f"Not a directory {self._base_dir}")
 
         common.create_directory_if_not_exists(self._base_dir)

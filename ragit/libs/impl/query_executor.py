@@ -1,11 +1,15 @@
 """Executes a query using the vector database."""
 
+import logging
 import openai
 
 import ragit.libs.common as common
 import ragit.libs.impl.vector_db as vector_db
 
 DEFAULT_MODEL = "gpt-3.5-turbo"
+
+# Aliases.
+logger = logging.getLogger(__name__)
 
 
 @common.handle_exceptions
@@ -78,12 +82,15 @@ class _QueryExecutor:
         :raises ValueError
         """
         if not cls._vdb:
+            logger.error("The virtual db is not initialized.")
             raise ValueError("No vector database.")
 
         if not cls._openai_client:
+            logger.error("The OpenAI client is not initialized.")
             raise ValueError("No OpenAI client.")
 
         if not cls._model_name:
+            logger.error("No model name was assigned for the query.")
             raise ValueError("No Model name.")
 
         matches = cls._vdb.query(question, k)
@@ -115,8 +122,18 @@ class _QueryExecutor:
             cls._model_name = model_name
             cls._vdb = vector_db.VectorDb(fullpath_to_db, collection_name)
             cls._openai_client = openai.OpenAI()
-        except Exception:
+        except Exception as ex:
+            logger.exception(ex)
+            logger.error(
+                "Failed to init vectordb: %s %s %s",
+                fullpath_to_db, collection_name, model_name
+            )
             cls._model_name = None
             cls._vdb = None
             cls._openai_client = None
             raise
+        else:
+            logger.info(
+                "Successfully initialized vector db: %s %s %s",
+                fullpath_to_db, collection_name, model_name
+            )
