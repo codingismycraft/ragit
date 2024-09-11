@@ -8,18 +8,32 @@ import yaml
 
 _CURRENT_DIR = os.path.dirname(os.path.realpath(__file__))
 _TESTING_DATA_DIR = os.path.join(_CURRENT_DIR, "testing_data")
-_CONN_STR = "postgres://myuser:password@localhost:5432/{db_name}"
 _DEFAULT_DB_NAME = "dummy"
 
 
 def make_local_connection_string(db_name=None):
     """Makes a connection string to use with the local postgres database.
 
+    :param str db_name: The name of the database to use.
+
     :return: The connection string for the postgresql.
     :rtype: str
     """
     db_name = db_name or _DEFAULT_DB_NAME
-    return _CONN_STR.format(db_name=db_name)
+
+    if running_inside_docker_container():
+        user = os.environ.get("POSTGRES_USER")
+        password = os.environ.get("POSTGRES_PASSWORD")
+        host = os.environ.get("POSTGRES_HOST")
+        port = os.environ.get("POSTGRES_PORT")
+    else:
+        user = "myuser"
+        password = "password"
+        host = "localhost"
+        port = 5432
+
+    conn_str = f"postgres://{user}:{password}@{host}:{port}/{db_name}"
+    return conn_str
 
 
 def get_rag_db_schema():
@@ -99,12 +113,31 @@ def get_testing_output_dir(relative_path, wipe_out=False):
 
 
 def init_settings():
-    """Initializes the project's settings."""
-    filepath = os.path.join(get_home_dir(), "settings.json")
-    with open(filepath) as fin:
-        settings = json.load(fin)
-        for k, v in settings.items():
-            os.environ[k] = v
+    """Initializes the project's settings.
+
+    Tries to load the settings from the corresponding file under the
+    home directory.  If the file is not available then it assumes that
+    it is running within a docker container meaning that the settings
+    must already be available.
+
+    Before it exits, verifies that the OPENAI_API_KEY is available.
+
+    :raises: ValueError, FileNotFoundError
+    """
+    if not running_inside_docker_container():
+        filepath = os.path.join(get_home_dir(), "settings.json")
+        with open(filepath) as fin:
+            settings = json.load(fin)
+            for k, v in settings.items():
+                os.environ[k] = v
+
+    # At this point the OPENAI_API_KEY environment value must exist.
+    if not os.environ.get("OPENAI_API_KEY"):
+        raise ValueError(
+            "OPENAI_API_KEY is not available. You need to either place it "
+            "in the settings.json file under the home directory or to "
+            "manually add it to the environment settings."
+        )
 
 
 def get_testing_data_directory():
@@ -171,7 +204,16 @@ def create_directory_if_not_exists(fullpath):
         os.makedirs(fullpath)
 
 
+def running_inside_docker_container():
+    """Checks if the application is running insider docker.
+
+    :returns: True if the application is running inside a docker container.
+    :rtype: bool
+    """
+    return bool(os.path.exists('/.dockerenv'))
+
+
 # Whatever follows this line is private to the module and should not be
 # used from the outside.
 
-_SHARED_DIR = "mygen-data"
+_SHARED_DIR = "ragit-data"

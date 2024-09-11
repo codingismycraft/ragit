@@ -51,7 +51,7 @@ class TestRagManager(unittest.TestCase):
         :rtype: str
         """
         fullpath = os.path.join(
-            common.get_home_dir(), "mygen-data", self._RAG_NAME
+            common.get_home_dir(), "ragit-data", self._RAG_NAME
         )
         return fullpath
 
@@ -70,6 +70,7 @@ class TestRagManager(unittest.TestCase):
         """
         base_dir = self._get_base_dir()
         self.assertFalse(os.path.exists(base_dir))
+        os.makedirs(base_dir)
         ragger = rag_mgr.RagManager(self._RAG_NAME)
         self.assertEqual(ragger.get_rag_collection_name(), self._RAG_NAME)
         self.assertTrue(os.path.exists(base_dir))

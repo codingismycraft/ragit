@@ -17,8 +17,8 @@ $script = <<SCRIPT
 sudo apt update
 sudo apt install python3-pip -y
 sudo apt-get install libpq-dev python3-dev -y
-mkdir -p /home/vagrant/mygen-data
-chown vagrant:vagrant /home/vagrant/mygen-data
+mkdir -p /home/vagrant/ragit-data
+chown vagrant:vagrant /home/vagrant/ragit-data
 sudo apt install postgresql postgresql-contrib -y
 sudo pip3 install -r /vagrant/requirements.txt
 # install vim gtk to make clipboard interaction simpler.
@@ -48,7 +48,7 @@ sudo chown vagrant:vagrant /home/vagrant/.vimrc
 
 echo "export PYTHONPATH='/vagrant' " >> /home/vagrant/.bashrc
 echo "alias pt=/vagrant/pt.sh" >> /home/vagrant/.bashrc
-echo "alias ragit=/vagrant/ragit/utilities/process_docs.py" >> /home/vagrant/.bashrc
+echo "alias ragit=/vagrant/ragit/backend/process_docs.py" >> /home/vagrant/.bashrc
 
 # Call the dos2unix for shell files.
 sudo apt update
@@ -58,6 +58,8 @@ find . -name "*.sh" | xargs dos2unix
 cd /home/vagrant
 SCRIPT
 
+
+USER_NAME = ENV['USER'] || ENV['USERNAME']
 
 Vagrant.configure("2") do |config|
       # Use the official Bento Ubuntu 22.04 base box
@@ -79,12 +81,12 @@ Vagrant.configure("2") do |config|
       # Set the correct host path format based on the host OS.
       if Vagrant::Util::Platform.windows?
             # Is Windows, set the path using Windows-style backslashes.
-            host_path = "C:\\Users\\john\\mygen-data"
+            host_path = "C:\\Users\\#{USER_NAME}\\ragit-data"
       else
             # Not Windows (assuming Linux/Mac), use Unix-style forward slashes.
-            host_path = "/home/john/mygen-data"
+            host_path = "/home/#{USER_NAME}/ragit-data"
       end
-      config.vm.synced_folder host_path, "/home/vagrant/mygen-data"
+      config.vm.synced_folder host_path, "/home/vagrant/ragit-data"
 
       # Specify VM provider.
       config.vm.provider "virtualbox" do |vb|

@@ -64,7 +64,7 @@ can always install it in any other directory if needed).
 ```
 cd ~
 git clone git@github.com:codingismycraft/ragit.git
-mkdir ~/mygen-data
+mkdir ~/ragit-data
 cd ragit
 vagrant up
 vagrant ssh
@@ -101,17 +101,17 @@ outlines the steps involved in creating and managing a custom RAG collection.
 ### Definition: RAG Collection (or simply Collection)
 
 A `Rag Collection` is  collection of documents that is stored under the shared
-directory (mygen-data).  Assuming that we have a collection called mydata then
+directory (ragit-data).  Assuming that we have a collection called mydata then
 its related data will exist under the following directory:
 
-```~/mygen-data/mydata/documents```
+```~/ragit-data/mydata/documents```
 
 
 ### Prepare the Documents Directory
 
 Create a directory to store your collection's documents:
 ```bash
-mkdir -p ~/mygen-data/<collection-name>/documents
+mkdir -p ~/ragit-data/<collection-name>/documents
 ```
 Replace `<collection-name>` with the desired name for your collection.
 
@@ -140,7 +140,7 @@ stories
 Example output:
 ```
 name.....................: stories
-full path................: /home/vagrant/mygen-data/stories/documents
+full path................: /home/vagrant/ragit-data/stories/documents
 total documents..........: 4
 total documents in db....: 4
 total chunks.............: 21
@@ -202,7 +202,7 @@ we can now start the ragit server passing the RAG collection in the command
 line as follows:
 
 ```bash
-cd ragit/services/ragit
+cd ragit/front_end
 python3 app.py <collection-name>
 ```
 
@@ -248,4 +248,30 @@ The front end collects user information to allow for the evalution of the
 solution (for example thumps up - down) which results to the backend working on
 a peridodic re-creation of the vector database, the prompts and other component
 that might affect the quality of the solution.
+
+# Running from Docker
+
+Build the docker composed images.
+```
+docker compose build
+```
+
+Run the backend.
+```
+docker compose up -d db_host
+docker compose run backend
+```
+
+If you need to delete all images / containers:
+
+```
+docker stop  $(docker ps -aq)
+docker rm $(docker ps -aq)
+docker image rm  $(docker images -q)
+```
+or all in one command:
+
+```
+docker stop  $(docker ps -aq); docker rm $(docker ps -aq); docker image rm  $(docker images -q)
+```
 

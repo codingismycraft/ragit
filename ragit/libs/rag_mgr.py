@@ -1,6 +1,7 @@
 """RagManager is a wrapper for the data handling for RAG creation and update."""
 
 import dataclasses
+import logging
 import os
 
 import ragit.libs.common as common
@@ -8,6 +9,9 @@ import ragit.libs.impl.chunks_mgr as chunks_mgr
 import ragit.libs.impl.metrics as metrics
 import ragit.libs.impl.query_executor as query_executor
 import ragit.libs.impl.vector_db as vector_db
+
+# Aliases.
+logger = logging.getLogger(__name__)
 
 
 class RagManager:
@@ -26,9 +30,9 @@ class RagManager:
     Under a development/ local machine this directory is mapped from
     the host to the Vagrant guest while when running the service directly
     on the host machine the shared directory must be under the home directory
-    and called mygen-data.
+    and called ragit-data.
 
-    Each RAG collection is managed by a specific directory under the mygen-data
+    Each RAG collection is managed by a specific directory under the ragit-data
     directory with the same name as the RAG collection having the following
     structure:
 
@@ -60,7 +64,7 @@ class RagManager:
     :cvar str _VECTOR_COLLECTION_NAME: The name of the collection inside the
     vector database.
     """
-    _SHARED_DIR = "mygen-data"
+    _SHARED_DIR = "ragit-data"
     _VECTOR_COLLECTION_NAME = "chunk_embeddings"
 
     _rag_name = None
@@ -73,6 +77,8 @@ class RagManager:
         """Initializer.
 
         :param str rag_name: The name of the RAG collection.
+
+        :raises: NotADirectoryError
         """
         self._rag_name = rag_name
         self._base_dir = os.path.join(
@@ -80,6 +86,10 @@ class RagManager:
             self._SHARED_DIR,
             self._rag_name
         )
+        if not os.path.isdir(self._base_dir):
+            logger.error("There is no RAG collection directory: %s", self._base_dir)
+            raise NotADirectoryError(f"Not a directory {self._base_dir}")
+
         common.create_directory_if_not_exists(self._base_dir)
 
         homedir = common.get_home_dir()

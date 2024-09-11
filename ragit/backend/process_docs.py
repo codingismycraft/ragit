@@ -11,7 +11,7 @@ Arguments
 Assumptions
 
 - Documents for the RAG collection are stored in the directory:
-  `~/mygen-data/<collection-name>/documents`. Users need to create this
+  `~/ragit-data/<collection-name>/documents`. Users need to create this
   directory beforehand and add the documents they want to use.
 
 - A PostgreSQL database named `<collection-name>` is required. Use the script
@@ -30,7 +30,7 @@ Functionality
 ------------------------------------------------------------------------------
 Notes
 
-- This script assumes a specific directory structure (`~/mygen-data`) for
+- This script assumes a specific directory structure (`~/ragit-data`) for
   storing data. Adjust the paths if needed.
 
 - The script relies on an external script `ragit/db/create-db.sh` for
