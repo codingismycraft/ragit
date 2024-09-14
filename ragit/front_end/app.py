@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 """Exposes the Sibyl Main web page."""
 
 import datetime
@@ -164,7 +165,7 @@ class RagitHandler:
             data = await request.json()
             query = data.get('query')
             t1 = datetime.datetime.now()
-            response = Globals.rag_manager.query(query)
+            response = Globals.rag_manager.query(query, k=8)
 
             t2 = datetime.datetime.now()
 
