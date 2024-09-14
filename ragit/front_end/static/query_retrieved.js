@@ -52,7 +52,7 @@ function make_chat_item(item) {
         answer_div.className = "chat_answer";
     }
 
-    answer_div.innerText = item.answer;
+    answer_div.innerHTML = marked.parse(item.answer);
     chat_div.appendChild(answer_div);
 
     const user_vote_div = document.createElement("div");

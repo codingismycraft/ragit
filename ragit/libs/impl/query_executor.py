@@ -2,11 +2,13 @@
 
 import logging
 import openai
+import re
 
 import ragit.libs.common as common
 import ragit.libs.impl.vector_db as vector_db
 
 DEFAULT_MODEL = "gpt-3.5-turbo"
+# DEFAULT_MODEL = "gpt-4-turbo"
 
 # Aliases.
 logger = logging.getLogger(__name__)
@@ -69,6 +71,125 @@ class _QueryExecutor:
     </question>
     """
 
+    _PYTHON_EXPERT = """You are an expert python programmer."""
+
+    _FORMAT_PYTHON_PROMPT = """
+    Reformat the passed in the <code> tags python code adding to it the 
+    proper indentation and return to me the proper code in markdown format:
+    <code>
+    {python_code}
+    </code>
+    """
+
+    @classmethod
+    def _format_python_code(cls, python_code):
+        """Formats the passed in python code.
+
+        Used in the case what we have the LLM writing for us some code that
+        can be wrongly formatted (mostly un-indented) to successfully
+        reformat it.
+
+        :param str python_code: The python code to format.
+
+        :returns: The formatted python code.
+        :rtype: str
+
+        ------------ Example ----------------------
+        An example of the input can be the following:
+
+        def get_x(a):
+        return a
+
+        For the above input we should expect something like the following to
+        be returned:
+
+        ```python
+        def get_x(a):
+            return a
+        ```
+        """
+        user_prompt = cls._FORMAT_PYTHON_PROMPT.format(
+            python_code=python_code
+        )
+
+        if not cls._openai_client:
+            cls._openai_client = openai.OpenAI()
+
+        response = cls._openai_client.chat.completions.create(
+            model=cls._model_name or DEFAULT_MODEL,
+            messages=[
+                {"role": "system", "content": cls._PYTHON_EXPERT},
+                {"role": "user", "content": user_prompt},
+            ],
+        )
+
+        resp = response.choices[0].message.content
+        match = re.search(r'```python(.*?)```', resp, re.DOTALL)
+        if match:
+            return match.group(0).strip()
+        else:
+            return ""
+
+    @classmethod
+    def _substitute_python_code(cls, content):
+        """If the content contains python code reformat it.
+
+        :param str content: The content to substitute python code if needed.
+
+        :returns: The content with proper python code formatting if needed.
+        :rtype: str
+        """
+        text = content
+        code_blocks = [
+            (match.start(), match.end())
+            for match in re.finditer(r'```python.*?```', text, re.DOTALL)
+        ]
+        formatted_code = []
+        pos = 0
+        surrounding_code = []
+        for (start, end) in code_blocks:
+            surrounding_code.append(content[pos:start])
+            pos = end
+            txt = text[start: end]
+            python_code = cls._get_internal_python_code(txt)
+            python_code = cls._format_python_code(python_code)
+            formatted_code.append(python_code)
+
+        surrounding_code.append(content[pos:-1])
+
+        final_txt = ''
+        for index, c in enumerate(formatted_code):
+            final_txt += surrounding_code[index]
+            final_txt += c
+        final_txt += surrounding_code[-1]
+
+        return final_txt
+
+    @classmethod
+    def _get_internal_python_code(cls, txt):
+        """Extracts the pure python code from markdown.
+
+        :param str txt: The passed in text that contains the python code. Note
+        that we expect only one chunk of code to exist in the txt and also
+        this code must be enclosed in markdown tags.
+
+        We expect the txt to be passed as follows:
+
+        ```python
+        def foo()...
+            ....
+        ```
+
+        The objective of this function is to strip the markdown and return
+        the clear python code.
+
+        :returns: The "clear" python code without the tags.
+        :rtype: str
+        """
+        txt = txt.strip()
+        txt = txt.replace("```python", '').replace("```", "")
+        return txt
+
     @classmethod
     def execute_query(cls, question, k=3):
         """Executes a query getting a RAG response.
@@ -106,9 +227,12 @@ class _QueryExecutor:
             ],
         )
 
-        respose_content = response.choices[0].message.content
+        response_content = response.choices[0].message.content
 
-        return respose_content
+        # Make content substitutions (if needed).
+        response_content = cls._substitute_python_code(response_content)
+
+        return response_content
 
     @classmethod
     def initialize(cls, fullpath_to_db, collection_name, model_name):

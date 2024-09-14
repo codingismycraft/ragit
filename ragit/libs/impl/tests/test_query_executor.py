@@ -10,6 +10,46 @@ import ragit.libs.dbutil as dbutil
 import ragit.libs.impl.query_executor as query_executor
 import ragit.libs.impl.vector_db as vector_db
 
+_CODE_TO_FORMAT = """
+def get_x(sql_statement):
+# Assuming dbutil is used to interact with the database
+# Execute the SQL statement using dbutil and retrieve the rows
+retrieved_rows = dbutil.execute(sql_statement)
+
+return retrieved_rows
+"""
+
+_CONTEXT_TO_FORMAT = """
+To create a Python function called `get_x` that receives a SQL statement as a
+string and returns the retrieved rows from the database using `dbutil`, you can
+follow the example code below:
+
+```python
+def get_x(sql_statement):
+# Assuming dbutil is used to interact with the database
+# Execute the SQL statement using dbutil and retrieve the rows
+retrieved_rows = dbutil.execute(sql_statement)
+
+return retrieved_rows
+```
+
+In this function:
+- `sql_statement` is the SQL query string that will be executed against the
+  database.
+- `dbutil.execute(sql_statement)` is a placeholder function call that you
+  should replace with the actual method or function provided by `dbutil` to
+  execute SQL statements and retrieve data from the database.
+
+Remember to replace `dbutil.execute(sql_statement)` with the correct method
+from `dbutil` that suits your specific database interaction needs.
+
+```python
+def add(i, j):
+x = i + j
+return x
+```
+"""
+
 
 class TestQueryExecutor(unittest.TestCase):
     """Tests the chunks_mgr module."""
@@ -81,5 +121,18 @@ class TestQueryExecutor(unittest.TestCase):
         with self.assertRaises(common.MyGenAIException):
             query_executor.initialize("junk", "junk")
 
+    def test_format_python_code(self):
+        """Tests the format_python_code function. """
+        retrieved = query_executor._QueryExecutor._format_python_code(
+            _CODE_TO_FORMAT
+        )
+        count = retrieved.count("```python")
+        self.assertEqual(count, 1)
 
-
+    def test_substitute_python_code(self):
+        """Tests the _substitute_python_code function."""
+        retrieved = query_executor._QueryExecutor._substitute_python_code(
+            _CONTEXT_TO_FORMAT
+        )
+        count = retrieved.count("```python")
+        self.assertEqual(count, 2)
