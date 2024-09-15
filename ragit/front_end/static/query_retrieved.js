@@ -2,11 +2,22 @@ let conversationHistory = [];
 
 function askQuestion() {
     const userQuery = document.getElementById("userQuery").value;
+    const temperature = document.getElementById("temperature").value;
+    const max_tokens = document.getElementById("max_tokens").value;
+    const matches_count = document.getElementById("matches_count").value;
+
     document.body.style.cursor = 'wait';
     $.ajax({
         url: "/ragit",
         type: "POST",
-        data: JSON.stringify({query: userQuery}),
+        data: JSON.stringify(
+            {
+                query: userQuery,
+                temperature: temperature,
+                max_tokens: max_tokens,
+                matches_count: matches_count
+            }
+        ),
         dataType: "json",
         contentType: "application/json; charset=utf-8",
         success: function (response, status) {
@@ -44,9 +55,9 @@ function make_chat_item(item) {
     answer_div.className = "chat_answer";
 
 
-    if (item.vote === 1){
+    if (item.vote === 1) {
         answer_div.className = "chat_answer chat_vote_up";
-    } else if(item.vote === 0) {
+    } else if (item.vote === 0) {
         answer_div.className = "chat_answer chat_vote_down";
     } else {
         answer_div.className = "chat_answer";
@@ -100,7 +111,7 @@ function user_vote(message_id, vote) {
         contentType: "application/json; charset=utf-8",
         success: function (response, status) {
             for (const item of conversationHistory) {
-                if (item.message_id === message_id){
+                if (item.message_id === message_id) {
                     item.vote = vote
                 }
             }

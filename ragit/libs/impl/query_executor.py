@@ -9,6 +9,9 @@ import ragit.libs.impl.vector_db as vector_db
 
 DEFAULT_MODEL = "gpt-3.5-turbo"
 # DEFAULT_MODEL = "gpt-4-turbo"
+_DEFAULT_TEMPERATURE = 0.5
+_DEFAULT_MAX_TOKENS = 800
+_DEFAULT_CLOSES_MATCHES_COUNT = 6
 
 # Aliases.
 logger = logging.getLogger(__name__)
@@ -26,16 +29,23 @@ def initialize(fullpath_to_db, collection_name, model_name=DEFAULT_MODEL):
 
 
 @common.handle_exceptions
-def query(question, k=3):
+def query(question, k=None, temperature=None, max_tokens=None):
     """Uses the RAG collection to enhance the LLM to answer the question.
 
     :param str question: The question to answer.
     :param int k: The number of vector matches to use.
+    :param float temperature: The temperature to use for the query.
+    :param float max_tokens: The max_tokens to use for the query.
 
     :return: The LLM generated answer using the vector db matches.
     :rtype: str
     """
-    return _QueryExecutor.execute_query(question, k=k)
+    return _QueryExecutor.execute_query(
+        question,
+        k=k,
+        temperature=temperature,
+        max_tokens=max_tokens
+    )
 
 
 # Whatever follows this line is private to the module and should not be
@@ -191,11 +201,13 @@ class _QueryExecutor:
         return txt
 
     @classmethod
-    def execute_query(cls, question, k=3):
+    def execute_query(cls, question, k=None, temperature=None, max_tokens=None):
         """Executes a query getting a RAG response.
 
         :param str question: The question to ask.
         :param int k: The number of matches to return.
+        :param float temperature: The temperature to use for the query.
+        :param float max_tokens: The max_tokens to use for the query.
 
         :return: The response as a string.
         :rtype: str
@@ -214,10 +226,19 @@ class _QueryExecutor:
             logger.error("No model name was assigned for the query.")
             raise ValueError("No Model name.")
 
+        if not k:
+            k = _DEFAULT_CLOSES_MATCHES_COUNT
+
         matches = cls._vdb.query(question, k)
         user_prompt = cls._USER_PROMPT.format(
             context=matches, question=question
         )
+
+        if not temperature:
+            temperature = _DEFAULT_TEMPERATURE
+
+        if not max_tokens:
+            max_tokens = _DEFAULT_MAX_TOKENS
 
         response = cls._openai_client.chat.completions.create(
             model=cls._model_name,
@@ -225,6 +246,8 @@ class _QueryExecutor:
                 {"role": "system", "content": cls._SYSTEM_PROMPT},
                 {"role": "user", "content": user_prompt},
             ],
+            temperature=temperature,
+            max_tokens=max_tokens
         )
 
         response_content = response.choices[0].message.content

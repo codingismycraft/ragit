@@ -124,18 +124,20 @@ class RagManager:
         """
         return self._rag_name
 
-    def query(self, question, k=3):
+    def query(self, question, k=None, temperature=None, max_tokens=None):
         """Uses the RAG collection to enhance the LLM to answer the question.
 
         :param str question: The question to answer.
         :param int k: The number of vector matches to use.
+        :param float temperature: The temperature to use for the query.
+        :param float max_tokens: The max_tokens to use for the query.
 
         :return: The LLM generated answer using the vector db matches.
         :rtype: str
 
         :raises MyGenAIException
         """
-        return query_executor.query(question, k)
+        return query_executor.query(question, k, temperature, max_tokens)
 
     def get_base_dir(self):
         """Returns the base directory for the RAG collection.

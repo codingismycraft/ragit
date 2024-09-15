@@ -164,8 +164,27 @@ class RagitHandler:
         try:
             data = await request.json()
             query = data.get('query')
+
+            temperature = data.get("temperature")
+            max_tokens = data.get("max_tokens")
+            matches_count = data.get("matches_count")
+
+            if temperature:
+                temperature = float(temperature)
+
+            if max_tokens:
+                max_tokens = int(max_tokens)
+
+            if matches_count:
+                matches_count = int(matches_count)
+
             t1 = datetime.datetime.now()
-            response = Globals.rag_manager.query(query, k=8)
+            response = Globals.rag_manager.query(
+                query,
+                k=matches_count,
+                temperature=temperature,
+                max_tokens=max_tokens,
+            )
 
             t2 = datetime.datetime.now()
 
