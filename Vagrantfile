@@ -21,6 +21,11 @@ mkdir -p /home/vagrant/ragit-data
 chown vagrant:vagrant /home/vagrant/ragit-data
 sudo apt install postgresql postgresql-contrib -y
 sudo pip3 install -r /vagrant/requirements.txt
+
+# install sqilite3
+sudo apt update
+sudo apt install sqlite3 -y
+
 # install vim gtk to make clipboard interaction simpler.
 cd
 sudo apt update
