@@ -114,7 +114,8 @@ class TestQueryExecutor(unittest.TestCase):
         self._create_vector_db(fullpath_to_db, collection_name)
         query_executor.initialize(fullpath_to_db, collection_name)
         retrieved = query_executor.query("What is method chaining?")
-        self.assertIn("method chaining", retrieved.lower())
+        resp = retrieved.response
+        self.assertIn("method chaining", resp.lower())
 
     def test_invalid_full_path_to_db(self):
         """Tests passing invalid path to db to initialize."""

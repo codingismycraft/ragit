@@ -53,10 +53,23 @@ class UserRegistry:
                     user_id       INTEGER,
                     received_at   TEXT, 
                     question      TEXT,
+                    temperature   FLOAT DEFAULT NULL,
+                    count_matches INTEGER DEFAULT NULL,
+                    max_tokens    INTEGER DEFAULT NULL,
+                    prompt        TEXT    DEFAULT NULL,
                     response      TEXT    DEFAULT NULL, 
                     responded_at  TEXT    DEFAULT NULL, 
                     thumps_up     INTEGER DEFAULT NULL, 
                     thumped_up_at TEXT    DEFAULT NULL 
+        )
+    """
+
+    _SQL_CREATE_MATCHES_TABLE = """
+        CREATE TABLE matches (
+            match_id        INTEGER PRIMARY KEY AUTOINCREMENT,
+            msg_id          INTEGER,
+            txt             TEXT DEFAULT NULL,
+            distance        FLOAT DEFAULT NULL
         )
     """
 
@@ -66,9 +79,16 @@ class UserRegistry:
 
     _SQL_INSERT_MSG = """
     INSERT INTO messages 
-        (user_id, received_at, question, response, responded_at) 
+        (
+            user_id, received_at, question, temperature, count_matches, 
+            max_tokens, prompt, response, responded_at
+            ) 
     values 
-        (?, ?, ?, ?, ? )
+        (?, ?, ?, ?, ?, ?, ?, ?, ? )
+    """
+
+    _SQL_INSERT_MATCH = """
+        INSERT INTO matches (msg_id, txt, distance) values (?, ?, ?)
     """
 
     _SQL_UPDATE_THUMPS_UP = """
@@ -152,7 +172,7 @@ class UserRegistry:
         :param str user_name: The user name to insert the message for.
         :param datetime.datetime received_at: When send to LLM.
         :param str question: The message to process.
-        :param str response: The response we got back from the LLM.
+        :param QueryResponse response: The response we got back from the LLM.
         :param datetime.datetime responded_at: When LLM responded.
 
         :returns: The newly created message id.
@@ -173,15 +193,35 @@ class UserRegistry:
                     user_id,
                     received_at.isoformat(),
                     question,
-                    response,
+                    response.temperature,
+                    response.matches_count,
+                    response.max_tokens,
+                    response.prompt,
+                    response.response,
                     responded_at.isoformat()
                 )
                 cursor.execute(cls._SQL_INSERT_MSG, data)
 
                 # Return the newly created message id:
+                msg_id = None
                 for row in cursor.execute(cls._SQL_GET_LAST_ROW_ID):
                     msg_id = row[0]
-                    return msg_id
+
+                assert msg_id is not None
+                msg_id = int(msg_id)
+
+
+                for match in response.matches:
+                    try:
+                        txt = match[0]
+                        distance = float(match[1])
+                        cursor.execute(
+                            cls._SQL_INSERT_MATCH, (msg_id, txt, distance)
+                        )
+                    except Exception as ex:
+                        print(ex)
+
+                return msg_id
 
             finally:
                 if cursor:
@@ -300,6 +340,7 @@ class UserRegistry:
                 cursor = conn.cursor()
                 cursor.execute(cls._SQL_CREATE_USER_TABLE)
                 cursor.execute(cls._SQL_CREATE_MSG_TABLE)
+                cursor.execute(cls._SQL_CREATE_MATCHES_TABLE)
             finally:
                 if cursor:
                     cursor.close()

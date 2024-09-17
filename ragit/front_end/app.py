@@ -150,6 +150,17 @@ class RagitHandler:
             return response
 
     @web_handler
+    async def history(self, request):
+        """Redirects to history."""
+        template = _JINJA_ENV.get_template('history.html')
+        txt = template.render()
+        response = web.Response(
+            body=txt.encode(),
+            content_type='text/html'
+        )
+        return response
+
+    @web_handler
     async def query_handler(self, request):
         """Handles a query that is submitted by the chatbot user.
 
@@ -193,7 +204,7 @@ class RagitHandler:
             )
             return web.json_response(
                 {
-                    "response": response,
+                    "response": response.response,
                     "message_id": msg_id
                 }
             )
@@ -342,6 +353,7 @@ def run():
             web.get('/signup', ragit_handler.signup_screen),
             web.post('/signup', ragit_handler.signup_new_acount),
             web.post('/vote', ragit_handler.vote),
+            web.get('/history', ragit_handler.history),
 
         ]
     )
