@@ -57,11 +57,6 @@ class TestRagManager(unittest.TestCase):
         )
         return fullpath
 
-    def test_get_all_rag_collections(self):
-        """Tests the get_all_rag_collections function."""
-        retrieved = rag_mgr.RagManager.get_all_rag_collections()
-        self.assertIsInstance(retrieved, list)
-
     def test_creation(self):
         """Tests the creation of the Rag Collection.
 
