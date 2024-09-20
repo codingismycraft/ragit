@@ -32,6 +32,11 @@ class VectorDb:
                 consistency_level="Strong",  # Strong consistency level
             )
 
+    def close(self):
+        """Closes the milvus vector db."""
+        if self._milvus_client:
+            self._milvus_client.close()
+
     def __repr__(self):
         """Returns a string representation of this instance.
 
@@ -51,6 +56,7 @@ class VectorDb:
         :param list[str] chunks: The list of chunks to insert.
         :param list[ list[float]] embeddings: The list of the embeddings.
         """
+        assert self._milvus_client, "Milvus Vector Collection is not open."
         data = []
         count = 0
         for chunk, embedding in zip(chunks, embeddings):
@@ -67,6 +73,7 @@ class VectorDb:
         :return: The number of records in the collection.
         :rtype: int
         """
+        assert self._milvus_client, "Milvus Vector Collection is not open."
         res = self._milvus_client.query(
             collection_name=self._collection_name,
             output_fields=["count(*)"]
@@ -80,6 +87,7 @@ class VectorDb:
         :param str query: The string to find matching chunks.
         :param int k: The number of matches to return.
         """
+        assert self._milvus_client, "Milvus Vector Collection is not open."
         e = embeddings_retriever.get_embeddings(query)
         search_res = self._milvus_client.search(
             collection_name=self._collection_name,

@@ -20,6 +20,17 @@ sudo apt-get install libpq-dev python3-dev -y
 mkdir -p /home/vagrant/ragit-data
 chown vagrant:vagrant /home/vagrant/ragit-data
 sudo apt install postgresql postgresql-contrib -y
+
+# Call the dos2unix for shell files.
+sudo apt update
+sudo apt install dos2unix -y
+cd /vagrant
+find . -name "*.sh" | xargs dos2unix
+find . -name "*.py" | xargs dos2unix
+find . -name "*.txt" | xargs dos2unix
+cd /home/vagrant
+
+# Install requirements.txt
 sudo pip3 install -r /vagrant/requirements.txt
 # install vim gtk to make clipboard interaction simpler.
 cd
@@ -48,15 +59,8 @@ sudo chown vagrant:vagrant /home/vagrant/.vimrc
 
 echo "export PYTHONPATH='/vagrant' " >> /home/vagrant/.bashrc
 echo "alias pt=/vagrant/pt.sh" >> /home/vagrant/.bashrc
-echo "alias ragit=/vagrant/ragit/backend/ragit_cmd.py" >> /home/vagrant/.bashrc
-echo "alias ragit_app=/vagrant/ragit/front_end/app.py" >> /home/vagrant/.bashrc
+echo "alias ragit=python3 /vagrant/ragit/backend/ragit_cmd.py" >> /home/vagrant/.bashrc
 
-# Call the dos2unix for shell files.
-sudo apt update
-sudo apt install dos2unix -y
-cd /vagrant
-find . -name "*.sh" | xargs dos2unix
-cd /home/vagrant
 SCRIPT
 
 

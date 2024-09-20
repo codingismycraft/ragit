@@ -29,6 +29,12 @@ def initialize(fullpath_to_db, collection_name, model_name=DEFAULT_MODEL):
 
 
 @common.handle_exceptions
+def close():
+    """Closes query executor."""
+    _QueryExecutor.close()
+
+
+@common.handle_exceptions
 def query(question, k=None, temperature=None, max_tokens=None):
     """Uses the RAG collection to enhance the LLM to answer the question.
 
@@ -276,11 +282,24 @@ class _QueryExecutor:
                 fullpath_to_db, collection_name, model_name
             )
             cls._model_name = None
-            cls._vdb = None
             cls._openai_client = None
+            if cls._vdb:
+                cls._vdb.close()
+                cls._vdb = None
             raise
         else:
             logger.info(
                 "Successfully initialized vector db: %s %s %s",
                 fullpath_to_db, collection_name, model_name
             )
+
+    @classmethod
+    def close(cls):
+        """Closes the vector db and clears the openai client."""
+        if cls._vdb:
+            cls._vdb.close()
+            cls._vdb = None
+        cls._model_name = None
+        cls._openai_client = None
+
+

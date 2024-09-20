@@ -87,7 +87,8 @@ class RagManager:
             self._rag_name
         )
         if not os.path.isdir(self._base_dir):
-            logger.error("There is no RAG collection directory: %s", self._base_dir)
+            logger.error("There is no RAG collection directory: %s",
+                         self._base_dir)
             raise NotADirectoryError(f"Not a directory {self._base_dir}")
 
         common.create_directory_if_not_exists(self._base_dir)
@@ -115,6 +116,15 @@ class RagManager:
             self._vectordb_fullpath,
             self._VECTOR_COLLECTION_NAME
         )
+
+    def close(self):
+        """Closes all open connections."""
+        query_executor.close()
+        self._rag_name = None
+        self._base_dir = None
+        self._documents_dir = None
+        self._vectordb_fullpath = None
+        self._backups_dir = None
 
     def get_rag_collection_name(self):
         """Returns the collection name.
