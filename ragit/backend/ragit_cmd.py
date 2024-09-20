@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """A REPL tool for managing RAG collections."""
 
 import cmd
@@ -163,4 +162,5 @@ class RAGCollectionTracker(cmd.Cmd):
 
 
 if __name__ == '__main__':
+    common.init_settings()
     RAGCollectionTracker().cmdloop()
