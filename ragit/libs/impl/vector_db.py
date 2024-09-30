@@ -20,9 +20,11 @@ class VectorDb:
         :param str collection_name: The name of the collection.
         :param int dimension: The length of the embeddings vector.
         """
-        self._fullpath = fullpath
+        self._fullpath = f'file://{fullpath}'
+        print(f"about to connect to {self._fullpath}")
         self._collection_name = collection_name
         self._milvus_client = pymilvus.MilvusClient(uri=fullpath)
+        print("done with connnecting")
         self._dimension = dimension
         if not self._milvus_client.has_collection(collection_name):
             self._milvus_client.create_collection(
