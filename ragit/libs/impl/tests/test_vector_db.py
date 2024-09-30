@@ -6,7 +6,7 @@ import unittest
 import ragit.libs.impl.chunks_mgr as chunks_mgr
 import ragit.libs.common as common
 import ragit.libs.dbutil as dbutil
-import ragit.libs.impl.vector_db as vector_db
+import ragit.libs.impl.vdb_factory as vector_db
 
 
 class TestVectorDb(unittest.TestCase):
@@ -46,7 +46,7 @@ class TestVectorDb(unittest.TestCase):
         )
         collection = "dummy"
         fullpath = os.path.join(parent_dir, "test.db")
-        vdb = vector_db.VectorDb(fullpath, collection)
+        vdb = vector_db.get_vector_db(fullpath, collection)
         with dbutil.SimpleSQL() as db:
             self._insert_chunks_to_db(db)
             count = 0
@@ -63,17 +63,17 @@ class TestVectorDb(unittest.TestCase):
                 chunks.append(chunk)
                 embeddings.append(embedding)
 
-            count = len(vdb)
+            count = vdb.get_number_of_records()
             self.assertEqual(count, 0)
 
             vdb.insert(chunks, embeddings[:4])
 
-            count = len(vdb)
+            count = vdb.get_number_of_records()
             self.assertEqual(count, 4)
 
             vdb.insert(chunks, embeddings[4:])
 
-            count = len(vdb)
+            count = vdb.get_number_of_records()
             self.assertEqual(count, len(embeddings))
 
             query = "Is SQL Alchemy good?"

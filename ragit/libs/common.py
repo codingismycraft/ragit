@@ -1,5 +1,6 @@
 """Exposes commonly used functions."""
 
+import enum
 import json
 import os
 import pathlib
@@ -9,6 +10,17 @@ import yaml
 _CURRENT_DIR = os.path.dirname(os.path.realpath(__file__))
 _TESTING_DATA_DIR = os.path.join(_CURRENT_DIR, "testing_data")
 _DEFAULT_DB_NAME = "dummy"
+
+
+class VectorDbProviderEnum(enum.Enum):
+    """Enumerates the supported 3rd parties for vector db storage.
+
+    This enum allows us to store the embeddings in any vector database
+    assuming that our code base has a wrapper to it.
+    """
+
+    MILVUS = 1
+    CHROMA = 2
 
 
 def make_local_connection_string(db_name=None):
@@ -139,6 +151,37 @@ def init_settings():
             "manually add it to the environment settings."
         )
 
+    # At this point the VECTOR_DB_PROVIDER environment value must exist; just
+    # try to get it, if it is missing an exception will be raised.
+    _ = get_vector_db_provider()
+
+
+def get_vector_db_provider():
+    """Returns the selected vector db provider.
+
+    The vector db provider is set either in the ~/settings.json (if running
+    locally) of in the .env (if running inside docker).
+
+    :return: The selected vector db provider.
+    :rtype: VectorDbProviderEnum
+
+    :raises: ValueError
+    """
+    vector_db_provider = os.environ.get("VECTOR_DB_PROVIDER")
+    vector_db_provider = vector_db_provider.strip()
+    vector_db_provider = vector_db_provider.upper()
+    if vector_db_provider == "MILVUS":
+        return VectorDbProviderEnum.MILVUS
+    elif vector_db_provider == "CHROMA":
+        return VectorDbProviderEnum.CHROMA
+    else:
+        raise ValueError(
+            "VECTOR_DB_PROVIDER is not valid. You need to either place it "
+            "in the settings.json file under the home directory or to "
+            "manually add it to the environment settings. The Valid values "
+            f" are {str(_SUPPORTED_VECTOR_DB_PROVIDERS)}"
+        )
+
 
 def get_testing_data_directory():
     """Returns the directory holding the data files to use for samples.
@@ -217,3 +260,11 @@ def running_inside_docker_container():
 # used from the outside.
 
 _SHARED_DIR = "ragit-data"
+
+# The VECTOR_DB_PROVIDER string that is set in the settings file
+# or the .env (in the case of running inside docker) must match one
+# of the supported providers.
+_SUPPORTED_VECTOR_DB_PROVIDERS = [
+    "MILVUS",
+    "CHROME"
+]

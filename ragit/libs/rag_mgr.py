@@ -8,7 +8,7 @@ import ragit.libs.common as common
 import ragit.libs.impl.chunks_mgr as chunks_mgr
 import ragit.libs.impl.metrics as metrics
 import ragit.libs.impl.query_executor as query_executor
-import ragit.libs.impl.vector_db as vector_db
+import ragit.libs.impl.vdb_factory as vector_db
 
 # Aliases.
 logger = logging.getLogger(__name__)
@@ -289,7 +289,7 @@ class RagManager:
         """
         if verbose:
             print("updating the vector db.")
-        vdb = vector_db.VectorDb(
+        vdb = vector_db.get_vector_db(
             fullpath=self.get_vector_db_fullpath(),
             collection_name=self._VECTOR_COLLECTION_NAME,
             dimension=dimension

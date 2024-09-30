@@ -8,7 +8,7 @@ import ragit.libs.impl.chunks_mgr as chunks_mgr
 import ragit.libs.common as common
 import ragit.libs.dbutil as dbutil
 import ragit.libs.impl.query_executor as query_executor
-import ragit.libs.impl.vector_db as vector_db
+import ragit.libs.impl.vdb_factory as vector_db
 
 _CODE_TO_FORMAT = """
 def get_x(sql_statement):
@@ -96,10 +96,11 @@ class TestQueryExecutor(unittest.TestCase):
         with dbutil.SimpleSQL() as db:
             db.execute_non_query(cls._SQL_CLEAR_CHUNKS)
             directory = common.get_testing_data_directory()
+            directory = os.path.join(directory, "nested_dir")
             chunks_mgr.insert_chunks_to_db(db, directory, verbose=False)
             chunks_mgr.insert_embeddings_to_db(db, verbose=False)
 
-            vdb = vector_db.VectorDb(fullpath_to_db, collection_name)
+            vdb = vector_db.get_vector_db(fullpath_to_db, collection_name)
             chunks = []
             embeddings = []
             for chunk_id in chunks_mgr.find_chunks_with_embeddings(db):
