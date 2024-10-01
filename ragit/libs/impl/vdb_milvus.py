@@ -1,53 +1,41 @@
-"""Exposes a vector index db wrapper."""
+"""Exports the Milvus vector db."""
 
 import pymilvus
 
+import ragit.libs.impl.vdb_abstract_base as abstract_vector_db
 import ragit.libs.impl.embeddings_retriever as embeddings_retriever
 
 
-class VectorDb:
-    """Encapsulates a vector database.
+class MilvusVectorDb(abstract_vector_db.AbstractVectorDb):
+    """Encapsulates a vector database using milvus."""
 
-    :ivar str _fullpath: The full path to the file holding the vector db.
-    :ivar str _collection_name: The name of the collection.
-    :ivar int _dimension: The dimensions of the embeddings array.
-    """
-
-    def __init__(self, fullpath, collection_name, dimension=1536):
-        """Initializes the instance.
+    def __init__(self, fullpath, collection_name, dimension):
+        """Initializer..
 
         :param str fullpath: The full path to the file holding the vector db.
         :param str collection_name: The name of the collection.
         :param int dimension: The length of the embeddings vector.
         """
-        self._fullpath = f'file://{fullpath}'
-        print(f"about to connect to {self._fullpath}")
-        self._collection_name = collection_name
-        self._milvus_client = pymilvus.MilvusClient(uri=fullpath)
-        print("done with connnecting")
-        self._dimension = dimension
-        if not self._milvus_client.has_collection(collection_name):
+        super().__init__(fullpath, collection_name, dimension)
+
+        assert self.get_fullpath() == fullpath
+        assert self.get_collection_name() == collection_name
+        assert self.get_dimension() == dimension
+
+        uri = self.get_fullpath()
+        self._milvus_client = pymilvus.MilvusClient(uri=uri)
+        if not self._milvus_client.has_collection(self.get_collection_name()):
             self._milvus_client.create_collection(
-                collection_name=self._collection_name,
-                dimension=self._dimension,
-                metric_type="IP",  # Inner product distance
-                consistency_level="Strong",  # Strong consistency level
+                collection_name=self.get_collection_name(),
+                dimension=self.get_dimension(),
+                metric_type="IP",
+                consistency_level="Strong",
             )
 
     def close(self):
         """Closes the milvus vector db."""
         if self._milvus_client:
             self._milvus_client.close()
-
-    def __repr__(self):
-        """Returns a string representation of this instance.
-
-        :return: A string representation of this instance.
-        :rtype: str
-        """
-        return f"{self._collection_name}, " \
-               f"{self._collection_name}: " \
-               f"{self._dimension}"
 
     def insert(self, chunks, embeddings):
         """Inserts a list of chunks and their embeddings into the db.
@@ -65,11 +53,11 @@ class VectorDb:
             data.append({"id": count, "vector": embedding, "text": chunk})
             count += 1
         self._milvus_client.insert(
-            collection_name=self._collection_name,
+            collection_name=self.get_collection_name(),
             data=data
         )
 
-    def __len__(self):
+    def get_number_of_records(self):
         """Returns the number of records in the collection.
 
         :return: The number of records in the collection.
@@ -77,7 +65,7 @@ class VectorDb:
         """
         assert self._milvus_client, "Milvus Vector Collection is not open."
         res = self._milvus_client.query(
-            collection_name=self._collection_name,
+            collection_name=self.get_collection_name(),
             output_fields=["count(*)"]
         )
         counter = res[0]["count(*)"]
@@ -92,11 +80,11 @@ class VectorDb:
         assert self._milvus_client, "Milvus Vector Collection is not open."
         e = embeddings_retriever.get_embeddings(query)
         search_res = self._milvus_client.search(
-            collection_name=self._collection_name,
+            collection_name=self.get_collection_name(),
             data=[e],
             limit=k,
             search_params={"metric_type": "IP", "params": {}},
-            output_fields=["text"],  # Return the text field
+            output_fields=["text"],
         )
 
         matches = [

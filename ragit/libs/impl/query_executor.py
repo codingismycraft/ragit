@@ -5,7 +5,7 @@ import openai
 import re
 
 import ragit.libs.common as common
-import ragit.libs.impl.vector_db as vector_db
+import ragit.libs.impl.vdb_factory as vector_db
 
 DEFAULT_MODEL = "gpt-3.5-turbo"
 # DEFAULT_MODEL = "gpt-4-turbo"
@@ -61,7 +61,7 @@ def query(question, k=None, temperature=None, max_tokens=None):
 class _QueryExecutor:
     """Manages the LLM session to get a RAG response.
 
-    :cvar vector_db.VectorDb _vdb: The vector database.
+    :cvar vector_db.AbstractVectorDb _vdb: The vector database.
     :cvar OpenAI _openai_client: The OpenAI client to use.
     :cvar str _model_name: The name of the model to use.
     """
@@ -273,7 +273,7 @@ class _QueryExecutor:
         """
         try:
             cls._model_name = model_name
-            cls._vdb = vector_db.VectorDb(fullpath_to_db, collection_name)
+            cls._vdb = vector_db.get_vector_db(fullpath_to_db, collection_name)
             cls._openai_client = openai.OpenAI()
         except Exception as ex:
             logger.exception(ex)

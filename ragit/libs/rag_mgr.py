@@ -8,7 +8,7 @@ import ragit.libs.common as common
 import ragit.libs.impl.chunks_mgr as chunks_mgr
 import ragit.libs.impl.metrics as metrics
 import ragit.libs.impl.query_executor as query_executor
-import ragit.libs.impl.vector_db as vector_db
+import ragit.libs.impl.vdb_factory as vector_db
 
 # Aliases.
 logger = logging.getLogger(__name__)
@@ -78,7 +78,7 @@ class RagManager:
 
         :param str rag_name: The name of the RAG collection.
 
-        :raises: NotADirectoryError
+        :raises: NotADirectoryError, ValueError
         """
         self._rag_name = rag_name
         self._base_dir = os.path.join(
@@ -103,9 +103,19 @@ class RagManager:
         # Assign the vectordb directory.
         directory = os.path.join(homedir, self._base_dir, "vectordb")
         common.create_directory_if_not_exists(directory)
-        self._vectordb_fullpath = os.path.join(
-            directory, f"{rag_name}-vector.db"
-        )
+
+        vector_db_provider = common.get_vector_db_provider()
+
+        if vector_db_provider == common.VectorDbProviderEnum.MILVUS:
+            self._vectordb_fullpath = os.path.join(
+                directory, f"{rag_name}-milvus-vector.db"
+            )
+        elif vector_db_provider == common.VectorDbProviderEnum.CHROMA:
+            self._vectordb_fullpath = os.path.join(
+                directory, f"{rag_name}-chroma-vector.db"
+            )
+        else:
+            raise ValueError("Unsupported vector-db provider.")
 
         # Assign the backups directory.
         directory = os.path.join(homedir, self._base_dir, "backups")
@@ -289,7 +299,7 @@ class RagManager:
         """
         if verbose:
             print("updating the vector db.")
-        vdb = vector_db.VectorDb(
+        vdb = vector_db.get_vector_db(
             fullpath=self.get_vector_db_fullpath(),
             collection_name=self._VECTOR_COLLECTION_NAME,
             dimension=dimension
