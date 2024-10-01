@@ -2,6 +2,7 @@
 
 
 import ragit.libs.common as common
+import ragit.libs.impl.vdb_chroma as chroma_vector_db
 import ragit.libs.impl.vdb_milvus as milvus_vector_db
 
 
@@ -22,6 +23,11 @@ def get_vector_db(fullpath, collection_name, dimension=1536):
         return milvus_vector_db.MilvusVectorDb(
             fullpath, collection_name, dimension
         )
+    elif vector_db_provider == common.VectorDbProviderEnum.CHROMA:
+        return chroma_vector_db.ChromaVectorDb(
+            fullpath, collection_name, dimension
+        )
+
     raise ValueError("Unsupported vector db provider.")
 
 

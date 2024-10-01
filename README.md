@@ -273,5 +273,6 @@ or all in one command:
 
 ```
 docker stop  $(docker ps -aq); docker rm $(docker ps -aq); docker image rm  $(docker images -q)
+docker-compose down -v
 ```
 
