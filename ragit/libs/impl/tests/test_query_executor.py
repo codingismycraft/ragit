@@ -61,6 +61,7 @@ class TestQueryExecutor(unittest.TestCase):
         """Creates the testing database."""
         dbutil.delete_db_if_exists(self._DB_NAME)
         dbutil.create_db_if_needed(self._DB_NAME, common.get_rag_db_schema())
+        os.environ["VECTOR_DB_PROVIDER"] = "MILVUS"
 
     def tearDown(self):
         """Cleans up the environment upon finishing a test."""
