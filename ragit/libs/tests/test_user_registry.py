@@ -135,3 +135,4 @@ class TestUserRegistry(unittest.TestCase):
         self.assertIsInstance(queries, list)
         for query in queries:
             self.assertIsInstance(query, dict)
+            print(query)

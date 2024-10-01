@@ -117,6 +117,9 @@ class UserRegistry:
         FROM 
             messages
     """
+    _SQL_SELECT_MATCHES = """
+        SELECT txt, distance from matches where msg_id=? ORDER BY distance desc
+    """
 
     _THUMPS_UP_FLAG = 1
     _THUMPS_DOWN_FLAG = 0
@@ -227,13 +230,11 @@ class UserRegistry:
                         )
                     except Exception as ex:
                         print(ex)
-
                 return msg_id
 
             finally:
                 if cursor:
                     cursor.close()
-        raise ValueError(f"User {user_name} not found.")
 
     @classmethod
     @common.handle_exceptions
@@ -310,6 +311,19 @@ class UserRegistry:
                             "thumps_up": row[7]
                         }
                     )
+
+                # Now that we have the queries let's get all the matches that
+                # used for the RAG query when calling the vector database.
+                for query in queries:
+                    msg_id = (query.get("msg_id"),)
+                    matches = []
+                    for row in cursor.execute(cls._SQL_SELECT_MATCHES, msg_id):
+                        matches.append({
+                            "txt": row[0],
+                            "distance": row[1]
+                        })
+                    query["matches"] = matches
+
                 return queries
             finally:
                 if cursor:

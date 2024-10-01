@@ -152,6 +152,12 @@ class RagitHandler:
     @web_handler
     async def history(self, request):
         """Redirects to history."""
+        try:
+            auth_token = request.cookies.get('ragit_auth_token')
+            user_name = request.cookies.get('user_name')
+            Globals.validate_token(auth_token, user_name)
+        except AuthenticationError:
+            return web.HTTPFound('/login')
         template = _JINJA_ENV.get_template('history.html')
         txt = template.render()
         response = web.Response(
@@ -159,6 +165,18 @@ class RagitHandler:
             content_type='text/html'
         )
         return response
+
+    @web_handler
+    async def get_all_queries(self, request):
+        """Returns all the available queries as a json document."""
+        try:
+            auth_token = request.cookies.get('ragit_auth_token')
+            user_name = request.cookies.get('user_name')
+            Globals.validate_token(auth_token, user_name)
+        except AuthenticationError:
+            return web.HTTPFound('/login')
+        all_queries = UserRegistry.get_all_queries()
+        return web.json_response(all_queries)
 
     @web_handler
     async def query_handler(self, request):
@@ -354,6 +372,7 @@ def run():
             web.post('/signup', ragit_handler.signup_new_acount),
             web.post('/vote', ragit_handler.vote),
             web.get('/history', ragit_handler.history),
+            web.get('/queries', ragit_handler.get_all_queries),
 
         ]
     )
