@@ -143,23 +143,6 @@ def init_settings():
             for k, v in settings.items():
                 os.environ[k] = v
 
-    vars = [
-        "JUNK",
-        "POSTGRES_DB",
-        "POSTGRES_USER",
-        "POSTGRES_PASSWORD",
-        "POSTGRES_PORT",
-        "POSTGRES_HOST",
-        "BIND_ADDRESS",
-        "EXTERNAL_FRONT_END_PORT",
-        "INTERNAL_FRONT_END_PORT",
-        "VECTOR_DB_PROVIDER",
-        "SHARED_DIR",
-        "RAG_COLLECTION"
-    ]
-    for var_name in vars:
-        print(var_name, os.environ.get(var_name))
-
     # At this point the OPENAI_API_KEY environment value must exist.
     if not os.environ.get("OPENAI_API_KEY"):
         raise ValueError(
