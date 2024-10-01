@@ -110,6 +110,14 @@ class UserRegistry:
         SELECT hashed_password from users where user_name=?
     """
 
+    _SQL_SELECT_QUERIES = """
+        SELECT 
+            msg_id, question, temperature, count_matches, 
+            max_tokens, prompt, response, thumps_up 
+        FROM 
+            messages
+    """
+
     _THUMPS_UP_FLAG = 1
     _THUMPS_DOWN_FLAG = 0
 
@@ -210,7 +218,6 @@ class UserRegistry:
                 assert msg_id is not None
                 msg_id = int(msg_id)
 
-
                 for match in response.matches:
                     try:
                         txt = match[0]
@@ -270,6 +277,40 @@ class UserRegistry:
                     cls._SQL_INSERT_USER,
                     (user_name, email_address, hashed_password)
                 )
+            finally:
+                if cursor:
+                    cursor.close()
+
+    @classmethod
+    @common.handle_exceptions
+    def get_all_queries(cls):
+        """Returns all the available queries.
+
+        Meant to be used from the UI to populate a list with the available
+        queries that will allow the user to view the details of them.
+
+        :returns: A dictionary holding the queries and their data.
+        :rtype: dict
+        """
+        queries = []
+        with sqlite3.connect(cls._get_full_path_to_db()) as conn:
+            cursor = None
+            try:
+                cursor = conn.cursor()
+                for row in cursor.execute(cls._SQL_SELECT_QUERIES):
+                    queries.append(
+                        {
+                            "msg_id": row[0],
+                            "question": row[1],
+                            "temperature": row[2],
+                            "count_matches": row[3],
+                            "max_tokens": row[4],
+                            "prompt": row[5],
+                            "response": row[6],
+                            "thumps_up": row[7]
+                        }
+                    )
+                return queries
             finally:
                 if cursor:
                     cursor.close()
