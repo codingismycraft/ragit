@@ -8,7 +8,7 @@ import ragit.libs.common as common
 import ragit.libs.impl.chunks_mgr as chunks_mgr
 import ragit.libs.impl.metrics as metrics
 import ragit.libs.impl.query_executor as query_executor
-import ragit.libs.impl.vector_db as vector_db
+import ragit.libs.impl.vdb_factory as vector_db
 
 # Aliases.
 logger = logging.getLogger(__name__)
@@ -78,7 +78,7 @@ class RagManager:
 
         :param str rag_name: The name of the RAG collection.
 
-        :raises: NotADirectoryError
+        :raises: NotADirectoryError, ValueError
         """
         self._rag_name = rag_name
         self._base_dir = os.path.join(
@@ -87,7 +87,8 @@ class RagManager:
             self._rag_name
         )
         if not os.path.isdir(self._base_dir):
-            logger.error("There is no RAG collection directory: %s", self._base_dir)
+            logger.error("There is no RAG collection directory: %s",
+                         self._base_dir)
             raise NotADirectoryError(f"Not a directory {self._base_dir}")
 
         common.create_directory_if_not_exists(self._base_dir)
@@ -102,9 +103,19 @@ class RagManager:
         # Assign the vectordb directory.
         directory = os.path.join(homedir, self._base_dir, "vectordb")
         common.create_directory_if_not_exists(directory)
-        self._vectordb_fullpath = os.path.join(
-            directory, f"{rag_name}-vector.db"
-        )
+
+        vector_db_provider = common.get_vector_db_provider()
+
+        if vector_db_provider == common.VectorDbProviderEnum.MILVUS:
+            self._vectordb_fullpath = os.path.join(
+                directory, f"{rag_name}-milvus-vector.db"
+            )
+        elif vector_db_provider == common.VectorDbProviderEnum.CHROMA:
+            self._vectordb_fullpath = os.path.join(
+                directory, f"{rag_name}-chroma-vector.db"
+            )
+        else:
+            raise ValueError("Unsupported vector-db provider.")
 
         # Assign the backups directory.
         directory = os.path.join(homedir, self._base_dir, "backups")
@@ -115,6 +126,15 @@ class RagManager:
             self._vectordb_fullpath,
             self._VECTOR_COLLECTION_NAME
         )
+
+    def close(self):
+        """Closes all open connections."""
+        query_executor.close()
+        self._rag_name = None
+        self._base_dir = None
+        self._documents_dir = None
+        self._vectordb_fullpath = None
+        self._backups_dir = None
 
     def get_rag_collection_name(self):
         """Returns the collection name.
@@ -279,7 +299,7 @@ class RagManager:
         """
         if verbose:
             print("updating the vector db.")
-        vdb = vector_db.VectorDb(
+        vdb = vector_db.get_vector_db(
             fullpath=self.get_vector_db_fullpath(),
             collection_name=self._VECTOR_COLLECTION_NAME,
             dimension=dimension

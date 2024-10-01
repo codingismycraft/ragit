@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """Updates the chunks, embeddings and vector db for a RAG collection.
 
 Arguments

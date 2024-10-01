@@ -6,7 +6,7 @@ import unittest
 import ragit.libs.impl.chunks_mgr as chunks_mgr
 import ragit.libs.common as common
 import ragit.libs.dbutil as dbutil
-import ragit.libs.impl.vector_db as vector_db
+import ragit.libs.impl.vdb_factory as vector_db
 
 
 class TestVectorDb(unittest.TestCase):
@@ -38,15 +38,15 @@ class TestVectorDb(unittest.TestCase):
         for fullpath in docs_to_chunk:
             chunks_mgr.save_chunks_to_db(db, fullpath)
 
-    def test_creation(self):
-        """Tests creating a VectorDb."""
+    def _create_and_query_vector_db(self, db_name):
+        """Creates and queries a vector db."""
         parent_dir = common.get_testing_output_dir(
             "creating-vector-db",
             wipe_out=True
         )
         collection = "dummy"
-        fullpath = os.path.join(parent_dir, "test.db")
-        vdb = vector_db.VectorDb(fullpath, collection)
+        fullpath = os.path.join(parent_dir, db_name)
+        vdb = vector_db.get_vector_db(fullpath, collection)
         with dbutil.SimpleSQL() as db:
             self._insert_chunks_to_db(db)
             count = 0
@@ -63,21 +63,28 @@ class TestVectorDb(unittest.TestCase):
                 chunks.append(chunk)
                 embeddings.append(embedding)
 
-            count = len(vdb)
+            count = vdb.get_number_of_records()
             self.assertEqual(count, 0)
-
-            vdb.insert(chunks, embeddings[:4])
-
-            count = len(vdb)
+            vdb.insert(chunks[:4], embeddings[:4])
+            count = vdb.get_number_of_records()
             self.assertEqual(count, 4)
-
-            vdb.insert(chunks, embeddings[4:])
-
-            count = len(vdb)
+            vdb.insert(chunks[4:], embeddings[4:])
+            count = vdb.get_number_of_records()
             self.assertEqual(count, len(embeddings))
-
             query = "Is SQL Alchemy good?"
-
             matches = vdb.query(query, 3)
             for match in matches:
-                print(match)
+                txt = match[0]
+                dist = match[1]
+                self.assertIsInstance(txt, str)
+                self.assertIsInstance(dist, float)
+
+    def test_creation_using_chroma(self):
+        """Tests creating a VectorDb using chroma."""
+        os.environ["VECTOR_DB_PROVIDER"] = "CHROMA"
+        self._create_and_query_vector_db("chroma_vector.db")
+
+    def test_creation_using_milvus(self):
+        """Tests creating a VectorDb using milvus."""
+        os.environ["VECTOR_DB_PROVIDER"] = "MILVUS"
+        self._create_and_query_vector_db("milvus_vector.db")

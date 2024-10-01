@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """A REPL tool for managing RAG collections."""
 
 import cmd

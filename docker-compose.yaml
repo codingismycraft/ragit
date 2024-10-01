@@ -9,6 +9,7 @@ services:
       - OPENAI_API_KEY=${OPENAI_API_KEY}
       - SERVICE_PORT=${INTERNAL_FRONT_END_PORT}
       - RAG_COLLECTION=${RAG_COLLECTION}
+      - VECTOR_DB_PROVIDER=${VECTOR_DB_PROVIDER}
     volumes:
       - ${SHARED_DIR}:/root/ragit-data
     ports:
@@ -24,6 +25,7 @@ services:
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
       - POSTGRES_PORT=${POSTGRES_PORT}
       - POSTGRES_HOST=${POSTGRES_HOST}
+      - VECTOR_DB_PROVIDER=${VECTOR_DB_PROVIDER}
     volumes:
       - ${SHARED_DIR}:/root/ragit-data
     stdin_open: true  # Keep stdin open even if not attached

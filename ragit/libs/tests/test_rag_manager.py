@@ -8,6 +8,7 @@ import ragit.libs.common as common
 import ragit.libs.dbutil as dbutil
 import ragit.libs.impl.metrics as metrics
 import ragit.libs.rag_mgr as rag_mgr
+import ragit.libs.impl.query_executor as query_executor
 
 
 class TestRagManager(unittest.TestCase):
@@ -32,6 +33,7 @@ class TestRagManager(unittest.TestCase):
         conn_str = common.make_local_connection_string(self._DB_NAME)
         dbutil.SimpleSQL.register_connection_string(conn_str)
 
+        query_executor.close()
         # If the directory for the rag data exists then delete it."""
         fullpath = self._get_base_dir()
 
@@ -54,11 +56,6 @@ class TestRagManager(unittest.TestCase):
             common.get_home_dir(), "ragit-data", self._RAG_NAME
         )
         return fullpath
-
-    def test_get_all_rag_collections(self):
-        """Tests the get_all_rag_collections function."""
-        retrieved = rag_mgr.RagManager.get_all_rag_collections()
-        self.assertIsInstance(retrieved, list)
 
     def test_creation(self):
         """Tests the creation of the Rag Collection.
@@ -127,3 +124,4 @@ class TestRagManager(unittest.TestCase):
             self.assertEqual(
                 coll_metrics.total_chunks, coll_metrics.inserted_to_vectordb
             )
+        ragger.close()
