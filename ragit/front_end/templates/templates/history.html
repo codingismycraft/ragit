@@ -5,130 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://code.jquery.com/jquery-latest.min.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
-    <script src="/static/query_retrieved.js"></script>
-    <title>RAG Validation</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            background-color: #f9f9f9;
-            display: flex;
-            flex-direction: column;
-            height: 100vh;
-        }
-
-        .top-pane {
-            width: 100%;
-            background: #007BFF;
-            color: white;
-            padding: 20px;
-            box-sizing: border-box;
-        }
-
-        .top-pane h2 {
-            margin: 0;
-            font-size: 24px;
-        }
-
-        .main-content {
-            display: flex;
-            flex: 1;
-        }
-
-        .sidebar {
-            width: 250px;
-            background: #333;
-            color: white;
-            padding: 20px;
-            box-sizing: border-box;
-            height: 100%;
-            overflow-y: auto;
-        }
-
-        .sidebar h2 {
-            color: #ddd;
-        }
-
-        .sidebar ul {
-            list-style-type: none;
-            padding: 0;
-        }
-
-        .sidebar ul li {
-            margin: 10px 0;
-            cursor: pointer;
-            padding: 10px;
-            background: #444;
-            border-radius: 5px;
-            transition: background 0.3s;
-        }
-
-        .sidebar ul li:hover {
-            background: #555;
-        }
-
-        .container {
-            flex-grow: 1;
-            padding: 20px;
-            box-sizing: border-box;
-            overflow-y: auto;
-        }
-
-        .section {
-            margin-bottom: 20px;
-            width: 900px;
-        }
-
-        h1, h2, h3 {
-            color: #333;
-        }
-
-        .response, .query, .prompt, .chunks, .grade {
-            padding: 15px;
-            background: #eee;
-            border-radius: 5px;
-        }
-
-        .chunks p {
-            margin: 5px 0;
-        }
-
-        .grade {
-            display: flex;
-            align-items: center;
-        }
-
-        .thumb {
-            cursor: pointer;
-            font-size: 24px;
-            margin-left: 10px;
-        }
-
-        .thumb:hover {
-            color: #007BFF;
-        }
-
-        .number-circle {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            background-color: blue;
-            color: white;
-            font-size: 18px;
-            text-align: center;
-        }
-
-    </style>
+    <link rel="stylesheet" href="/static/history_style.css">
+    <script src="/static/history.js"></script>
+    <title>RAG History</title>
 </head>
 <body>
-<div class="top-pane">
-    <h2>Available Queries</h2>
+<div class="top_pane">
+    <h2>User Queries</h2>
 </div>
 
-<div class="main-content">
+<div class="main_content">
     <div class="sidebar">
         <h2>Queries</h2>
         <ul id="question-list">
@@ -171,14 +57,6 @@
 </div>
 
 <script>
-
-    function display_value_in_circle(value){
-        const div = document.createElement("span");
-        div.className = "number-circle";
-        div.textContent = value.toFixed(2);
-        return div;
-    }
-
     document.addEventListener("DOMContentLoaded", function () {
         retrieve_queries();
     });
