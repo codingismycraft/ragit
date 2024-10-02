@@ -132,7 +132,7 @@ class TestUserRegistry(unittest.TestCase):
 
         # Test the get_all_queries
         queries = UserRegistry.get_all_queries()
-        self.assertIsInstance(queries, list)
-        for query in queries:
-            self.assertIsInstance(query, dict)
-            print(query)
+        self.assertIsInstance(queries, dict)
+        for key, value in queries.items():
+            self.assertIsInstance(key, int)
+            self.assertIsInstance(value, dict)

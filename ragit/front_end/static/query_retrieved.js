@@ -1,4 +1,5 @@
 let conversationHistory = [];
+let _historical_queries = null;
 
 function askQuestion() {
     const userQuery = document.getElementById("userQuery").value;
@@ -131,3 +132,58 @@ function logout() {
     location.reload();
 }
 
+/**
+ * Loads the queries and their details (like the matching chunks that
+ * were used for the RAG creation.  This function is meant to be used
+ * to display the history window that is part of the validation process.
+ */
+function retrieve_queries() {
+    document.body.style.cursor = 'wait';
+    $.ajax({
+            url: "/queries",
+            type: "GET",
+            dataType: 'json',
+            success: function (data) {
+                document.body.style.cursor = 'default';
+                _historical_queries = data;
+                const questionList = document.getElementById("question-list");
+                for (let key in _historical_queries) {
+                    if (data.hasOwnProperty(key)) {
+                        const msg_id = key;
+                        const details = _historical_queries[key];
+                        const question = details["question"];
+                        const li = document.createElement("li");
+                        li.innerText = question;
+                        li.addEventListener("click", () => display_query_details(msg_id));
+                        questionList.appendChild(li);
+                    }
+                }
+            },
+            error: function (request, status, error) {
+                document.body.style.cursor = 'default';
+                console.error(error)
+                alert(request.responseText);
+            }
+        }
+    )
+}
+
+function display_query_details(msg_id){
+    const details = _historical_queries[msg_id];
+
+    document.getElementById("query").innerText = details.question;
+    document.getElementById("response").innerText = details.response;
+
+    document.getElementById("chunks").innerHTML = '';
+    details.matches.forEach(chunk => {
+        document.getElementById("chunks").appendChild(
+            display_value_in_circle(chunk["distance"])
+        );
+        const p = document.createElement("p");
+        p.innerText = chunk["txt"];
+        document.getElementById("chunks").appendChild(p);
+        const hr = document.createElement("hr");
+        document.getElementById("chunks").appendChild(hr);
+    });
+    document.getElementById("prompt").innerText = details.prompt;
+}

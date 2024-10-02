@@ -290,18 +290,18 @@ class UserRegistry:
         Meant to be used from the UI to populate a list with the available
         queries that will allow the user to view the details of them.
 
-        :returns: A dictionary holding the queries and their data.
+        :returns: A dictionary mapping the message id to its internal
+        details.
         :rtype: dict
         """
-        queries = []
+        queries = {}
         with sqlite3.connect(cls._get_full_path_to_db()) as conn:
             cursor = None
             try:
                 cursor = conn.cursor()
                 for row in cursor.execute(cls._SQL_SELECT_QUERIES):
-                    queries.append(
-                        {
-                            "msg_id": row[0],
+                    msg_id = row[0]
+                    queries[msg_id] = {
                             "question": row[1],
                             "temperature": row[2],
                             "count_matches": row[3],
@@ -309,21 +309,19 @@ class UserRegistry:
                             "prompt": row[5],
                             "response": row[6],
                             "thumps_up": row[7]
-                        }
-                    )
+                    }
 
                 # Now that we have the queries let's get all the matches that
                 # used for the RAG query when calling the vector database.
-                for query in queries:
-                    msg_id = (query.get("msg_id"),)
+                for key in queries:
+                    msg_id = (key,)
                     matches = []
                     for row in cursor.execute(cls._SQL_SELECT_MATCHES, msg_id):
                         matches.append({
                             "txt": row[0],
                             "distance": row[1]
                         })
-                    query["matches"] = matches
-
+                    queries[key]["matches"] = matches
                 return queries
             finally:
                 if cursor:
