@@ -27,42 +27,49 @@ let _historical_queries = null;
 /**
  * Loads the queries and their details calling the API.
  *
- * This function is meant to be used * to display the history
- * window that is part of the validation process.
+ * The function performs the following operations:
+ *
+ * 1. Iterates over the received data to populate the left-hand query list.
+ *    Users can click on an item to view its details on the right side.
+ *
+ * 2. Constructs a dictionary that maps each message ID to its query details.
+ *    This caching mechanism accelerates query lookup in response to user
+ *    clicks.
+ *
+ * Queries are presented in the same order as received from the server,
+ * typically sorted by creation time, with the most recent queries displayed
+ * first.
  */
 function retrieve_queries() {
     document.body.style.cursor = 'wait';
+    _historical_queries = {};
     $.ajax({
             url: "/queries",
             type: "GET",
             dataType: 'json',
             success: function (data) {
                 document.body.style.cursor = 'default';
-                _historical_queries = data;
+                _historical_queries = {};
                 const questionList = document.getElementById("question-list");
-                for (let key in _historical_queries) {
-                    if (data.hasOwnProperty(key)) {
-                        const msg_id = key;
-                        const details = _historical_queries[key];
-                        const question = details["question"];
-                        const li = document.createElement("li");
-
-                        let label = question;
-                        if (details["thumps_up"] === 1){
-                            label = "👍" + question;
-                            li.className = "thumps_up_query";
-                        } else if (details["thumps_up"] === 0){
-                            li.className = "thumps_down_query";
-                            label = "👎" + question;
-                        }
-
-                        li.innerText = label;
-
-                        li.addEventListener(
-                            "click", () => display_query_details(msg_id)
-                        );
-                        questionList.appendChild(li);
+                for (let i = 0; i < data.length; i++) {
+                    const details = data[i];
+                    const msg_id = details["msg_id"];
+                    _historical_queries[msg_id] = details;
+                    const question = details["question"];
+                    const li = document.createElement("li");
+                    let label = question;
+                    if (details["thumps_up"] === 1) {
+                        label = "👍" + question;
+                        li.className = "thumps_up_query";
+                    } else if (details["thumps_up"] === 0) {
+                        li.className = "thumps_down_query";
+                        label = "👎" + question;
                     }
+                    li.innerText = label;
+                    li.addEventListener(
+                        "click", () => display_query_details(msg_id)
+                    );
+                    questionList.appendChild(li);
                 }
             },
             error: function (request, status, error) {
@@ -77,7 +84,7 @@ function retrieve_queries() {
 /**
  * Should be called when the used clicks on a query to display its details.
  */
-function display_query_details(msg_id){
+function display_query_details(msg_id) {
     const details = _historical_queries[msg_id];
 
     document.getElementById("query").innerText = details.question;
@@ -103,7 +110,7 @@ function display_query_details(msg_id){
  * Creates a span element containing a number formatted to two decimal places,
  * styled to be displayed inside a circle.
  */
-function display_value_in_circle(value){
+function display_value_in_circle(value) {
     const span = document.createElement("span");
     span.className = "circled_number";
     span.textContent = value.toFixed(2);
