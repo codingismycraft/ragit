@@ -164,3 +164,4 @@ class RAGCollectionTracker(cmd.Cmd):
 if __name__ == '__main__':
     common.init_settings()
     RAGCollectionTracker().cmdloop()
+

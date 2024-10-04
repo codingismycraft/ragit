@@ -152,8 +152,8 @@ class RagManager:
         :param float temperature: The temperature to use for the query.
         :param float max_tokens: The max_tokens to use for the query.
 
-        :return: The LLM generated answer using the vector db matches.
-        :rtype: str
+        :return: The LLM generated answer as an instance of the QueryResponse.
+        :rtype: QueryResponse
 
         :raises MyGenAIException
         """

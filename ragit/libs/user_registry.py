@@ -53,10 +53,23 @@ class UserRegistry:
                     user_id       INTEGER,
                     received_at   TEXT, 
                     question      TEXT,
+                    temperature   FLOAT DEFAULT NULL,
+                    count_matches INTEGER DEFAULT NULL,
+                    max_tokens    INTEGER DEFAULT NULL,
+                    prompt        TEXT    DEFAULT NULL,
                     response      TEXT    DEFAULT NULL, 
                     responded_at  TEXT    DEFAULT NULL, 
                     thumps_up     INTEGER DEFAULT NULL, 
                     thumped_up_at TEXT    DEFAULT NULL 
+        )
+    """
+
+    _SQL_CREATE_MATCHES_TABLE = """
+        CREATE TABLE matches (
+            match_id        INTEGER PRIMARY KEY AUTOINCREMENT,
+            msg_id          INTEGER,
+            txt             TEXT DEFAULT NULL,
+            distance        FLOAT DEFAULT NULL
         )
     """
 
@@ -66,9 +79,16 @@ class UserRegistry:
 
     _SQL_INSERT_MSG = """
     INSERT INTO messages 
-        (user_id, received_at, question, response, responded_at) 
+        (
+            user_id, received_at, question, temperature, count_matches, 
+            max_tokens, prompt, response, responded_at
+            ) 
     values 
-        (?, ?, ?, ?, ? )
+        (?, ?, ?, ?, ?, ?, ?, ?, ? )
+    """
+
+    _SQL_INSERT_MATCH = """
+        INSERT INTO matches (msg_id, txt, distance) values (?, ?, ?)
     """
 
     _SQL_UPDATE_THUMPS_UP = """
@@ -88,6 +108,17 @@ class UserRegistry:
 
     _SQL_SELECT_PASSWD = """
         SELECT hashed_password from users where user_name=?
+    """
+
+    _SQL_SELECT_QUERIES = """
+        SELECT 
+            msg_id, question, temperature, count_matches, 
+            max_tokens, prompt, response, thumps_up 
+        FROM 
+            messages
+    """
+    _SQL_SELECT_MATCHES = """
+        SELECT txt, distance from matches where msg_id=? ORDER BY distance desc
     """
 
     _THUMPS_UP_FLAG = 1
@@ -152,7 +183,7 @@ class UserRegistry:
         :param str user_name: The user name to insert the message for.
         :param datetime.datetime received_at: When send to LLM.
         :param str question: The message to process.
-        :param str response: The response we got back from the LLM.
+        :param QueryResponse response: The response we got back from the LLM.
         :param datetime.datetime responded_at: When LLM responded.
 
         :returns: The newly created message id.
@@ -173,20 +204,37 @@ class UserRegistry:
                     user_id,
                     received_at.isoformat(),
                     question,
-                    response,
+                    response.temperature,
+                    response.matches_count,
+                    response.max_tokens,
+                    response.prompt,
+                    response.response,
                     responded_at.isoformat()
                 )
                 cursor.execute(cls._SQL_INSERT_MSG, data)
 
                 # Return the newly created message id:
+                msg_id = None
                 for row in cursor.execute(cls._SQL_GET_LAST_ROW_ID):
                     msg_id = row[0]
-                    return msg_id
+
+                assert msg_id is not None
+                msg_id = int(msg_id)
+
+                for match in response.matches:
+                    try:
+                        txt = match[0]
+                        distance = float(match[1])
+                        cursor.execute(
+                            cls._SQL_INSERT_MATCH, (msg_id, txt, distance)
+                        )
+                    except Exception as ex:
+                        print(ex)
+                return msg_id
 
             finally:
                 if cursor:
                     cursor.close()
-        raise ValueError(f"User {user_name} not found.")
 
     @classmethod
     @common.handle_exceptions
@@ -230,6 +278,51 @@ class UserRegistry:
                     cls._SQL_INSERT_USER,
                     (user_name, email_address, hashed_password)
                 )
+            finally:
+                if cursor:
+                    cursor.close()
+
+    @classmethod
+    @common.handle_exceptions
+    def get_all_queries(cls):
+        """Returns all the available queries.
+
+        Meant to be used from the UI to populate a list with the available
+        queries that will allow the user to view the details of them.
+
+        :returns: A dictionary mapping the message id to its internal
+        details.
+        :rtype: dict
+        """
+        queries = {}
+        with sqlite3.connect(cls._get_full_path_to_db()) as conn:
+            cursor = None
+            try:
+                cursor = conn.cursor()
+                for row in cursor.execute(cls._SQL_SELECT_QUERIES):
+                    msg_id = row[0]
+                    queries[msg_id] = {
+                            "question": row[1],
+                            "temperature": row[2],
+                            "count_matches": row[3],
+                            "max_tokens": row[4],
+                            "prompt": row[5],
+                            "response": row[6],
+                            "thumps_up": row[7]
+                    }
+
+                # Now that we have the queries let's get all the matches that
+                # used for the RAG query when calling the vector database.
+                for key in queries:
+                    msg_id = (key,)
+                    matches = []
+                    for row in cursor.execute(cls._SQL_SELECT_MATCHES, msg_id):
+                        matches.append({
+                            "txt": row[0],
+                            "distance": row[1]
+                        })
+                    queries[key]["matches"] = matches
+                return queries
             finally:
                 if cursor:
                     cursor.close()
@@ -300,6 +393,7 @@ class UserRegistry:
                 cursor = conn.cursor()
                 cursor.execute(cls._SQL_CREATE_USER_TABLE)
                 cursor.execute(cls._SQL_CREATE_MSG_TABLE)
+                cursor.execute(cls._SQL_CREATE_MATCHES_TABLE)
             finally:
                 if cursor:
                     cursor.close()

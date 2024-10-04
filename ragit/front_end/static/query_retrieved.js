@@ -1,6 +1,24 @@
+/*******************************************************************************
+ *
+ * Implements the functionality needed for the RAG front end page.
+ *
+ ******************************************************************************
+ */
+
+
+// Holds the list of the chat queries executed during the user session.
 let conversationHistory = [];
 
-function askQuestion() {
+/**
+ * Fetches the server's response by sending the user's query.
+ *
+ * This function triggers an AJAX POST request to the "/ragit" endpoint,
+ * sending the user's query and other related parameters. On a successful
+ * response, it updates the conversation history and clears the query input. If
+ * an error occurs, an alert displays the error message.
+ *
+ */
+function make_query() {
     const userQuery = document.getElementById("userQuery").value;
     const temperature = document.getElementById("temperature").value;
     const max_tokens = document.getElementById("max_tokens").value;
@@ -29,7 +47,7 @@ function askQuestion() {
                     vote: null
                 }
             );
-            updateHistoryList();
+            update_history_list();
             document.getElementById("userQuery").value = "";
             document.body.style.cursor = 'default';
         },
@@ -40,6 +58,28 @@ function askQuestion() {
     });
 }
 
+/**
+ * Creates a chat item element based on the provided data.
+ *
+ * This function generates a HTML structure representing a chat message,
+ * including the question, answer, and voting options. The response answer
+ * supports markdown formatting, and votes can be indicated by thumbs-up and
+ * thumbs-down images.
+ *
+ * @param {Object} item - The chat item data.
+ *
+ * @param {string} item.question - The question text in the chat item.
+ *
+ * @param {string} item.answer - The answer text in the chat item.
+ *
+ * @param {number} item.vote - The vote state of the answer (1 for upvote, 0
+ * for downvote, else neutral).
+ * 
+ * @param {string} item.message_id - The unique identifier for the message.
+ *
+ * @returns {HTMLDivElement} The constructed chat item element.
+ *
+ */
 function make_chat_item(item) {
     const chat_div = document.createElement("div");
     chat_div.className = "chat_message";
@@ -91,8 +131,13 @@ function make_chat_item(item) {
     return chat_div;
 
 }
-
-function updateHistoryList() {
+/**
+ * Updates the conversation history list on the webpage.
+ *
+ * This function clears the existing content in the history list element and
+ * populates it with chat items based on the `conversationHistory` array.
+ */
+function update_history_list() {
     const historyListElement = document.getElementById("historyList");
     historyListElement.innerHTML = "";
     for (const item of conversationHistory) {
@@ -101,6 +146,16 @@ function updateHistoryList() {
     }
 }
 
+/**
+ * Sends to server a vote for a message and updates the conversation history.
+ *
+ * This function triggers an AJAX POST request to the "/vote" endpoint with the
+ * message ID and vote value.  Upon successful response, it updates the vote
+ * value in the global `conversationHistory` array and refreshes the history
+ * list on the webpage. In case of an error, it shows an alert with the error
+ * message.
+ *
+ */
 function user_vote(message_id, vote) {
     document.body.style.cursor = 'wait';
     $.ajax({
@@ -115,7 +170,7 @@ function user_vote(message_id, vote) {
                     item.vote = vote
                 }
             }
-            updateHistoryList();
+            update_history_list();
             document.body.style.cursor = 'default';
         },
         error: function (request, status, error) {
@@ -125,6 +180,14 @@ function user_vote(message_id, vote) {
     });
 }
 
+
+/**
+ * Logs the user out by removing authentication cookies and reloading the page.
+ *
+ * This function deletes the 'user_name' and 'ragit_auth_token' cookies from
+ * the root path, and then reloads the current webpage to reflect the logout
+ * status.
+ */
 function logout() {
     $.removeCookie('user_name', {path: '/'});
     $.removeCookie('ragit_auth_token', {path: '/'});

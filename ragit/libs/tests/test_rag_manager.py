@@ -118,7 +118,7 @@ class TestRagManager(unittest.TestCase):
             self.assertEqual(retrieved, c2)
 
             retrieved = ragger.query("What is method chaining?")
-            self.assertIn("method chaining", retrieved.lower())
+            self.assertIn("method chaining", retrieved.response.lower())
 
             coll_metrics = ragger.get_metrics(db)
             self.assertEqual(

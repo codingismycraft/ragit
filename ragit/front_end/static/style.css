@@ -78,11 +78,18 @@ body {
 }
 
 .bottom-right {
-    position: absolute; /* Position relative to its nearest positioned ancestor */
-    bottom: 10px; /* 10px from the bottom of the container */
-    right: 10px; /* 10px from the right side of the container */
-    /* Optional: Add additional styling for the button */
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
     padding: 10px 15px;
+}
+
+.middle-right {
+    position: absolute;
+    bottom: 30px;
+    right: 10px;
+    padding: 10px 15px;
+    margin-bottom: 13px;
 }
 
 #user_name_span {

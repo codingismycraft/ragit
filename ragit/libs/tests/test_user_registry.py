@@ -4,9 +4,11 @@ import unittest
 
 import ragit.libs.common as common
 import ragit.libs.user_registry as user_registry
+import ragit.libs.impl.query_executor as query_executor
 
 # Aliases.
 UserRegistry = user_registry.UserRegistry
+QueryResponse = query_executor.QueryResponse
 
 
 class TestUserRegistry(unittest.TestCase):
@@ -100,7 +102,14 @@ class TestUserRegistry(unittest.TestCase):
         t1 = datetime.datetime.now()
         t2 = datetime.datetime.now()
         question = "what time it is?"
-        response = "i have no idea.."
+        response = QueryResponse(
+            response="i have no idea..",
+            temperature=0.6,
+            max_tokens=1000,
+            matches_count=3,
+            prompt=question,
+            matches=["abc"]
+        )
         msg_id = UserRegistry.insert_message(
             user_name, t1, question, response, t2
         )
@@ -120,3 +129,10 @@ class TestUserRegistry(unittest.TestCase):
         thumps_up, t3 = UserRegistry.get_thumps_up(msg_id)
         self.assertEqual(thumps_up, 0)
         self.assertIsInstance(t3, str)
+
+        # Test the get_all_queries
+        queries = UserRegistry.get_all_queries()
+        self.assertIsInstance(queries, dict)
+        for key, value in queries.items():
+            self.assertIsInstance(key, int)
+            self.assertIsInstance(value, dict)

@@ -1,5 +1,6 @@
 """Executes a query using the vector database."""
 
+import dataclasses
 import logging
 import openai
 import re
@@ -15,6 +16,26 @@ _DEFAULT_CLOSES_MATCHES_COUNT = 6
 
 # Aliases.
 logger = logging.getLogger(__name__)
+
+
+@dataclasses.dataclass(frozen=True)
+class QueryResponse:
+    """Holds the data related to a query that is run against the LLM.
+
+    str response: The full text of the response.
+    float temperature: The temperature used in the query.
+    int max_tokens: The max tokens used in the query.
+    int matches_count: The number of the matches passed to the query.
+    str prompt: The prompt used in the query.
+    list[str] matches: The list of the matches used in the query.
+    """
+
+    response: str
+    temperature: float
+    max_tokens: int
+    matches_count: int
+    prompt: str
+    matches: list[str]
 
 
 @common.handle_exceptions
@@ -43,8 +64,8 @@ def query(question, k=None, temperature=None, max_tokens=None):
     :param float temperature: The temperature to use for the query.
     :param float max_tokens: The max_tokens to use for the query.
 
-    :return: The LLM generated answer using the vector db matches.
-    :rtype: str
+    :return: An instance of the QueryResponse.
+    :rtype: QueryResponse
     """
     return _QueryExecutor.execute_query(
         question,
@@ -215,8 +236,8 @@ class _QueryExecutor:
         :param float temperature: The temperature to use for the query.
         :param float max_tokens: The max_tokens to use for the query.
 
-        :return: The response as a string.
-        :rtype: str
+        :return: An instance of the QueryResponse.
+        :rtype: QueryResponse
 
         :raises ValueError
         """
@@ -261,7 +282,16 @@ class _QueryExecutor:
         # Make content substitutions (if needed).
         response_content = cls._substitute_python_code(response_content)
 
-        return response_content
+        response = QueryResponse(
+            response=response_content,
+            temperature=temperature,
+            max_tokens=max_tokens,
+            matches_count=k,
+            prompt=cls._USER_PROMPT,
+            matches=matches
+        )
+
+        return response
 
     @classmethod
     def initialize(cls, fullpath_to_db, collection_name, model_name):

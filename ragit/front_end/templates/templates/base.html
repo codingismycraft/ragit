@@ -27,12 +27,16 @@
 
     <div class="right_child">
         <span id="user_name_span"></span>
+        <div class="middle-right">
+            <button id="history_button" onclick='window.location.href = "/history"'>History</button>
+        </div>
         <div class="bottom-right">
             <button id="logout_button" onclick="logout()">Log Out</button>
         </div>
     </div>
 </div>
 <br>
+
 
 {% block content %}
 {% endblock %}

@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://code.jquery.com/jquery-latest.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+    <link rel="stylesheet" href="/static/history_style.css">
+    <script src="/static/history.js"></script>
+    <title>RAG History</title>
+</head>
+<body>
+<div class="top_pane">
+    <h2 style="display: inline-block">User Queries</h2>
+
+    <button style="margin-left: 300px; height: 50px"
+            onclick='window.location.href = "/ragit"'>
+        Click here to open the RAGIT Chat box
+    </button>
+</div>
+
+<div class="main_content">
+    <div class="sidebar">
+        <h2>Queries</h2>
+        <ul id="question-list">
+            <!-- Questions will be populated here -->
+        </ul>
+    </div>
+
+    <div class="container">
+        <h1>RAG Validation</h1>
+
+        <div class="section">
+            <h2>User Query</h2>
+            <div class="query" id="query"></div>
+        </div>
+
+        <div class="section">
+            <h2>Response</h2>
+            <div class="response" id="response"></div>
+        </div>
+
+        <div class="section">
+            <h2>User Assigned Grade</h2>
+            <div class="grade">
+                <span id="grade"></span>
+                <span class="thumb" id="thumb-up">👍</span>
+                <span class="thumb" id="thumb-down">👎</span>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Relevant Chunks</h2>
+            <div class="chunks" id="chunks"></div>
+        </div>
+
+        <div class="section">
+            <h2>Used Prompt</h2>
+            <div class="prompt" id="prompt"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        retrieve_queries();
+    });
+</script>
+</body>
+</html>
+
