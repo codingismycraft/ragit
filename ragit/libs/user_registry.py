@@ -113,9 +113,10 @@ class UserRegistry:
     _SQL_SELECT_QUERIES = """
         SELECT 
             msg_id, question, temperature, count_matches, 
-            max_tokens, prompt, response, thumps_up 
+            max_tokens, prompt, response, thumps_up, received_at 
         FROM 
             messages
+        ORDER BY received_at DESC
     """
     _SQL_SELECT_MATCHES = """
         SELECT txt, distance from matches where msg_id=? ORDER BY distance desc
@@ -290,38 +291,38 @@ class UserRegistry:
         Meant to be used from the UI to populate a list with the available
         queries that will allow the user to view the details of them.
 
-        :returns: A dictionary mapping the message id to its internal
-        details.
-        :rtype: dict
+        :returns: A list containing the queries using dicts.
+        :rtype: [dict]
         """
-        queries = {}
+        queries = []
         with sqlite3.connect(cls._get_full_path_to_db()) as conn:
             cursor = None
             try:
                 cursor = conn.cursor()
                 for row in cursor.execute(cls._SQL_SELECT_QUERIES):
-                    msg_id = row[0]
-                    queries[msg_id] = {
-                            "question": row[1],
-                            "temperature": row[2],
-                            "count_matches": row[3],
-                            "max_tokens": row[4],
-                            "prompt": row[5],
-                            "response": row[6],
-                            "thumps_up": row[7]
+                    query_info = {
+                        "msg_id": row[0],
+                        "question": row[1],
+                        "temperature": row[2],
+                        "count_matches": row[3],
+                        "max_tokens": row[4],
+                        "prompt": row[5],
+                        "response": row[6],
+                        "thumps_up": row[7],
+                        "received_at": row[8]
                     }
-
+                    queries.append(query_info)
                 # Now that we have the queries let's get all the matches that
                 # used for the RAG query when calling the vector database.
-                for key in queries:
-                    msg_id = (key,)
+                for query_info in queries:
+                    msg_id = (query_info["msg_id"],)
                     matches = []
                     for row in cursor.execute(cls._SQL_SELECT_MATCHES, msg_id):
                         matches.append({
                             "txt": row[0],
                             "distance": row[1]
                         })
-                    queries[key]["matches"] = matches
+                    query_info["matches"] = matches
                 return queries
             finally:
                 if cursor:
