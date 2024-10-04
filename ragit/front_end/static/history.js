@@ -46,7 +46,18 @@ function retrieve_queries() {
                         const details = _historical_queries[key];
                         const question = details["question"];
                         const li = document.createElement("li");
-                        li.innerText = question;
+
+                        let label = question;
+                        if (details["thumps_up"] === 1){
+                            label = "👍" + question;
+                            li.className = "thumps_up_query";
+                        } else if (details["thumps_up"] === 0){
+                            li.className = "thumps_down_query";
+                            label = "👎" + question;
+                        }
+
+                        li.innerText = label;
+
                         li.addEventListener(
                             "click", () => display_query_details(msg_id)
                         );

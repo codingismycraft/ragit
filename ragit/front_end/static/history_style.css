@@ -112,3 +112,11 @@ h1, h2, h3 {
     font-size: 18px;
     text-align: center;
 }
+
+.thumps_up_query {
+    background: #4CAF50;
+}
+
+.thumps_down_query {
+    background: #b00a37;
+}
