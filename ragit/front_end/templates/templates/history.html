@@ -8,6 +8,28 @@
     <link rel="stylesheet" href="/static/history_style.css">
     <script src="/static/history.js"></script>
     <title>RAG History</title>
+
+    <style>
+
+        .label-value-pair {
+            display: flex; /* Make label and value pair side by side */
+            align-items: center;
+            margin-right: 20px; /* Space between pairs */
+            margin-bottom: 10px; /* Space to next line if wrapped */
+        }
+
+        .label-value-pair label {
+            font-weight: bold;
+            margin-right: 5px; /* Space between label and value */
+        }
+
+        .label-value-pair span {
+            background-color: #f0f0f0;
+            padding: 4px 8px;
+            border-radius: 4px;
+        }
+    </style>
+
 </head>
 <body>
 <div class="top_pane">
@@ -42,6 +64,24 @@
             <h2 id="response_label">Response</h2>
             <div class="response" id="response"></div>
         </div>
+
+        <div class="section">
+            <div class="label-value-pair">
+                <label>Temperature</label>
+                <span id="temperature_span"></span>
+            </div>
+
+            <div class="label-value-pair">
+                <label>Max Tokens</label>
+                <span id="max_tokens_span"></span>
+            </div>
+
+            <div class="label-value-pair">
+                <label>Number of Matches</label>
+                <span id="number_of_matches_span"></span>
+            </div>
+        </div>
+
         <hr>
         <div class="section">
             <h2>Relevant Chunks</h2>

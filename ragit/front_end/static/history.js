@@ -120,6 +120,12 @@ function display_query_details(msg_id) {
         document.getElementById("chunks").appendChild(hr);
     });
     document.getElementById("prompt").innerText = details.prompt;
+
+    $("#temperature_span").text(details.temperature);
+    $("#max_tokens_span").text(details.max_tokens);
+    $("#number_of_matches_span").text(details.count_matches);
+
+
     $("#delete_query_btn").removeClass().addClass("action_button");
 
     $("#delete_query_btn").off("click");
