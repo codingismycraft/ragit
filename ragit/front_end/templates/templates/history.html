@@ -11,44 +11,38 @@
 </head>
 <body>
 <div class="top_pane">
-    <h2 style="display: inline-block">User Queries</h2>
+    <h2 style="display: inline-block">Query History</h2>
 
-    <button style="margin-left: 300px; height: 50px"
+    <span style="margin-left: 300px; height: 50px">
+    <button class="action_button"
             onclick='window.location.href = "/ragit"'>
-        Click here to open the RAGIT Chat box
+        Chat box
     </button>
+    <button id="delete_query_btn" class="action_button disabled">
+        Delete
+    </button>
+    </span>
 </div>
 
 <div class="main_content">
     <div class="sidebar">
-        <h2>Queries</h2>
         <ul id="question-list">
             <!-- Questions will be populated here -->
         </ul>
     </div>
 
     <div class="container">
-        <h1>RAG Validation</h1>
-
+        <hr>
         <div class="section">
-            <h2>User Query</h2>
+            <h2>Query</h2>
             <div class="query" id="query"></div>
         </div>
 
         <div class="section">
-            <h2>Response</h2>
+            <h2 id="response_label">Response</h2>
             <div class="response" id="response"></div>
         </div>
-
-        <div class="section">
-            <h2>User Assigned Grade</h2>
-            <div class="grade">
-                <span id="grade"></span>
-                <span class="thumb" id="thumb-up">👍</span>
-                <span class="thumb" id="thumb-down">👎</span>
-            </div>
-        </div>
-
+        <hr>
         <div class="section">
             <h2>Relevant Chunks</h2>
             <div class="chunks" id="chunks"></div>

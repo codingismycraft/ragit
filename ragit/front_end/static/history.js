@@ -49,28 +49,7 @@ function retrieve_queries() {
             dataType: 'json',
             success: function (data) {
                 document.body.style.cursor = 'default';
-                _historical_queries = {};
-                const questionList = document.getElementById("question-list");
-                for (let i = 0; i < data.length; i++) {
-                    const details = data[i];
-                    const msg_id = details["msg_id"];
-                    _historical_queries[msg_id] = details;
-                    const question = details["question"];
-                    const li = document.createElement("li");
-                    let label = question;
-                    if (details["thumps_up"] === 1) {
-                        label = "👍" + question;
-                        li.className = "thumps_up_query";
-                    } else if (details["thumps_up"] === 0) {
-                        li.className = "thumps_down_query";
-                        label = "👎" + question;
-                    }
-                    li.innerText = label;
-                    li.addEventListener(
-                        "click", () => display_query_details(msg_id)
-                    );
-                    questionList.appendChild(li);
-                }
+                update_queries_from_server(data);
             },
             error: function (request, status, error) {
                 document.body.style.cursor = 'default';
@@ -81,14 +60,53 @@ function retrieve_queries() {
     )
 }
 
+
+/**
+ * Updates the history view using the data retrieved from the server.
+ */
+function update_queries_from_server(data) {
+    _historical_queries = {};
+    const questionList = document.getElementById("question-list");
+    questionList.innerHTML = '';
+    for (let i = 0; i < data.length; i++) {
+        const details = data[i];
+        const msg_id = details["msg_id"];
+        _historical_queries[msg_id] = details;
+        const question = details["question"];
+        const li = document.createElement("li");
+        let label = question;
+        if (details["thumps_up"] === 1) {
+            label = "👍" + question;
+            li.className = "thumps_up_query";
+        } else if (details["thumps_up"] === 0) {
+            li.className = "thumps_down_query";
+            label = "👎" + question;
+        }
+        li.innerText = label;
+        li.addEventListener(
+            "click", () => display_query_details(msg_id)
+        );
+        questionList.appendChild(li);
+    }
+}
+
 /**
  * Should be called when the used clicks on a query to display its details.
  */
 function display_query_details(msg_id) {
+    $("#delete_query_btn").removeClass().addClass("action_button disabled");
     const details = _historical_queries[msg_id];
 
     document.getElementById("query").innerText = details.question;
     document.getElementById("response").innerText = details.response;
+
+    let label = "Response";
+    if (details["thumps_up"] === 1) {
+        label = "👍" + label;
+    } else if (details["thumps_up"] === 0) {
+        label = "👎" + label;
+    }
+    document.getElementById("response_label").innerText = label;
 
     document.getElementById("chunks").innerHTML = '';
     details.matches.forEach(chunk => {
@@ -102,6 +120,42 @@ function display_query_details(msg_id) {
         document.getElementById("chunks").appendChild(hr);
     });
     document.getElementById("prompt").innerText = details.prompt;
+    $("#delete_query_btn").removeClass().addClass("action_button");
+
+    $("#delete_query_btn").off("click");
+
+    $("#delete_query_btn").click(function () {
+        const userConfirmed = confirm(
+            'Are you sure you want to delete the active query information?'
+        );
+
+        if (userConfirmed) {
+            delete_query(msg_id);
+        }
+    })
+}
+
+/**
+ * Deletes a Query from the database using the message id.
+ */
+function delete_query(msg_id) {
+    document.body.style.cursor = 'wait';
+    const url = `/queries/${msg_id}`;
+    $.ajax({
+            url: url,
+            type: "DELETE",
+            dataType: 'json',
+            success: function (data) {
+                document.body.style.cursor = 'default';
+                retrieve_queries()
+            },
+            error: function (request, status, error) {
+                document.body.style.cursor = 'default';
+                console.error(error)
+                alert(request.responseText);
+            }
+        }
+    )
 }
 
 /**

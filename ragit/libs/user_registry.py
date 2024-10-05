@@ -122,6 +122,8 @@ class UserRegistry:
         SELECT txt, distance from matches where msg_id=? ORDER BY distance desc
     """
 
+    _SQL_DELETE_QUERY = """ DELETE FROM messages where msg_id=? """
+
     _THUMPS_UP_FLAG = 1
     _THUMPS_DOWN_FLAG = 0
 
@@ -141,6 +143,22 @@ class UserRegistry:
         :param int msg_id: The message id to set thumps up for.
         """
         cls._update_thumps_up(msg_id, cls._THUMPS_UP_FLAG)
+
+    @classmethod
+    @common.handle_exceptions
+    def delete_query(cls, msg_id):
+        """Deletes the query with the passed in message id.
+
+        :param int msg_id: The message id of the query to delete.
+        """
+        with sqlite3.connect(cls._get_full_path_to_db()) as conn:
+            cursor = None
+            try:
+                cursor = conn.cursor()
+                cursor.execute(cls._SQL_DELETE_QUERY, (msg_id,))
+            finally:
+                if cursor:
+                    cursor.close()
 
     @classmethod
     @common.handle_exceptions
