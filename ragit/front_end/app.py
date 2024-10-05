@@ -179,6 +179,27 @@ class RagitHandler:
         return web.json_response(all_queries)
 
     @web_handler
+    async def delete_query(self, request):
+        """Deletes a query using the passed in msg_id."""
+        try:
+            auth_token = request.cookies.get('ragit_auth_token')
+            user_name = request.cookies.get('user_name')
+            Globals.validate_token(auth_token, user_name)
+        except AuthenticationError:
+            return web.HTTPFound('/login')
+
+        try:
+            msg_id = int(request.match_info['msg_id'])
+            UserRegistry.delete_query(msg_id)
+        except:
+            return web.json_response(
+                {'message': 'Operation Failed'}, status=404
+            )
+        else:
+            return web.Response(status=204)
+
+
+    @web_handler
     async def query_handler(self, request):
         """Handles a query that is submitted by the chatbot user.
 
@@ -373,7 +394,7 @@ def run():
             web.post('/vote', ragit_handler.vote),
             web.get('/history', ragit_handler.history),
             web.get('/queries', ragit_handler.get_all_queries),
-
+            web.delete('/queries/{msg_id}', ragit_handler.delete_query)
         ]
     )
 
