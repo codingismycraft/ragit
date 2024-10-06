@@ -66,11 +66,16 @@ function retrieve_queries() {
  */
 function update_queries_from_server(data) {
     _historical_queries = {};
+    let first_msg_id = null;
     const questionList = document.getElementById("question-list");
     questionList.innerHTML = '';
     for (let i = 0; i < data.length; i++) {
         const details = data[i];
         const msg_id = details["msg_id"];
+        if (first_msg_id === null){
+            first_msg_id = msg_id;
+        }
+
         _historical_queries[msg_id] = details;
         const question = details["question"];
         const li = document.createElement("li");
@@ -87,6 +92,9 @@ function update_queries_from_server(data) {
             "click", () => display_query_details(msg_id)
         );
         questionList.appendChild(li);
+    }
+    if (first_msg_id != null){
+        display_query_details(first_msg_id);
     }
 }
 
