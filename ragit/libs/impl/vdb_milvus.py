@@ -59,8 +59,8 @@ class MilvusVectorDb(abstract_vector_db.AbstractVectorDb):
                     "vector": embedding,
                     "text": chunk,
                     "filepath": "not defined.",
-                    # "source": source,
-                    # "page": page
+                    "source": source or "n/a",
+                    "page": page or 0
                 }
             )
             count += 1

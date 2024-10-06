@@ -9,6 +9,7 @@ import ragit.libs.common as common
 import ragit.libs.dbutil as dbutil
 import ragit.libs.impl.embeddings_retriever as embeddings_retriever
 import ragit.libs.impl.splitter as splitter
+import ragit.libs.impl.embeddings_info as embeddings_info
 
 
 @common.handle_exceptions
@@ -169,17 +170,30 @@ def set_vectorized(db, chunk_ids):
 def load_embeddings(db, chunk_id):
     """Returns the embeddings for the passed in chunk_id.
 
+    This function retrieves the embeddings for a given chunk identifier from
+    the database.  It also extracts additional metadata including the source
+    and page number associated with the chunk.
+
     :param SimpleSQL db: The database wrapper to use.
     :param int chunk_id: The chunk id to fetch.
 
-    :return: A tuple consisting with the chunk Text and the embeddings.
-    :rtype: tuple
+    :return: An instance of the EmbeddingsInfo class holding the following:
+
+    - chunk (str): The text associated with the specified chunk ID.
+    - embeddings (list [float]): The embeddings of the chunk.
+    - source (str or None): The source from where the chunk was derived.
+    - page (int or None): The page number associated with the chunk.
+
+    :rtype: EmbeddingsInfo
     """
     sql = _SQL_SELECT_EMBEDDINGS.format(chunk_id=chunk_id)
     for row in db.execute_query(sql):
         chunk = row[0]
         embeddings = row[1]
-        return chunk, embeddings
+        metadata = row[2]
+        source = metadata.get("source")
+        page = metadata.get("page")
+        return embeddings_info.EmbeddingsInfo(chunk, embeddings, source, page)
 
 
 @common.handle_exceptions
@@ -270,7 +284,7 @@ SELECT chunk FROM chunks WHERE chunk_id={chunk_id}
 """
 
 _SQL_SELECT_EMBEDDINGS = """
-SELECT chunk, embeddings FROM chunks WHERE chunk_id={chunk_id}
+SELECT chunk, embeddings, metadata FROM chunks WHERE chunk_id={chunk_id}
 """
 
 _SQL_UPDATE_EMBEDDINGS = """

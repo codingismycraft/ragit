@@ -61,11 +61,11 @@ class TestVectorDb(unittest.TestCase):
             sources = []
             pages = []
             for chunk_id in chunks_mgr.find_chunks_with_embeddings(db):
-                chunk, embedding = chunks_mgr.load_embeddings(db, chunk_id)
-                chunks.append(chunk)
-                sources.append(None)
-                pages.append(None)
-                embeddings.append(embedding)
+                embedding_info = chunks_mgr.load_embeddings(db, chunk_id)
+                chunks.append(embedding_info.get_chunk())
+                sources.append(embedding_info.get_source())
+                pages.append(embedding_info.get_page())
+                embeddings.append(embedding_info.get_embeddings())
 
             count = vdb.get_number_of_records()
             self.assertEqual(count, 0)

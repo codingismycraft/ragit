@@ -48,7 +48,20 @@ class ChromaVectorDb(abstract_vector_db.AbstractVectorDb):
             self.get_collection_name()
         )
         ids = [str(uuid.uuid4()) for _ in range(len(chunks))]
-        collection.add(documents=chunks, embeddings=embeddings, ids=ids)
+        sources = [source or "n/a" for source in sources]
+        pages = [page or 0 for page in pages]
+
+        meta_data = [
+            {"source": source, "page": page}
+            for source, page in zip(sources, pages)
+        ]
+
+        collection.add(
+            documents=chunks,
+            embeddings=embeddings,
+            ids=ids,
+            metadatas=meta_data
+        )
 
     def get_number_of_records(self):
         """Returns the number of records in the collection.
