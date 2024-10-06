@@ -82,7 +82,10 @@ class _PdfDocument:
         :yields: The chunks as strings.
         """
         for chunk in self._chunks:
-            yield chunk.page_content, chunk.metadata
+            meta = chunk.metadata.copy()
+            if "page" in meta and isinstance(meta["page"], int):
+                meta["page"] += 1
+            yield chunk.page_content, meta
 
 
 class _DocxDocument:
