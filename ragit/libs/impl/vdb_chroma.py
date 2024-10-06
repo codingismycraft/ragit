@@ -96,8 +96,12 @@ class ChromaVectorDb(abstract_vector_db.AbstractVectorDb):
         )
 
         matches = []
-        for txt, distance in zip(search_results["documents"][0],
-                                 search_results["distances"][0]):
-            matches.append((txt, distance))
+        for txt, distance, meta in zip(search_results["documents"][0],
+                                 search_results["distances"][0],
+                                 search_results["metadatas"][0]
+                                 ):
+            source = meta.get("source")
+            page = meta.get("page")
+            matches.append((txt, distance, source, page))
 
         return matches

@@ -80,8 +80,12 @@ class TestVectorDb(unittest.TestCase):
             for match in matches:
                 txt = match[0]
                 dist = match[1]
+                source = match[2]
+                page = match[3]
                 self.assertIsInstance(txt, str)
                 self.assertIsInstance(dist, float)
+                self.assertTrue(isinstance(source, str) or source is None)
+                self.assertIsInstance(page, int)
 
     def test_creation_using_chroma(self):
         """Tests creating a VectorDb using chroma."""

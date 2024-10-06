@@ -58,7 +58,6 @@ class MilvusVectorDb(abstract_vector_db.AbstractVectorDb):
                     "id": count,
                     "vector": embedding,
                     "text": chunk,
-                    "filepath": "not defined.",
                     "source": source or "n/a",
                     "page": page or 0
                 }
@@ -96,12 +95,19 @@ class MilvusVectorDb(abstract_vector_db.AbstractVectorDb):
             data=[e],
             limit=k,
             search_params={"metric_type": "IP", "params": {}},
-            output_fields=["text", "filepath"],
+            output_fields=["text", "source", "page"],
         )
 
         matches = []
 
         for res in search_res[0]:
-            matches.append((res["entity"]["text"], res["distance"]))
+            matches.append(
+                (
+                    res["entity"]["text"],
+                    res["distance"],
+                    res["entity"]["source"],
+                    res["entity"]["page"]
+                )
+            )
 
         return matches
