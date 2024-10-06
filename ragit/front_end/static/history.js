@@ -125,6 +125,9 @@ function display_query_details(msg_id) {
     $("#max_tokens_span").text(details.max_tokens);
     $("#number_of_matches_span").text(details.count_matches);
 
+    const received_at = format_date_time(details.received_at);
+    $("#received_at").text(received_at);
+        
 
     $("#delete_query_btn").removeClass().addClass("action_button");
 
@@ -175,4 +178,42 @@ function display_value_in_circle(value) {
     span.className = "circled_number";
     span.textContent = value.toFixed(2);
     return span;
+}
+
+
+
+/**
+ * Converts a data string.
+ *
+ * Receives a date in this format:
+ * 2024-10-06T14:20:51.650732 
+ *
+ * and returns it to the following:
+ * Sun 06, October 2024 2:20 pm
+ *
+ */
+function format_date_time(input) {
+    const date = new Date(input);
+
+    // Options for day of the week and month
+    const dayOfWeekShort = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    const monthNames = [
+        'January', 'February', 'March', 'April', 'May', 'June',
+        'July', 'August', 'September', 'October', 'November', 'December'
+    ];
+
+    // Extract components
+    const dayOfWeek = dayOfWeekShort[date.getUTCDay()];
+    const day = String(date.getUTCDate()).padStart(2, '0');
+    const month = monthNames[date.getUTCMonth()];
+    const year = date.getUTCFullYear();
+
+    // Extract and format time components
+    let hours = date.getUTCHours();
+    const minutes = String(date.getUTCMinutes()).padStart(2, '0');
+    const ampm = hours >= 12 ? 'pm' : 'am';
+    hours = hours % 12;
+    hours = hours ? hours : 12; // the hour '0' should be '12'
+
+    return `${dayOfWeek} ${day}, ${month} ${year} ${hours}:${minutes} ${ampm}`;
 }
