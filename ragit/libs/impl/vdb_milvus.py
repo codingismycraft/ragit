@@ -37,20 +37,32 @@ class MilvusVectorDb(abstract_vector_db.AbstractVectorDb):
         if self._milvus_client:
             self._milvus_client.close()
 
-    def insert(self, chunks, embeddings):
+    def insert(self, chunks, embeddings, sources, pages):
         """Inserts a list of chunks and their embeddings into the db.
 
         Subsequent calls to this method append new chunks to and existing
         collection, effectively incrementally updating the database.
 
         :param list[str] chunks: The list of chunks to insert.
-        :param list[ list[float]] embeddings: The list of the embeddings.
+        :param list[list[float]] embeddings: The list of the embeddings.
+        :param list[str] sources: The full paths to the documents.
+        :param list[int] pages: The pages holding the chunks.
         """
         assert self._milvus_client, "Milvus Vector Collection is not open."
         data = []
         count = 0
-        for chunk, embedding in zip(chunks, embeddings):
-            data.append({"id": count, "vector": embedding, "text": chunk})
+        for chunk, embedding, source, page in zip(chunks, embeddings,
+                                                  sources, pages):
+            data.append(
+                {
+                    "id": count,
+                    "vector": embedding,
+                    "text": chunk,
+                    "filepath": "not defined.",
+                    # "source": source,
+                    # "page": page
+                }
+            )
             count += 1
         self._milvus_client.insert(
             collection_name=self.get_collection_name(),
@@ -84,11 +96,12 @@ class MilvusVectorDb(abstract_vector_db.AbstractVectorDb):
             data=[e],
             limit=k,
             search_params={"metric_type": "IP", "params": {}},
-            output_fields=["text"],
+            output_fields=["text", "filepath"],
         )
 
-        matches = [
-            (res["entity"]["text"], res["distance"]) for res in search_res[0]
-        ]
+        matches = []
+
+        for res in search_res[0]:
+            matches.append((res["entity"]["text"], res["distance"]))
 
         return matches

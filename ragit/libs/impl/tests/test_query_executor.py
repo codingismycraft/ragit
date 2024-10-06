@@ -104,11 +104,15 @@ class TestQueryExecutor(unittest.TestCase):
             vdb = vector_db.get_vector_db(fullpath_to_db, collection_name)
             chunks = []
             embeddings = []
+            sources = []
+            pages = []
             for chunk_id in chunks_mgr.find_chunks_with_embeddings(db):
                 chunk, embedding = chunks_mgr.load_embeddings(db, chunk_id)
                 chunks.append(chunk)
                 embeddings.append(embedding)
-            vdb.insert(chunks, embeddings)
+                sources.append(None)
+                pages.append(None)
+            vdb.insert(chunks, embeddings, sources, pages)
 
     def test_query(self):
         """Tests the query."""

@@ -58,17 +58,21 @@ class TestVectorDb(unittest.TestCase):
 
             chunks = []
             embeddings = []
+            sources = []
+            pages = []
             for chunk_id in chunks_mgr.find_chunks_with_embeddings(db):
                 chunk, embedding = chunks_mgr.load_embeddings(db, chunk_id)
                 chunks.append(chunk)
+                sources.append(None)
+                pages.append(None)
                 embeddings.append(embedding)
 
             count = vdb.get_number_of_records()
             self.assertEqual(count, 0)
-            vdb.insert(chunks[:4], embeddings[:4])
+            vdb.insert(chunks[:4], embeddings[:4], sources[:4], pages[:4])
             count = vdb.get_number_of_records()
             self.assertEqual(count, 4)
-            vdb.insert(chunks[4:], embeddings[4:])
+            vdb.insert(chunks[4:], embeddings[4:], sources[4:], pages[4:])
             count = vdb.get_number_of_records()
             self.assertEqual(count, len(embeddings))
             query = "Is SQL Alchemy good?"

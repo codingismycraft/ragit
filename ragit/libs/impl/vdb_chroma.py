@@ -31,7 +31,7 @@ class ChromaVectorDb(abstract_vector_db.AbstractVectorDb):
         """Closes the milvus vector db."""
         print("close is not implemented..")
 
-    def insert(self, chunks, embeddings):
+    def insert(self, chunks, embeddings, sources, pages):
         """Inserts a list of chunks and their embeddings into the db.
 
         Subsequent calls to this method append new chunks to and existing
@@ -39,6 +39,8 @@ class ChromaVectorDb(abstract_vector_db.AbstractVectorDb):
 
         :param list[str] chunks: The list of chunks to insert.
         :param list[ list[float]] embeddings: The list of the embeddings.
+        :param list[str] sources: The full paths to the documents.
+        :param list[int] pages: The pages holding the chunks.
         """
         assert self._chroma_client, "Chroma Vector Collection is not open."
         assert len(chunks) == len(embeddings)

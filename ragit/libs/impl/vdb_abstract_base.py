@@ -60,7 +60,7 @@ class AbstractVectorDb(abc.ABC):
         return self.__dimension
 
     @abc.abstractmethod
-    def insert(self, chunks, embeddings):
+    def insert(self, chunks, embeddings, sources, pages):
         """Inserts a list of chunks and their embeddings into the db.
 
         Subsequent calls to this method append new chunks to and existing
@@ -68,6 +68,8 @@ class AbstractVectorDb(abc.ABC):
 
         :param list[str] chunks: The list of chunks to insert.
         :param list[ list[float]] embeddings: The list of the embeddings.
+        :param list[str] sources: The full paths to the documents.
+        :param list[int] pages: The pages holding the chunks.
         """
 
     @abc.abstractmethod
