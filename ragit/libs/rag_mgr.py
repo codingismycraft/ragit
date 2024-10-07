@@ -308,19 +308,23 @@ class RagManager:
         total_inserted_counter = 0
         chunks = []
         embeddings = []
+        sources = []
+        pages = []
         vectorized_chunk_ids = []
 
         for chunk_id in chunks_mgr.get_chunk_ids_to_insert_to_vector_db(db):
             if verbose:
                 print(chunk_id, len(embeddings))
-            chunk, embedding = chunks_mgr.load_embeddings(db, chunk_id)
-            chunks.append(chunk)
-            embeddings.append(embedding)
+            embeddings_info = chunks_mgr.load_embeddings(db, chunk_id)
+            chunks.append(embeddings_info.get_chunk())
+            embeddings.append(embeddings_info.get_embeddings())
+            sources.append(embeddings_info.get_source())
+            pages.append(embeddings_info.get_page())
             vectorized_chunk_ids.append(chunk_id)
             if max_count is not None and len(embeddings) >= max_count:
                 break
             if len(embeddings) > batch_size:
-                vdb.insert(chunks, embeddings)
+                vdb.insert(chunks, embeddings, sources, pages)
                 total_inserted_counter += len(embeddings)
                 chunks_mgr.set_vectorized(db, vectorized_chunk_ids)
                 chunks = []
@@ -329,7 +333,7 @@ class RagManager:
 
         # Insert leftovers if needed.
         if len(embeddings):
-            vdb.insert(chunks, embeddings)
+            vdb.insert(chunks, embeddings, sources, pages)
             total_inserted_counter += len(embeddings)
             chunks_mgr.set_vectorized(db, vectorized_chunk_ids)
 

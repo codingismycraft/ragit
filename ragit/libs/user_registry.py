@@ -69,8 +69,11 @@ class UserRegistry:
             match_id        INTEGER PRIMARY KEY AUTOINCREMENT,
             msg_id          INTEGER,
             txt             TEXT DEFAULT NULL,
-            distance        FLOAT DEFAULT NULL
+            distance        FLOAT DEFAULT NULL,
+            source          TEXT DEFAULT NULL,
+            page            INTEGER DEFAULT NULL
         )
+        
     """
 
     _SQL_GET_LAST_ROW_ID = """SELECT last_insert_rowid()"""
@@ -88,7 +91,9 @@ class UserRegistry:
     """
 
     _SQL_INSERT_MATCH = """
-        INSERT INTO matches (msg_id, txt, distance) values (?, ?, ?)
+        INSERT INTO 
+            matches (msg_id, txt, distance, source, page) 
+        VALUES (?, ?, ?, ?, ?)
     """
 
     _SQL_UPDATE_THUMPS_UP = """
@@ -119,7 +124,11 @@ class UserRegistry:
         ORDER BY received_at DESC
     """
     _SQL_SELECT_MATCHES = """
-        SELECT txt, distance from matches where msg_id=? ORDER BY distance desc
+        SELECT 
+            txt, distance, source, page 
+        FROM matches 
+        WHERE msg_id=? 
+        ORDER BY distance DESC
     """
 
     _SQL_DELETE_QUERY = """ DELETE FROM messages where msg_id=? """
@@ -244,13 +253,16 @@ class UserRegistry:
                     try:
                         txt = match[0]
                         distance = float(match[1])
+                        source = match[2]
+                        page = match[3]
                         cursor.execute(
-                            cls._SQL_INSERT_MATCH, (msg_id, txt, distance)
+                            cls._SQL_INSERT_MATCH, (
+                                msg_id, txt, distance, source, page
+                            )
                         )
                     except Exception as ex:
                         print(ex)
                 return msg_id
-
             finally:
                 if cursor:
                     cursor.close()
@@ -338,7 +350,9 @@ class UserRegistry:
                     for row in cursor.execute(cls._SQL_SELECT_MATCHES, msg_id):
                         matches.append({
                             "txt": row[0],
-                            "distance": row[1]
+                            "distance": row[1],
+                            "source": cls._shorten_file_path(row[2]),
+                            "page": row[3] or None
                         })
                     query_info["matches"] = matches
                 return queries
@@ -496,3 +510,23 @@ class UserRegistry:
             finally:
                 if cursor:
                     cursor.close()
+
+    @classmethod
+    def _shorten_file_path(cls, file_path, max_parents=4):
+        """Shortens the file path.
+
+        :param file_path: The original file path to be shortened.
+        :param int max_parents: Max Number of parents to retain.
+
+        :return: A shortened path to the file path.
+        :rtype: str
+        """
+        if not file_path:
+            return "n/a"
+        components = file_path.split(os.sep)
+
+        if len(components) > max_parents:
+            return os.sep.join(['...'] + components[-max_parents:])
+        else:
+            return file_path
+

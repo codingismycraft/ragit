@@ -31,7 +31,7 @@ class ChromaVectorDb(abstract_vector_db.AbstractVectorDb):
         """Closes the milvus vector db."""
         print("close is not implemented..")
 
-    def insert(self, chunks, embeddings):
+    def insert(self, chunks, embeddings, sources, pages):
         """Inserts a list of chunks and their embeddings into the db.
 
         Subsequent calls to this method append new chunks to and existing
@@ -39,6 +39,8 @@ class ChromaVectorDb(abstract_vector_db.AbstractVectorDb):
 
         :param list[str] chunks: The list of chunks to insert.
         :param list[ list[float]] embeddings: The list of the embeddings.
+        :param list[str] sources: The full paths to the documents.
+        :param list[int] pages: The pages holding the chunks.
         """
         assert self._chroma_client, "Chroma Vector Collection is not open."
         assert len(chunks) == len(embeddings)
@@ -46,7 +48,20 @@ class ChromaVectorDb(abstract_vector_db.AbstractVectorDb):
             self.get_collection_name()
         )
         ids = [str(uuid.uuid4()) for _ in range(len(chunks))]
-        collection.add(documents=chunks, embeddings=embeddings, ids=ids)
+        sources = [source or "n/a" for source in sources]
+        pages = [page or 0 for page in pages]
+
+        meta_data = [
+            {"source": source, "page": page}
+            for source, page in zip(sources, pages)
+        ]
+
+        collection.add(
+            documents=chunks,
+            embeddings=embeddings,
+            ids=ids,
+            metadatas=meta_data
+        )
 
     def get_number_of_records(self):
         """Returns the number of records in the collection.
@@ -81,8 +96,12 @@ class ChromaVectorDb(abstract_vector_db.AbstractVectorDb):
         )
 
         matches = []
-        for txt, distance in zip(search_results["documents"][0],
-                                 search_results["distances"][0]):
-            matches.append((txt, distance))
+        for txt, distance, meta in zip(search_results["documents"][0],
+                                 search_results["distances"][0],
+                                 search_results["metadatas"][0]
+                                 ):
+            source = meta.get("source")
+            page = meta.get("page")
+            matches.append((txt, distance, source, page))
 
         return matches

@@ -58,17 +58,21 @@ class TestVectorDb(unittest.TestCase):
 
             chunks = []
             embeddings = []
+            sources = []
+            pages = []
             for chunk_id in chunks_mgr.find_chunks_with_embeddings(db):
-                chunk, embedding = chunks_mgr.load_embeddings(db, chunk_id)
-                chunks.append(chunk)
-                embeddings.append(embedding)
+                embedding_info = chunks_mgr.load_embeddings(db, chunk_id)
+                chunks.append(embedding_info.get_chunk())
+                sources.append(embedding_info.get_source())
+                pages.append(embedding_info.get_page())
+                embeddings.append(embedding_info.get_embeddings())
 
             count = vdb.get_number_of_records()
             self.assertEqual(count, 0)
-            vdb.insert(chunks[:4], embeddings[:4])
+            vdb.insert(chunks[:4], embeddings[:4], sources[:4], pages[:4])
             count = vdb.get_number_of_records()
             self.assertEqual(count, 4)
-            vdb.insert(chunks[4:], embeddings[4:])
+            vdb.insert(chunks[4:], embeddings[4:], sources[4:], pages[4:])
             count = vdb.get_number_of_records()
             self.assertEqual(count, len(embeddings))
             query = "Is SQL Alchemy good?"
@@ -76,8 +80,12 @@ class TestVectorDb(unittest.TestCase):
             for match in matches:
                 txt = match[0]
                 dist = match[1]
+                source = match[2]
+                page = match[3]
                 self.assertIsInstance(txt, str)
                 self.assertIsInstance(dist, float)
+                self.assertTrue(isinstance(source, str) or source is None)
+                self.assertIsInstance(page, int)
 
     def test_creation_using_chroma(self):
         """Tests creating a VectorDb using chroma."""

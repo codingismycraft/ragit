@@ -125,13 +125,18 @@ class TestChunksMgr(unittest.TestCase):
             self.assertListEqual(expected, retrieved)
 
             chunk_id = chunk_id_with_embeddings[0]
-            chunk, embeddings = chunks_mgr.load_embeddings(db, chunk_id)
+            embeddings_info = chunks_mgr.load_embeddings(db, chunk_id)
 
-            self.assertIsInstance(embeddings, list)
-            self.assertEqual(len(embeddings), 1536)
+            self.assertIsInstance(embeddings_info.get_embeddings(), list)
+            self.assertEqual(len(embeddings_info.get_embeddings()), 1536)
 
-            self.assertIsInstance(chunk, str)
+            source = embeddings_info.get_source()
+            page = embeddings_info.get_page()
+            self.assertTrue(isinstance(source, str) or source is None)
+            self.assertTrue(isinstance(page, int) or page is None)
+
+            self.assertIsInstance(embeddings_info.get_chunk(), str)
             chunk_id = chunk_ids_no_embeddings[0]
-            chunk, embeddings = chunks_mgr.load_embeddings(db, chunk_id)
-            self.assertIsInstance(chunk, str)
-            self.assertIsNone(embeddings)
+            embeddings_info = chunks_mgr.load_embeddings(db, chunk_id)
+            self.assertIsInstance(embeddings_info.get_chunk(), str)
+            self.assertIsNone(embeddings_info.get_embeddings())

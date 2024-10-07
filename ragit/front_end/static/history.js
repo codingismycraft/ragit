@@ -72,7 +72,7 @@ function update_queries_from_server(data) {
     for (let i = 0; i < data.length; i++) {
         const details = data[i];
         const msg_id = details["msg_id"];
-        if (first_msg_id === null){
+        if (first_msg_id === null) {
             first_msg_id = msg_id;
         }
 
@@ -93,7 +93,7 @@ function update_queries_from_server(data) {
         );
         questionList.appendChild(li);
     }
-    if (first_msg_id != null){
+    if (first_msg_id != null) {
         display_query_details(first_msg_id);
     }
 }
@@ -118,15 +118,36 @@ function display_query_details(msg_id) {
 
     document.getElementById("chunks").innerHTML = '';
     details.matches.forEach(chunk => {
-        document.getElementById("chunks").appendChild(
-            display_value_in_circle(chunk["distance"])
-        );
-        const p = document.createElement("p");
-        p.innerText = chunk["txt"];
-        document.getElementById("chunks").appendChild(p);
-        const hr = document.createElement("hr");
-        document.getElementById("chunks").appendChild(hr);
-    });
+            const chunks_container = document.getElementById("chunks");
+
+            const meta_container = document.createElement("div");
+            meta_container.className = "meta_container_div"
+            chunks_container.appendChild(meta_container);
+
+            meta_container.appendChild(
+                display_value_in_rect(chunk["distance"])
+            );
+
+            meta_container.appendChild(
+                display_value_in_span(chunk["source"])
+            )
+
+            const page = chunk["page"];
+            if (page != null) {
+                meta_container.appendChild(
+                    display_value_in_span(`page: ${page}`)
+                )
+            }
+
+            const p = document.createElement("p");
+            p.innerText = chunk["txt"];
+            chunks_container.appendChild(p);
+
+            const hr = document.createElement("hr");
+            chunks_container.appendChild(hr);
+        }
+    )
+    ;
     document.getElementById("prompt").innerText = details.prompt;
 
     $("#temperature_span").text(details.temperature);
@@ -135,7 +156,7 @@ function display_query_details(msg_id) {
 
     const received_at = format_date_time(details.received_at);
     $("#received_at").text(received_at);
-        
+
 
     $("#delete_query_btn").removeClass().addClass("action_button");
 
@@ -175,26 +196,12 @@ function delete_query(msg_id) {
     )
 }
 
-/**
- * Displays a number insider a circle.
- *
- * Creates a span element containing a number formatted to two decimal places,
- * styled to be displayed inside a circle.
- */
-function display_value_in_circle(value) {
-    const span = document.createElement("span");
-    span.className = "circled_number";
-    span.textContent = value.toFixed(2);
-    return span;
-}
-
-
 
 /**
  * Converts a data string.
  *
  * Receives a date in this format:
- * 2024-10-06T14:20:51.650732 
+ * 2024-10-06T14:20:51.650732
  *
  * and returns it to the following:
  * Sun 06, October 2024 2:20 pm
@@ -224,4 +231,26 @@ function format_date_time(input) {
     hours = hours ? hours : 12; // the hour '0' should be '12'
 
     return `${dayOfWeek} ${day}, ${month} ${year} ${hours}:${minutes} ${ampm}`;
+}
+
+
+/**
+ * Create a span element to wrap the label and value
+ */
+function display_value_in_span(value) {
+    const span = document.createElement('span');
+    span.className = "value_container";
+    span.textContent = value;
+    return span;
+}
+
+/**
+ * Displays a numeric value in a rectangle (up to two decimals).
+ *
+ */
+function display_value_in_rect(value) {
+    const span = document.createElement("span");
+    span.className = "value_rect";
+    span.textContent = value.toFixed(2);
+    return span;
 }

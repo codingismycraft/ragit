@@ -100,18 +100,6 @@ h1, h2, h3 {
     color: #007BFF;
 }
 
-.circled_number {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    background-color: blue;
-    color: white;
-    font-size: 18px;
-    text-align: center;
-}
 
 .thumps_up_query {
     background: #4CAF50;
@@ -137,4 +125,33 @@ h1, h2, h3 {
 .disabled {
     opacity: 0.6;
     cursor: not-allowed;
+}
+
+/*Styles for the label-value function.*/
+
+.meta_container_div {
+   display: inherit;
+    background-color: #e8e4db;
+    height: 1.5em;
+    padding: 12px;
+    width: auto;
+}
+
+
+.value_rect {
+    justify-content: center;
+    align-items: center;
+    background-color: #3d2c05;
+    color: white;
+    font-size: 18px;
+    text-align: center;
+    margin: 12px 12px 12px 6px;
+    padding: 6px;
+}
+
+.value_container {
+    color: #555;
+    white-space: nowrap;
+    margin-left: 12px;
+    margin-right: 12px;
 }
