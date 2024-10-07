@@ -150,12 +150,13 @@ function display_query_details(msg_id) {
     ;
     document.getElementById("prompt").innerText = details.prompt;
 
-    $("#temperature_span").text(details.temperature);
-    $("#max_tokens_span").text(details.max_tokens);
-    $("#number_of_matches_span").text(details.count_matches);
+    const how_long_before = time_ago(details.received_at);
 
-    const received_at = format_date_time(details.received_at);
-    $("#received_at").text(received_at);
+    $("#time_ago_span").text(`asked ${how_long_before}`);
+    $("#temperature_span").text(`temperature ${details.temperature}`);
+    $("#max_tokens_span").text(`max tokens ${details.max_tokens}`);
+    $("#matches_count_span").text(`matches ${details.count_matches}`);
+
 
 
     $("#delete_query_btn").removeClass().addClass("action_button");
@@ -231,6 +232,54 @@ function format_date_time(input) {
     hours = hours ? hours : 12; // the hour '0' should be '12'
 
     return `${dayOfWeek} ${day}, ${month} ${year} ${hours}:${minutes} ${ampm}`;
+}
+
+/**
+ * Converts a datetime string to a human-readable relative time description.
+ *
+ * This function receives a datetime string, calculates the difference from
+ * the current time, and returns a string describing how long ago the datetime
+ * was, such as "now", "3 minutes ago", "2 days ago", "2 weeks ago", etc.
+ *
+ * @param {string} datetimeStr - The datetime string in ISO format
+ *  (e.g., '2024-10-06T14:20:51.650732').
+ *
+ * @return {string} A human-readable string indicating the relative time
+ *   since the datetime.
+ */
+function time_ago(datetimeStr) {
+    const now = new Date();
+    const pastDate = new Date(datetimeStr);
+    const diffInSeconds = Math.floor((now - pastDate) / 1000);
+
+    const secondsInMinute = 60;
+    const secondsInHour = 3600;
+    const secondsInDay = 86400;
+    const secondsInWeek = 604800;
+    const secondsInMonth = 2592000; // Roughly 30 days
+    const secondsInYear = 31536000; // Roughly 365 days
+
+    if (diffInSeconds < secondsInMinute) {
+        return "now";
+    } else if (diffInSeconds < secondsInHour) {
+        const minutes = Math.floor(diffInSeconds / secondsInMinute);
+        return `${minutes} minute${minutes > 1 ? 's' : ''} ago`;
+    } else if (diffInSeconds < secondsInDay) {
+        const hours = Math.floor(diffInSeconds / secondsInHour);
+        return `${hours} hour${hours > 1 ? 's' : ''} ago`;
+    } else if (diffInSeconds < secondsInWeek) {
+        const days = Math.floor(diffInSeconds / secondsInDay);
+        return `${days} day${days > 1 ? 's' : ''} ago`;
+    } else if (diffInSeconds < secondsInMonth) {
+        const weeks = Math.floor(diffInSeconds / secondsInWeek);
+        return `${weeks} week${weeks > 1 ? 's' : ''} ago`;
+    } else if (diffInSeconds < secondsInYear) {
+        const months = Math.floor(diffInSeconds / secondsInMonth);
+        return `${months} month${months > 1 ? 's' : ''} ago`;
+    } else {
+        const years = Math.floor(diffInSeconds / secondsInYear);
+        return `${years} year${years > 1 ? 's' : ''} ago`;
+    }
 }
 
 
