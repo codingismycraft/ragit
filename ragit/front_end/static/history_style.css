@@ -100,18 +100,6 @@ h1, h2, h3 {
     color: #007BFF;
 }
 
-.circled_number {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    background-color: blue;
-    color: white;
-    font-size: 18px;
-    text-align: center;
-}
 
 .thumps_up_query {
     background: #4CAF50;
@@ -141,22 +129,29 @@ h1, h2, h3 {
 
 /*Styles for the label-value function.*/
 
-.label-value-pair {
-    display: inline-flex;
+.meta_container_div {
+   display: inherit;
+    background-color: #e8e4db;
+    height: 1.5em;
+    padding: 12px;
+    width: auto;
+}
+
+
+.value_rect {
+    justify-content: center;
     align-items: center;
-    margin: 5px;
-    padding: 3px 10px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    background-color: #f9f9f9;
+    background-color: #3d2c05;
+    color: white;
+    font-size: 18px;
+    text-align: center;
+    margin: 12px 12px 12px 6px;
+    padding: 6px;
 }
 
-.label-value-pair .label {
-    font-weight: bold;
-    margin-right: 5px;
-    color: #333;
-}
-
-.label-value-pair .value {
+.value_container {
     color: #555;
+    white-space: nowrap;
+    margin-left: 12px;
+    margin-right: 12px;
 }

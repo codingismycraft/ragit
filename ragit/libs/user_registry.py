@@ -352,7 +352,7 @@ class UserRegistry:
                             "txt": row[0],
                             "distance": row[1],
                             "source": cls._shorten_file_path(row[2]),
-                            "page": row[3] or "n/a"
+                            "page": row[3] or None
                         })
                     query_info["matches"] = matches
                 return queries

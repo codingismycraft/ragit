@@ -118,26 +118,36 @@ function display_query_details(msg_id) {
 
     document.getElementById("chunks").innerHTML = '';
     details.matches.forEach(chunk => {
-        const chunks_container = document.getElementById("chunks");
-        chunks_container.appendChild(
-            display_value_in_circle(chunk["distance"])
-        );
+            const chunks_container = document.getElementById("chunks");
 
-        chunks_container.appendChild(
-            make_label_value("source", chunk["source"])
-        )
+            const meta_container = document.createElement("div");
+            meta_container.className = "meta_container_div"
+            chunks_container.appendChild(meta_container);
 
-        chunks_container.appendChild(
-            make_label_value("page", chunk["page"])
-        )
+            meta_container.appendChild(
+                display_value_in_rect(chunk["distance"])
+            );
 
-        const p = document.createElement("p");
-        p.innerText = chunk["txt"];
-        chunks_container.appendChild(p);
+            meta_container.appendChild(
+                display_value_in_span(chunk["source"])
+            )
 
-        const hr = document.createElement("hr");
-        chunks_container.appendChild(hr);
-    });
+            const page = chunk["page"];
+            if (page != null) {
+                meta_container.appendChild(
+                    display_value_in_span(`page: ${page}`)
+                )
+            }
+
+            const p = document.createElement("p");
+            p.innerText = chunk["txt"];
+            chunks_container.appendChild(p);
+
+            const hr = document.createElement("hr");
+            chunks_container.appendChild(hr);
+        }
+    )
+    ;
     document.getElementById("prompt").innerText = details.prompt;
 
     $("#temperature_span").text(details.temperature);
@@ -186,18 +196,6 @@ function delete_query(msg_id) {
     )
 }
 
-/**
- * Displays a number insider a circle.
- *
- * Creates a span element containing a number formatted to two decimal places,
- * styled to be displayed inside a circle.
- */
-function display_value_in_circle(value) {
-    const span = document.createElement("span");
-    span.className = "circled_number";
-    span.textContent = value.toFixed(2);
-    return span;
-}
 
 /**
  * Converts a data string.
@@ -239,20 +237,20 @@ function format_date_time(input) {
 /**
  * Create a span element to wrap the label and value
  */
-function make_label_value(label, value) {
+function display_value_in_span(value) {
     const span = document.createElement('span');
-    span.className = 'label-value-pair';
+    span.className = "value_container";
+    span.textContent = value;
+    return span;
+}
 
-    const labelElement = document.createElement('span');
-    labelElement.className = 'label';
-    labelElement.textContent = label + ':';
-
-    const valueElement = document.createElement('span');
-    valueElement.className = 'value';
-    valueElement.textContent = value;
-
-    span.appendChild(labelElement);
-    span.appendChild(valueElement);
-
+/**
+ * Displays a numeric value in a rectangle (up to two decimals).
+ *
+ */
+function display_value_in_rect(value) {
+    const span = document.createElement("span");
+    span.className = "value_rect";
+    span.textContent = value.toFixed(2);
     return span;
 }
