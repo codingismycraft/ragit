@@ -122,6 +122,36 @@ def web_handler(handler_func):
 class RagitHandler:
     """Implements all the web handlers used from the service."""
 
+
+    @web_handler
+    async def admin_handler(self, request):
+        """Displays the admin page.
+
+        :param request: The web request.
+        """
+        try:
+            auth_token = request.cookies.get('ragit_auth_token')
+            user_name = request.cookies.get('user_name')
+            Globals.validate_token(auth_token, user_name)
+        except AuthenticationError:
+            return web.HTTPFound('/login')
+        else:
+            template = _JINJA_ENV.get_template('admin.html')
+            collection_name = Globals.rag_manager.get_rag_collection_name()
+            txt = template.render(
+                host=request.host,
+                collection_name=collection_name
+            )
+            response = web.Response(
+                body=txt.encode(),
+                content_type='text/html'
+            )
+            response.set_cookie('ragit_auth_token', auth_token)
+            response.set_cookie('user_name', user_name)
+            logger.info("Serving admin page.")
+            return response
+
+
     @web_handler
     async def main_page_handler(self, request):
         """Displays the main page.
@@ -138,7 +168,8 @@ class RagitHandler:
             template = _JINJA_ENV.get_template('index.html')
             collection_name = Globals.rag_manager.get_rag_collection_name()
             txt = template.render(
-                host=request.host, collection_name=collection_name
+                host=request.host,
+                collection_name=collection_name
             )
             response = web.Response(
                 body=txt.encode(),
@@ -388,13 +419,14 @@ def run():
             web.get('/login', ragit_handler.login_screen, name="login"),
             web.post('/login', ragit_handler.login_validate),
             web.get('/ragit', ragit_handler.main_page_handler),
+            web.get('/admin', ragit_handler.admin_handler),
             web.post('/ragit', ragit_handler.query_handler),
             web.get('/signup', ragit_handler.signup_screen),
             web.post('/signup', ragit_handler.signup_new_acount),
             web.post('/vote', ragit_handler.vote),
             web.get('/history', ragit_handler.history),
             web.get('/queries', ragit_handler.get_all_queries),
-            web.delete('/queries/{msg_id}', ragit_handler.delete_query)
+            web.delete('/queries/{msg_id}', ragit_handler.delete_query),
         ]
     )
 

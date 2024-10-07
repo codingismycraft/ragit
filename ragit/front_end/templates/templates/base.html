@@ -14,29 +14,25 @@
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 </head>
 <body>
+<div class="navigation_container">
+    <span id="logo">
+    <img src="/static/ragit.jpeg" width="76px" height=100%>
+    </span>
+    <ul>
+        <li id="chat-li"><a href="#chat">Chat</a></li>
+        <li id="history-li"><a href="/history">History</a></li>
+        <li id="admin-li"><a href="/admin">Admin</a></li>
+        <li id="logout-li"><a onclick="logout()">Log Out</a></li>
+
+    </ul>
+</div>
 
 <div class="top_bar">
-    <div class="left_child">
-    <span id="logo">
-    <img src="/static/ragit.jpeg" width="100px" height="100px">
+    <span id="collection_name_span" style="margin-left: 18px">
+        Collection Name:<b> {{ collection_name }} </b>
     </span>
-     <span class="collection_name_span">
-         {{ collection_name }}
-     </span>
-    </div>
-
-    <div class="right_child">
-        <span id="user_name_span"></span>
-        <div class="middle-right">
-            <button id="history_button" onclick='window.location.href = "/history"'>History</button>
-        </div>
-        <div class="bottom-right">
-            <button id="logout_button" onclick="logout()">Log Out</button>
-        </div>
-    </div>
+    <span id="user_name_span" style="margin-left: 18px"></span>
 </div>
-<br>
-
 
 {% block content %}
 {% endblock %}
@@ -47,9 +43,11 @@
         if (user_name != null) {
             $('#user_name_span').html("User:  <b>" + user_name + "</b>");
         } else {
-            $('#user_name_span').hide();
-            $('#logout_button').hide();
-            $('#history_button').hide();
+            $('#chat-li').hide();
+            $('#history-li').hide();
+            $('#admin-li').hide();
+            $('#logout-li').hide();
+            $('#collection_name_span').text("Please login to continue.")
         }
     });
 </script>
