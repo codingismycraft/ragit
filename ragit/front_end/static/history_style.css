@@ -81,8 +81,13 @@ h1, h2, h3 {
     border-radius: 5px;
 }
 
+
 .chunks p {
     margin: 5px 0;
+}
+
+.chunks_section {
+    /*background-color: #e8e4db;*/
 }
 
 .grade {
@@ -127,10 +132,28 @@ h1, h2, h3 {
     cursor: not-allowed;
 }
 
+/* Styles for header displays.*/
+
+.container h1 {
+    display: inline;
+    font-size: 1.8em;
+    font-weight: bold;
+    margin: 0;
+    margin-right: 4em;
+}
+
+.meta_data {
+    display: inline;
+    font-size: 0.8em;
+    font-weight: lighter;
+    margin-left: 2em;
+    color: #4d4b4b;
+}
+
 /*Styles for the label-value function.*/
 
 .meta_container_div {
-   display: inherit;
+    display: inherit;
     background-color: #e8e4db;
     height: 1.5em;
     padding: 12px;

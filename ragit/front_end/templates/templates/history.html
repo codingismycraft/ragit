@@ -8,28 +8,6 @@
     <link rel="stylesheet" href="/static/history_style.css">
     <script src="/static/history.js"></script>
     <title>RAG History</title>
-
-    <style>
-
-        .label-value-pair {
-            display: flex; /* Make label and value pair side by side */
-            align-items: center;
-            margin-right: 20px; /* Space between pairs */
-            margin-bottom: 10px; /* Space to next line if wrapped */
-        }
-
-        .label-value-pair label {
-            font-weight: bold;
-            margin-right: 5px; /* Space between label and value */
-        }
-
-        .label-value-pair span {
-            background-color: #f0f0f0;
-            padding: 4px 8px;
-            border-radius: 4px;
-        }
-    </style>
-
 </head>
 <body>
 <div class="top_pane">
@@ -54,9 +32,15 @@
     </div>
 
     <div class="container">
-        <hr>
         <div class="section">
-            <h2>Query</h2>
+            <div style="display: flex; margin-bottom: 12px">
+                <h1>Query</h1>
+                <span class="meta_data" id="time_ago_span">1 day ago </span>
+                <span class="meta_data" id="temperature_span">Temperature </span>
+                <span class="meta_data" id="matches_count_span">Matches count </span>
+                <span class="meta_data" id="max_tokens_span">Maximum tokens </span>
+
+            </div>
             <div class="query" id="query"></div>
         </div>
 
@@ -64,39 +48,15 @@
             <h2 id="response_label">Response</h2>
             <div class="response" id="response"></div>
         </div>
-
-        <div class="section">
-            <div class="label-value-pair">
-                <label>Temperature</label>
-                <span id="temperature_span"></span>
-            </div>
-
-            <div class="label-value-pair">
-                <label>Max Tokens</label>
-                <span id="max_tokens_span"></span>
-            </div>
-
-            <div class="label-value-pair">
-                <label>Number of Matches</label>
-                <span id="number_of_matches_span"></span>
-            </div>
-
-            <div class="label-value-pair">
-                <label>Date</label>
-                <span id="received_at"></span>
-            </div>
-
-
-        </div>
-
-        <hr>
-        <div class="section">
+        <div class="section chunks_section">
+            <hr style="border-top:8px solid black">
             <h2>Relevant Chunks</h2>
             <div id="chunks"></div>
         </div>
 
         <div class="section">
-            <h2>Used Prompt</h2>
+            <hr style="border-top:8px solid black">
+            <h2>Prompt</h2>
             <div class="prompt" id="prompt"></div>
         </div>
     </div>

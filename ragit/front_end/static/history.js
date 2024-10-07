@@ -150,12 +150,13 @@ function display_query_details(msg_id) {
     ;
     document.getElementById("prompt").innerText = details.prompt;
 
-    $("#temperature_span").text(details.temperature);
-    $("#max_tokens_span").text(details.max_tokens);
-    $("#number_of_matches_span").text(details.count_matches);
-
     const how_long_before = time_ago(details.received_at);
-    $("#received_at").text(how_long_before);
+
+    $("#time_ago_span").text(`asked ${how_long_before}`);
+    $("#temperature_span").text(`temperature ${details.temperature}`);
+    $("#max_tokens_span").text(`max tokens ${details.max_tokens}`);
+    $("#matches_count_span").text(`matches ${details.count_matches}`);
+
 
 
     $("#delete_query_btn").removeClass().addClass("action_button");
