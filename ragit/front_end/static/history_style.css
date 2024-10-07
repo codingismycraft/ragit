@@ -138,3 +138,25 @@ h1, h2, h3 {
     opacity: 0.6;
     cursor: not-allowed;
 }
+
+/*Styles for the label-value function.*/
+
+.label-value-pair {
+    display: inline-flex;
+    align-items: center;
+    margin: 5px;
+    padding: 3px 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: #f9f9f9;
+}
+
+.label-value-pair .label {
+    font-weight: bold;
+    margin-right: 5px;
+    color: #333;
+}
+
+.label-value-pair .value {
+    color: #555;
+}

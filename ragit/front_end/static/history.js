@@ -72,7 +72,7 @@ function update_queries_from_server(data) {
     for (let i = 0; i < data.length; i++) {
         const details = data[i];
         const msg_id = details["msg_id"];
-        if (first_msg_id === null){
+        if (first_msg_id === null) {
             first_msg_id = msg_id;
         }
 
@@ -93,7 +93,7 @@ function update_queries_from_server(data) {
         );
         questionList.appendChild(li);
     }
-    if (first_msg_id != null){
+    if (first_msg_id != null) {
         display_query_details(first_msg_id);
     }
 }
@@ -118,14 +118,25 @@ function display_query_details(msg_id) {
 
     document.getElementById("chunks").innerHTML = '';
     details.matches.forEach(chunk => {
-        document.getElementById("chunks").appendChild(
+        const chunks_container = document.getElementById("chunks");
+        chunks_container.appendChild(
             display_value_in_circle(chunk["distance"])
         );
+
+        chunks_container.appendChild(
+            make_label_value("source", chunk["source"])
+        )
+
+        chunks_container.appendChild(
+            make_label_value("page", chunk["page"])
+        )
+
         const p = document.createElement("p");
         p.innerText = chunk["txt"];
-        document.getElementById("chunks").appendChild(p);
+        chunks_container.appendChild(p);
+
         const hr = document.createElement("hr");
-        document.getElementById("chunks").appendChild(hr);
+        chunks_container.appendChild(hr);
     });
     document.getElementById("prompt").innerText = details.prompt;
 
@@ -135,7 +146,7 @@ function display_query_details(msg_id) {
 
     const received_at = format_date_time(details.received_at);
     $("#received_at").text(received_at);
-        
+
 
     $("#delete_query_btn").removeClass().addClass("action_button");
 
@@ -188,13 +199,11 @@ function display_value_in_circle(value) {
     return span;
 }
 
-
-
 /**
  * Converts a data string.
  *
  * Receives a date in this format:
- * 2024-10-06T14:20:51.650732 
+ * 2024-10-06T14:20:51.650732
  *
  * and returns it to the following:
  * Sun 06, October 2024 2:20 pm
@@ -224,4 +233,26 @@ function format_date_time(input) {
     hours = hours ? hours : 12; // the hour '0' should be '12'
 
     return `${dayOfWeek} ${day}, ${month} ${year} ${hours}:${minutes} ${ampm}`;
+}
+
+
+/**
+ * Create a span element to wrap the label and value
+ */
+function make_label_value(label, value) {
+    const span = document.createElement('span');
+    span.className = 'label-value-pair';
+
+    const labelElement = document.createElement('span');
+    labelElement.className = 'label';
+    labelElement.textContent = label + ':';
+
+    const valueElement = document.createElement('span');
+    valueElement.className = 'value';
+    valueElement.textContent = value;
+
+    span.appendChild(labelElement);
+    span.appendChild(valueElement);
+
+    return span;
 }
