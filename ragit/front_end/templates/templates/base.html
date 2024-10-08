@@ -6,12 +6,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="/static/history_style.css">
     <script src="/static/query_retrieved.js"></script>
+    <script src="/static/history.js"></script>
     <script src="https://code.jquery.com/jquery-latest.min.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
     <script type="text/javascript"
             src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+
+    <script>
+        // Set the name of the page (CHAT, HISTORY or ADMIN)
+        const PAGE_NAME = "{{ page_name }}";
+    </script>
 </head>
 <body>
 <div class="navigation_container">
@@ -19,11 +27,10 @@
     <img src="/static/ragit.jpeg" width="76px" height=100%>
     </span>
     <ul>
-        <li id="chat-li"><a href="#chat">Chat</a></li>
+        <li id="chat-li"><a href="/ragit">Chat</a></li>
         <li id="history-li"><a href="/history">History</a></li>
-        <li id="admin-li"><a href="/admin">Admin</a></li>
+        <li id="admin-li" ><a href="/admin">Admin</a></li>
         <li id="logout-li"><a onclick="logout()">Log Out</a></li>
-
     </ul>
 </div>
 
@@ -42,6 +49,16 @@
         const user_name = $.cookie('user_name');
         if (user_name != null) {
             $('#user_name_span').html("User:  <b>" + user_name + "</b>");
+
+            if (PAGE_NAME === "CHAT"){
+                $("#chat-li").removeClass().addClass("disabled");
+            }
+            else if (PAGE_NAME === "HISTORY"){
+                $("#history-li").removeClass().addClass("disabled");
+            }
+            else if (PAGE_NAME === "ADMIN"){
+                $("#admin-li").removeClass().addClass("disabled");
+            }
         } else {
             $('#chat-li').hide();
             $('#history-li').hide();

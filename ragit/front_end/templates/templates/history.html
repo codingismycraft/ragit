@@ -1,31 +1,12 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="https://code.jquery.com/jquery-latest.min.js"></script>
-    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
-    <link rel="stylesheet" href="/static/history_style.css">
-    <script src="/static/history.js"></script>
-    <title>RAG History</title>
-</head>
-<body>
-<div class="top_pane">
-    <h2 style="display: inline-block">Query History</h2>
+{% extends "base.html" %}
+{% block content %}
 
-    <span style="margin-left: 300px; height: 50px">
-    <button class="action_button"
-            onclick='window.location.href = "/ragit"'>
-        Chat box
-    </button>
-    <button id="delete_query_btn" class="action_button disabled">
-        Delete
-    </button>
-    </span>
-</div>
 
 <div class="main_content">
     <div class="sidebar">
+        <button id="delete_query_btn" class="action_button disabled">
+            Click here to delete the current query
+        </button>
         <ul id="question-list">
             <!-- Questions will be populated here -->
         </ul>
@@ -48,6 +29,7 @@
             <h2 id="response_label">Response</h2>
             <div class="response" id="response"></div>
         </div>
+
         <div class="section chunks_section">
             <hr style="border-top:8px solid black">
             <h2>Relevant Chunks</h2>
@@ -67,6 +49,5 @@
         retrieve_queries();
     });
 </script>
-</body>
-</html>
 
+{% endblock %}

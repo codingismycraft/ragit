@@ -122,7 +122,6 @@ def web_handler(handler_func):
 class RagitHandler:
     """Implements all the web handlers used from the service."""
 
-
     @web_handler
     async def admin_handler(self, request):
         """Displays the admin page.
@@ -140,7 +139,8 @@ class RagitHandler:
             collection_name = Globals.rag_manager.get_rag_collection_name()
             txt = template.render(
                 host=request.host,
-                collection_name=collection_name
+                collection_name=collection_name,
+                page_name="ADMIN"
             )
             response = web.Response(
                 body=txt.encode(),
@@ -150,7 +150,6 @@ class RagitHandler:
             response.set_cookie('user_name', user_name)
             logger.info("Serving admin page.")
             return response
-
 
     @web_handler
     async def main_page_handler(self, request):
@@ -169,7 +168,8 @@ class RagitHandler:
             collection_name = Globals.rag_manager.get_rag_collection_name()
             txt = template.render(
                 host=request.host,
-                collection_name=collection_name
+                collection_name=collection_name,
+                page_name="CHAT"
             )
             response = web.Response(
                 body=txt.encode(),
@@ -189,8 +189,13 @@ class RagitHandler:
             Globals.validate_token(auth_token, user_name)
         except AuthenticationError:
             return web.HTTPFound('/login')
+        collection_name = Globals.rag_manager.get_rag_collection_name()
         template = _JINJA_ENV.get_template('history.html')
-        txt = template.render()
+        txt = template.render(
+            host=request.host,
+            collection_name=collection_name,
+            page_name="HISTORY"
+        )
         response = web.Response(
             body=txt.encode(),
             content_type='text/html'
@@ -228,7 +233,6 @@ class RagitHandler:
             )
         else:
             return web.Response(status=204)
-
 
     @web_handler
     async def query_handler(self, request):

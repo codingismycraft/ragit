@@ -205,9 +205,16 @@ input[type="number"] {
 }
 
 .navigation_container ul li.disabled a {
-    color: #888; /* Grey out the disabled option */
-    pointer-events: none; /* Disable clicking */
-    cursor: not-allowed; /* Change cursor on hover */
+    color: #ff9100;
+    pointer-events: none;
+    cursor: not-allowed;
+    font-weight: bold;
+    text-decoration: underline;
+    background-color: #696262;
+    padding-left: 12px;
+    padding-right: 6px;
 }
+
+
 
 /* ********************************************* */
