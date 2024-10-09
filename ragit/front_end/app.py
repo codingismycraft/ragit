@@ -1,5 +1,23 @@
 #!/usr/bin/env python3
-"""Exposes the Sibyl Main web page."""
+"""Exposes the Ragit Front End.
+
+This module initializes an aiohttp based web server that serves different
+front-end interfaces based on command line parameters.
+
+Usage:
+    python server.py <collection_name> [--admin]
+
+Parameters:
+collection_name (str):
+    Mandatory. The name of the RAG (Retrieval-Augmented Generation) collection
+    that must point to the corresponding vectorized database.
+
+--admin (optional):
+    If passed, regardless of case (e.g., 'ADMIN', 'admin'), the application
+    will enable full administrative features on the front-end, including
+    history and admin screens. If not passed, the application will default to
+    only providing the chatbox interface.
+"""
 
 import datetime
 import functools
@@ -50,9 +68,14 @@ class Globals:
     the lifespan of the program.
 
     :cvar: str _secret_key:  The secret key that is used for authentication.
+
+    :cvar: bool is_admin: True if the user is an admin; in this case he will
+    have access to the full environment including the postgres database and
+    the document file storage.
     """
     rag_manager = None
     _secret_key = str(uuid.uuid4())
+    is_admin = False
 
     @classmethod
     def generate_token(cls, user_name, expiration_minutes=3600):
@@ -140,7 +163,8 @@ class RagitHandler:
             txt = template.render(
                 host=request.host,
                 collection_name=collection_name,
-                page_name="ADMIN"
+                page_name="ADMIN",
+                is_admin=Globals.is_admin
             )
             response = web.Response(
                 body=txt.encode(),
@@ -169,7 +193,9 @@ class RagitHandler:
             txt = template.render(
                 host=request.host,
                 collection_name=collection_name,
-                page_name="CHAT"
+                page_name="CHAT",
+                is_admin=Globals.is_admin
+
             )
             response = web.Response(
                 body=txt.encode(),
@@ -194,7 +220,8 @@ class RagitHandler:
         txt = template.render(
             host=request.host,
             collection_name=collection_name,
-            page_name="HISTORY"
+            page_name="HISTORY",
+            is_admin = Globals.is_admin
         )
         response = web.Response(
             body=txt.encode(),
@@ -396,11 +423,27 @@ def initialize():
     common.init_settings()
     if common.running_inside_docker_container():
         collection_name = os.environ.get("RAG_COLLECTION")
+        is_admin = os.environ.get("IS_ADMIN")
+        if isinstance(is_admin, str):
+            is_admin = is_admin.upper() == "ADMIN"
+        else:
+            is_admin = False
     else:
         try:
             collection_name = sys.argv[1]
         except IndexError:
             raise ValueError("You must provide a valid collection name.")
+
+        try:
+            is_admin = sys.argv[2]
+        except IndexError:
+            is_admin = False
+        else:
+            if isinstance(is_admin, str):
+                is_admin = is_admin.upper() == "ADMIN"
+            else:
+                is_admin = False
+    Globals.is_admin = is_admin
     print(f"Loading vector db, using collection {collection_name}")
     logger.info(f"Loading vector db, using collection {collection_name}")
 
