@@ -20,15 +20,11 @@
     </table>
 
     <form action="/admin" method="POST" enctype="multipart/form-data">
+        <div style="margin-top: 12px; margin-bottom: 12px">
+            Upload a document to the RAG Collection
+        </div>
         <input type="file" name="file" required>
-        <button type="submit">Upload</button>
+        <button type="submit" class="admin_button">Upload</button>
     </form>
-
-    <button class="admin_button" id="upload-new-document">
-        Upload New Document
-    </button>
-    <button class="admin_button" id="complete-processing">
-        Complete Processing
-    </button>
 
 {% endblock %}

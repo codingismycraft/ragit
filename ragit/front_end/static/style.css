@@ -104,7 +104,7 @@ body {
 }
 
 .chat_vote_up {
-   background-color: #daebda;
+    background-color: #daebda;
 }
 
 .chat_vote_down {
@@ -216,5 +216,12 @@ input[type="number"] {
 }
 
 
-
 /* ********************************************* */
+
+form {
+    border: 2px solid #333;
+    margin: 20px;
+    padding: 10px;
+    width: 500px;
+
+}
