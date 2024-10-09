@@ -1,38 +1,29 @@
 {% extends "base.html" %}
 {% block content %}
 
-<h1>Collection Statistics</h1>
-<table id="stats_table">
-    <tr>
-        <th>Label</th>
-        <th>Value</th>
-    </tr>
-    <!-- Dynamically generated data will go here -->
-    <script>
-        // Sample dynamic data (replace with your actual data)
-        const data = [
-            { label: 'name', value: 'stories' },
-            { label: 'full path', value: '/home/vagrant/ragit-data/stories/documents' },
-            { label: 'total documents', value: 10 },
-            { label: 'total documents in db', value: 10 },
-            { label: 'total chunks', value: 85 },
-            { label: 'with embeddings', value: 85 },
-            { label: 'without embeddings', value: 0 },
-            { label: 'inserted to vectordb', value: 85 },
-            { label: 'to insert to vector db', value: 0 }
-        ];
+    <h1>Collection Statistics</h1>
+    <table>
+        <thead>
+        <tr>
+            <th>Label</th>
+            <th>Value</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for key, value in data.items() %}
+            <tr>
+                <td>{{ key }}</td>
+                <td>{{ value }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
 
-        // Generate the table rows dynamically
-        const tableBody = document.getElementById('stats_table').getElementsByTagName('tbody')[0];
-        data.forEach((item) => {
-            const row = tableBody.insertRow();
-            row.insertCell().innerHTML = item.label;
-            row.insertCell().innerHTML = `${item.value}`;
-        });
-    </script>
-</table>
-
-<button class="admin_button" id="upload-new-document">Upload New Document</button>
-<button class="admin_button" id="complete-processing">Complete Processing</button>
+    <button class="admin_button" id="upload-new-document">
+        Upload New Document
+    </button>
+    <button class="admin_button" id="complete-processing">
+        Complete Processing
+    </button>
 
 {% endblock %}

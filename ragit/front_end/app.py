@@ -20,6 +20,7 @@ collection_name (str):
 """
 
 import datetime
+import dataclasses
 import functools
 import logging
 import os
@@ -32,6 +33,7 @@ import jinja2
 import jwt
 
 import ragit.libs.common as common
+import ragit.libs.dbutil as dbutil
 import ragit.libs.rag_mgr as rag_mgr
 import ragit.libs.user_registry as user_registry
 
@@ -110,6 +112,45 @@ class Globals:
             raise AuthenticationError(str(ex)) from ex
 
 
+def get_metrics():
+    """Reports metrics for the active RAG collection.
+
+    This function gathers two types of metrics:
+
+    1. Document Processing Metrics:
+       These metrics pertain to document that have been processed and inserted
+       into the vectorization database. They are sourced from a PostgreSQL
+       database corresponding to the specified collection name, ensuring
+       synchronization between the documents, the database, and the vector
+       database.
+
+    2. Front-End Usage Metrics:
+       These metrics reflect the usage of the front end. They are stored in an
+       SQLite database, managed by the `UserRegistry` class. The metrics
+       include user queries, responses received, and details about the RAG
+       model. They also track the chunks utilized in each request and other
+       relevant information.
+
+    :return: A dictionary containing metrics as key-value pairs.
+    :rtype: dict
+    """
+    collection_name = Globals.rag_manager.get_rag_collection_name()
+    conn_str = common.make_local_connection_string(collection_name)
+    dbutil.SimpleSQL.register_connection_string(conn_str)
+    ragger = rag_mgr.RagManager(collection_name)
+    metrics = {}
+    with dbutil.SimpleSQL() as db:
+        stats = ragger.get_metrics(db)
+        for field in dataclasses.fields(stats):
+            field_name = field.name
+            if field_name.strip().lower() == 'full_path':
+                continue
+            field_value = getattr(stats, field_name)
+            name = f"{field_name.replace('_', ' ').ljust(25, '.')}"
+            metrics[name] = field_value
+    return metrics
+
+
 def _raw_headers_to_dict(raw_headers):
     """Converts raw headers to a dictionary."""
     d = {}
@@ -164,6 +205,7 @@ class RagitHandler:
                 host=request.host,
                 collection_name=collection_name,
                 page_name="ADMIN",
+                data=get_metrics(),
                 is_admin=Globals.is_admin
             )
             response = web.Response(
@@ -221,7 +263,7 @@ class RagitHandler:
             host=request.host,
             collection_name=collection_name,
             page_name="HISTORY",
-            is_admin = Globals.is_admin
+            is_admin=Globals.is_admin
         )
         response = web.Response(
             body=txt.encode(),
@@ -444,6 +486,10 @@ def initialize():
             else:
                 is_admin = False
     Globals.is_admin = is_admin
+    if Globals.is_admin:
+        print("Running the RAGIT UI as ADMIN")
+    else:
+        print("Running the RAGIT UI as not ADMIN")
     print(f"Loading vector db, using collection {collection_name}")
     logger.info(f"Loading vector db, using collection {collection_name}")
 
