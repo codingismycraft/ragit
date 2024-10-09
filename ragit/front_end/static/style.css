@@ -204,7 +204,7 @@ input[type="number"] {
     background-color: #575757;
 }
 
-.navigation_container ul li.disabled a {
+.navigation_container ul li.set_active_page a {
     color: #ff9100;
     pointer-events: none;
     cursor: not-allowed;

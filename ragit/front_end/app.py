@@ -19,12 +19,13 @@ collection_name (str):
     only providing the chatbox interface.
 """
 
-import datetime
 import dataclasses
+import datetime
 import functools
 import logging
 import os
 import sys
+import tempfile
 import uuid
 
 import aiohttp
@@ -185,6 +186,62 @@ def web_handler(handler_func):
 
 class RagitHandler:
     """Implements all the web handlers used from the service."""
+
+    @classmethod
+    def _is_multipart_request(cls, request):
+        """Checks if the passed in request is a multipart upload.
+
+        :param request : aiohttp.web.Request instance
+
+        :returns: True if the request is a multipart upload, False otherwise.
+        """
+        headers = dict(request.headers)
+        for key, value in headers.items():
+            if key.lower() == "content-type":
+                return "multipart" in value.lower()
+        return False
+
+    @web_handler
+    async def upload_file(cls, request):
+        """Uploads the file.
+
+        Saves the file that is uploaded under the collection's documents
+        directory and then it runs its embeddings and inserts it to the
+        vectorized database.
+
+        :param request : aiohttp.web.Request instance
+
+        :returns: The fullpath to the temporary file holding the upload.
+        :rtype: str
+        """
+        if not cls._is_multipart_request(request):
+            return web.Response(
+                text="Invalid upload: not a multipart/form-data request.",
+                status=400
+            )
+        reader = await request.multipart()
+        temp_file_path = None
+        uploaded_filename = None
+        while True:
+            part = await reader.next()
+            if part is None:
+                break
+            if part.filename:
+                shared_dir = common.get_shared_directory()
+                fullpath = os.path.join(
+                    shared_dir,
+                    Globals.rag_manager.get_rag_collection_name(),
+                    "documents",
+                    part.filename
+                )
+                with open(fullpath, 'wb') as fout:
+                    while True:
+                        chunk = await part.read_chunk()
+                        if not chunk:
+                            break
+                        fout.write(chunk)
+
+        raise web.HTTPFound(location="/admin")
 
     @web_handler
     async def admin_handler(self, request):
@@ -366,7 +423,10 @@ class RagitHandler:
         :param request: The web request.
         """
         template = _JINJA_ENV.get_template('signup.html')
-        txt = template.render(host=request.host)
+        txt = template.render(
+            host=request.host,
+            page_name="CHAT"
+        )
         return web.Response(
             body=txt.encode(),
             content_type='text/html'
@@ -430,7 +490,10 @@ class RagitHandler:
             Globals.validate_token(auth_token, user_name)
         except AuthenticationError:
             template = _JINJA_ENV.get_template('login.html')
-            txt = template.render(host=request.host)
+            txt = template.render(
+                host=request.host,
+                page_name="LOGIN"
+            )
             logger.info("Serving login page.")
             return web.Response(
                 body=txt.encode(),
@@ -512,7 +575,6 @@ def run():
             web.get('/login', ragit_handler.login_screen, name="login"),
             web.post('/login', ragit_handler.login_validate),
             web.get('/ragit', ragit_handler.main_page_handler),
-            web.get('/admin', ragit_handler.admin_handler),
             web.post('/ragit', ragit_handler.query_handler),
             web.get('/signup', ragit_handler.signup_screen),
             web.post('/signup', ragit_handler.signup_new_acount),
@@ -520,6 +582,8 @@ def run():
             web.get('/history', ragit_handler.history),
             web.get('/queries', ragit_handler.get_all_queries),
             web.delete('/queries/{msg_id}', ragit_handler.delete_query),
+            web.get('/admin', ragit_handler.admin_handler),
+            web.post('/admin', ragit_handler.upload_file)
         ]
     )
 

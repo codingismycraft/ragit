@@ -28,8 +28,8 @@
     </span>
     <ul>
         <li id="chat-li"><a href="/ragit">Chat</a></li>
+        <li id="history-li"><a href="/history">History</a></li>
         {% if is_admin %}
-            <li id="history-li"><a href="/history">History</a></li>
             <li id="admin-li"><a href="/admin">Admin</a></li>
         {% endif %}
         <li id="logout-li"><a onclick="logout()">Log Out</a></li>
@@ -48,32 +48,36 @@
 
 <script>
     $(document).ready(function () {
-        const user_name = $.cookie('user_name');
-        if (user_name != null) {
-            $('#user_name_span').html("User:  <b>" + user_name + "</b>");
-
-            if (PAGE_NAME === "CHAT") {
-                $("#chat-li").removeClass().addClass("disabled");
-            } else if (PAGE_NAME === "HISTORY") {
-                {% if is_admin %}
-                    $("#history-li").removeClass().addClass("disabled");
-                {% endif %}
-            } else if (PAGE_NAME === "ADMIN") {
-                {% if is_admin %}
-                    $("#admin-li").removeClass().addClass("disabled");
-                {% endif %}
-            }
-        } else {
+        if (PAGE_NAME === "LOGIN") {
             $('#chat-li').hide();
-            {% if is_admin %}
-                $('#history-li').hide();
-                $('#admin-li').hide();
-            {% endif %}
+            $('#history-li').hide();
+            $('#admin-li').hide();
             $('#logout-li').hide();
             $('#collection_name_span').text("Please login to continue.")
+        } else {
+            const user_name = $.cookie('user_name');
+            if (user_name != null) {
+                $('#user_name_span').html("User:  <b>" + user_name + "</b>");
+
+                if (PAGE_NAME === "CHAT") {
+                    $("#chat-li").removeClass().addClass("set_active_page");
+                    console.log("here");
+                } else if (PAGE_NAME === "HISTORY") {
+                    $("#history-li").removeClass().addClass("set_active_page");
+                } else if (PAGE_NAME === "ADMIN") {
+                    {% if is_admin %}
+                        $("#admin-li").removeClass().addClass("set_active_page");
+                    {% endif %}
+                }
+            } else {
+                $('#chat-li').hide();
+                $('#history-li').hide();
+                $('#admin-li').hide();
+                $('#logout-li').hide();
+                $('#collection_name_span').text("Please login to continue.")
+            }
         }
     });
 </script>
-
 </body>
 </html>
