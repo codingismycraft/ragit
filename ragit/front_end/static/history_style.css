@@ -1,5 +1,6 @@
 /* Defines the styles used for the history web page. */
 
+/*
 body {
     font-family: Arial, sans-serif;
     margin: 0;
@@ -8,6 +9,8 @@ body {
     flex-direction: column;
     height: 100vh;
 }
+
+ */
 
 .top_pane {
     width: 100%;
@@ -33,12 +36,12 @@ body {
     color: white;
     padding: 20px;
     box-sizing: border-box;
-    height: 100%;
     overflow-y: auto;
 }
 
 .sidebar h2 {
     color: #ddd;
+    height: auto;
 }
 
 .sidebar ul {

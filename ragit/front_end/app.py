@@ -1,11 +1,31 @@
 #!/usr/bin/env python3
-"""Exposes the Sibyl Main web page."""
+"""Exposes the Ragit Front End.
 
+This module initializes an aiohttp based web server that serves different
+front-end interfaces based on command line parameters.
+
+Usage:
+    python server.py <collection_name> [--admin]
+
+Parameters:
+collection_name (str):
+    Mandatory. The name of the RAG (Retrieval-Augmented Generation) collection
+    that must point to the corresponding vectorized database.
+
+--admin (optional):
+    If passed, regardless of case (e.g., 'ADMIN', 'admin'), the application
+    will enable full administrative features on the front-end, including
+    history and admin screens. If not passed, the application will default to
+    only providing the chatbox interface.
+"""
+
+import dataclasses
 import datetime
 import functools
 import logging
 import os
 import sys
+import tempfile
 import uuid
 
 import aiohttp
@@ -14,6 +34,7 @@ import jinja2
 import jwt
 
 import ragit.libs.common as common
+import ragit.libs.dbutil as dbutil
 import ragit.libs.rag_mgr as rag_mgr
 import ragit.libs.user_registry as user_registry
 
@@ -50,9 +71,14 @@ class Globals:
     the lifespan of the program.
 
     :cvar: str _secret_key:  The secret key that is used for authentication.
+
+    :cvar: bool is_admin: True if the user is an admin; in this case he will
+    have access to the full environment including the postgres database and
+    the document file storage.
     """
     rag_manager = None
     _secret_key = str(uuid.uuid4())
+    is_admin = False
 
     @classmethod
     def generate_token(cls, user_name, expiration_minutes=3600):
@@ -85,6 +111,45 @@ class Globals:
             return payload
         except (jwt.ExpiredSignatureError, jwt.InvalidTokenError) as ex:
             raise AuthenticationError(str(ex)) from ex
+
+
+def get_metrics():
+    """Reports metrics for the active RAG collection.
+
+    This function gathers two types of metrics:
+
+    1. Document Processing Metrics:
+       These metrics pertain to document that have been processed and inserted
+       into the vectorization database. They are sourced from a PostgreSQL
+       database corresponding to the specified collection name, ensuring
+       synchronization between the documents, the database, and the vector
+       database.
+
+    2. Front-End Usage Metrics:
+       These metrics reflect the usage of the front end. They are stored in an
+       SQLite database, managed by the `UserRegistry` class. The metrics
+       include user queries, responses received, and details about the RAG
+       model. They also track the chunks utilized in each request and other
+       relevant information.
+
+    :return: A dictionary containing metrics as key-value pairs.
+    :rtype: dict
+    """
+    collection_name = Globals.rag_manager.get_rag_collection_name()
+    conn_str = common.make_local_connection_string(collection_name)
+    dbutil.SimpleSQL.register_connection_string(conn_str)
+    ragger = rag_mgr.RagManager(collection_name)
+    metrics = {}
+    with dbutil.SimpleSQL() as db:
+        stats = ragger.get_metrics(db)
+        for field in dataclasses.fields(stats):
+            field_name = field.name
+            if field_name.strip().lower() == 'full_path':
+                continue
+            field_value = getattr(stats, field_name)
+            name = f"{field_name.replace('_', ' ').ljust(25, '.')}"
+            metrics[name] = field_value
+    return metrics
 
 
 def _raw_headers_to_dict(raw_headers):
@@ -122,6 +187,93 @@ def web_handler(handler_func):
 class RagitHandler:
     """Implements all the web handlers used from the service."""
 
+    @classmethod
+    def _is_multipart_request(cls, request):
+        """Checks if the passed in request is a multipart upload.
+
+        :param request : aiohttp.web.Request instance
+
+        :returns: True if the request is a multipart upload, False otherwise.
+        """
+        headers = dict(request.headers)
+        for key, value in headers.items():
+            if key.lower() == "content-type":
+                return "multipart" in value.lower()
+        return False
+
+    @web_handler
+    async def upload_file(cls, request):
+        """Uploads the file.
+
+        Saves the file that is uploaded under the collection's documents
+        directory and then it runs its embeddings and inserts it to the
+        vectorized database.
+
+        :param request : aiohttp.web.Request instance
+
+        :returns: The fullpath to the temporary file holding the upload.
+        :rtype: str
+        """
+        if not cls._is_multipart_request(request):
+            return web.Response(
+                text="Invalid upload: not a multipart/form-data request.",
+                status=400
+            )
+        reader = await request.multipart()
+        temp_file_path = None
+        uploaded_filename = None
+        while True:
+            part = await reader.next()
+            if part is None:
+                break
+            if part.filename:
+                shared_dir = common.get_shared_directory()
+                fullpath = os.path.join(
+                    shared_dir,
+                    Globals.rag_manager.get_rag_collection_name(),
+                    "documents",
+                    part.filename
+                )
+                with open(fullpath, 'wb') as fout:
+                    while True:
+                        chunk = await part.read_chunk()
+                        if not chunk:
+                            break
+                        fout.write(chunk)
+
+        raise web.HTTPFound(location="/admin")
+
+    @web_handler
+    async def admin_handler(self, request):
+        """Displays the admin page.
+
+        :param request: The web request.
+        """
+        try:
+            auth_token = request.cookies.get('ragit_auth_token')
+            user_name = request.cookies.get('user_name')
+            Globals.validate_token(auth_token, user_name)
+        except AuthenticationError:
+            return web.HTTPFound('/login')
+        else:
+            template = _JINJA_ENV.get_template('admin.html')
+            collection_name = Globals.rag_manager.get_rag_collection_name()
+            txt = template.render(
+                host=request.host,
+                collection_name=collection_name,
+                page_name="ADMIN",
+                data=get_metrics(),
+                is_admin=Globals.is_admin
+            )
+            response = web.Response(
+                body=txt.encode(),
+                content_type='text/html'
+            )
+            response.set_cookie('ragit_auth_token', auth_token)
+            response.set_cookie('user_name', user_name)
+            logger.info("Serving admin page.")
+            return response
+
     @web_handler
     async def main_page_handler(self, request):
         """Displays the main page.
@@ -138,7 +290,11 @@ class RagitHandler:
             template = _JINJA_ENV.get_template('index.html')
             collection_name = Globals.rag_manager.get_rag_collection_name()
             txt = template.render(
-                host=request.host, collection_name=collection_name
+                host=request.host,
+                collection_name=collection_name,
+                page_name="CHAT",
+                is_admin=Globals.is_admin
+
             )
             response = web.Response(
                 body=txt.encode(),
@@ -158,8 +314,14 @@ class RagitHandler:
             Globals.validate_token(auth_token, user_name)
         except AuthenticationError:
             return web.HTTPFound('/login')
+        collection_name = Globals.rag_manager.get_rag_collection_name()
         template = _JINJA_ENV.get_template('history.html')
-        txt = template.render()
+        txt = template.render(
+            host=request.host,
+            collection_name=collection_name,
+            page_name="HISTORY",
+            is_admin=Globals.is_admin
+        )
         response = web.Response(
             body=txt.encode(),
             content_type='text/html'
@@ -197,7 +359,6 @@ class RagitHandler:
             )
         else:
             return web.Response(status=204)
-
 
     @web_handler
     async def query_handler(self, request):
@@ -262,7 +423,10 @@ class RagitHandler:
         :param request: The web request.
         """
         template = _JINJA_ENV.get_template('signup.html')
-        txt = template.render(host=request.host)
+        txt = template.render(
+            host=request.host,
+            page_name="CHAT"
+        )
         return web.Response(
             body=txt.encode(),
             content_type='text/html'
@@ -326,7 +490,10 @@ class RagitHandler:
             Globals.validate_token(auth_token, user_name)
         except AuthenticationError:
             template = _JINJA_ENV.get_template('login.html')
-            txt = template.render(host=request.host)
+            txt = template.render(
+                host=request.host,
+                page_name="LOGIN"
+            )
             logger.info("Serving login page.")
             return web.Response(
                 body=txt.encode(),
@@ -361,11 +528,31 @@ def initialize():
     common.init_settings()
     if common.running_inside_docker_container():
         collection_name = os.environ.get("RAG_COLLECTION")
+        is_admin = os.environ.get("IS_ADMIN")
+        if isinstance(is_admin, str):
+            is_admin = is_admin.upper() == "ADMIN"
+        else:
+            is_admin = False
     else:
         try:
             collection_name = sys.argv[1]
         except IndexError:
             raise ValueError("You must provide a valid collection name.")
+
+        try:
+            is_admin = sys.argv[2]
+        except IndexError:
+            is_admin = False
+        else:
+            if isinstance(is_admin, str):
+                is_admin = is_admin.upper() == "ADMIN"
+            else:
+                is_admin = False
+    Globals.is_admin = is_admin
+    if Globals.is_admin:
+        print("Running the RAGIT UI as ADMIN")
+    else:
+        print("Running the RAGIT UI as not ADMIN")
     print(f"Loading vector db, using collection {collection_name}")
     logger.info(f"Loading vector db, using collection {collection_name}")
 
@@ -394,7 +581,9 @@ def run():
             web.post('/vote', ragit_handler.vote),
             web.get('/history', ragit_handler.history),
             web.get('/queries', ragit_handler.get_all_queries),
-            web.delete('/queries/{msg_id}', ragit_handler.delete_query)
+            web.delete('/queries/{msg_id}', ragit_handler.delete_query),
+            web.get('/admin', ragit_handler.admin_handler),
+            web.post('/admin', ragit_handler.upload_file)
         ]
     )
 
