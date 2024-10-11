@@ -129,7 +129,7 @@ function display_query_details(msg_id) {
             );
 
             meta_container.appendChild(
-                display_value_in_span(chunk["source"])
+                display_document_link(chunk["source"])
             )
 
             const page = chunk["page"];
@@ -156,7 +156,6 @@ function display_query_details(msg_id) {
     $("#temperature_span").text(`temperature ${details.temperature}`);
     $("#max_tokens_span").text(`max tokens ${details.max_tokens}`);
     $("#matches_count_span").text(`matches ${details.count_matches}`);
-
 
 
     $("#delete_query_btn").removeClass().addClass("action_button");
@@ -294,6 +293,29 @@ function display_value_in_span(value) {
 }
 
 /**
+ * Displays the link to the document. When clicked it will open a modal window.
+ */
+function display_document_link(doc_link) {
+    const span = document.createElement('span');
+    span.className = "value_container";
+    const link = document.createElement("a");
+    link.href = "#";
+    link.onclick = function () {
+        // Evaluate the document type.
+        const index = doc_link.lastIndexOf('.');
+        const file_ext = doc_link.slice(index) ? doc_link.slice(index) : "";
+        if (file_ext === ".pdf") {
+            show_pdf_modal_dialog(doc_link);
+        } else {
+            show_modal_dialog(doc_link);
+        }
+    }
+    link.innerText = doc_link;
+    span.appendChild(link);
+    return span;
+}
+
+/**
  * Displays a numeric value in a rectangle (up to two decimals).
  *
  */
@@ -302,4 +324,44 @@ function display_value_in_rect(value) {
     span.className = "value_rect";
     span.textContent = value.toFixed(2);
     return span;
+}
+
+function show_pdf_modal_dialog(doc_link) {
+    const dialog = document.getElementById('editorDialog');
+    dialog.innerHTML = '';
+    dialog.className = "modal_editor";
+    const div = document.createElement("div");
+    div.id = "modal_editor";
+
+    const embed = document.createElement("embed");
+    embed.type = "application/pdf";
+    embed.className = "pdf-frame";
+    embed.src = "/document/" + doc_link;
+    dialog.appendChild(embed);
+    dialog.showModal();
+}
+
+
+function show_modal_dialog(document_link) {
+    const dialog = document.getElementById('editorDialog');
+    dialog.innerHTML = '';
+    const div = document.createElement("div");
+    div.id = "modal_editor";
+    div.className = "modal_editor";
+    div.innerText = 'function foo(items) { var x = "All this is syntax highlighted"; }';
+
+    const btn = document.createElement("button");
+    btn.innerText = "X";
+    btn.onclick = function () {
+        const dialog_to_close = document.getElementById('editorDialog');
+        dialog_to_close.close();
+    }
+    dialog.appendChild(btn);
+    dialog.appendChild(div);
+
+    const editor = ace.edit("modal_editor");
+    editor.setTheme("ace/theme/monokai");
+    editor.session.setMode("ace/mode/javascript");
+    dialog.showModal();
+    editor.resize();
 }
