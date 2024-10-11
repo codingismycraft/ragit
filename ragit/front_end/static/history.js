@@ -19,7 +19,7 @@
  * to memory and performance issues. Future enhancements will focus on making
  * data retrieval and management more dynamic to mitigate these issues.
  ******************************************************************************
- */
+*/
 
 // Stores the retrieved queries in memory.
 let _historical_queries = null;
@@ -294,24 +294,29 @@ function display_value_in_span(value) {
 
 /**
  * Displays the link to the document. When clicked it will open a modal window.
+ *
+ * @param {string} filepath - The relative file path to display in the title.
  */
-function display_document_link(doc_link) {
+function display_document_link(filepath) {
     const span = document.createElement('span');
     span.className = "value_container";
     const link = document.createElement("a");
     link.href = "#";
     link.onclick = function () {
+        // Called when the user clicks on document link.
         // Evaluate the document type.
-        const index = doc_link.lastIndexOf('.');
-        const file_ext = doc_link.slice(index) ? doc_link.slice(index) : "";
-        const url = "/document/" + doc_link;
+        const index = filepath.lastIndexOf('.');
+        const file_ext = filepath.slice(index) ? filepath.slice(index) : "";
+        const url = "/document/" + filepath;
+
+        // Call the applicable function to display the document.
         if (file_ext === ".pdf") {
-            show_pdf_modal_dialog(url);
+            show_pdf_modal_dialog(url, filepath);
         } else {
-            show_modal_dialog(url, doc_link);
+            show_modal_dialog(url, filepath);
         }
     }
-    link.innerText = doc_link;
+    link.innerText = filepath;
     span.appendChild(link);
     return span;
 }
@@ -327,7 +332,14 @@ function display_value_in_rect(value) {
     return span;
 }
 
-function show_pdf_modal_dialog(doc_link) {
+/**
+ * Displays a pdf in a modal dialog.
+ *
+ * @param {string} doc_link - The link to the document to display.
+ * @param {string} filepath - The relative file path to display in the title.
+ *
+ */
+function show_pdf_modal_dialog(doc_link, filepath) {
     const dialog = document.getElementById('editorDialog');
     dialog.innerHTML = '';
     dialog.className = "modal_editor";
@@ -342,7 +354,13 @@ function show_pdf_modal_dialog(doc_link) {
     dialog.showModal();
 }
 
-function show_modal_dialog(document_link, filepath) {
+/**
+ * Displays a modal dialog for text loaded using a link to the server.
+ *
+ * @param {string} doc_link - The link to the document to display.
+ * @param {string} filepath - The relative file path to display in the title.
+ */
+function show_modal_dialog(doc_link, filepath) {
     const dialog = document.getElementById('editorDialog');
     dialog.innerHTML = '';
     dialog.className = "modal_editor";
@@ -355,7 +373,7 @@ function show_modal_dialog(document_link, filepath) {
     // Adds the close button.
     const close_button = document.createElement("button");
     close_button.innerText = "X";
-    close_button.onclick = function (){
+    close_button.onclick = function () {
         const dialog = document.getElementById('editorDialog');
         dialog.close();
     }
@@ -366,7 +384,7 @@ function show_modal_dialog(document_link, filepath) {
     title.innerText = filepath;
     doc_info_div.appendChild(title);
 
-
+    // Add the frame where the document will be displayed.
     const frame = document.createElement("iframe");
     frame.src = document_link;
     frame.title = document_link;
