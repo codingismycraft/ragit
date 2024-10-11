@@ -346,6 +346,25 @@ function show_pdf_modal_dialog(doc_link, filepath) {
     const div = document.createElement("div");
     div.id = "modal_editor";
 
+    // Add the top line div (to store close button and title).
+    const doc_info_div = document.createElement("div");
+    dialog.appendChild(doc_info_div);
+    doc_info_div.className = "title"
+
+    // Adds the close button.
+    const close_button = document.createElement("button");
+    close_button.innerText = "X";
+    close_button.onclick = function () {
+        const dialog = document.getElementById('editorDialog');
+        dialog.close();
+    }
+    doc_info_div.appendChild(close_button);
+
+    // Adds the title for the modal window.
+    const title = document.createElement("span");
+    title.innerText = filepath;
+    doc_info_div.appendChild(title);
+
     const embed = document.createElement("embed");
     embed.type = "application/pdf";
     embed.className = "pdf-frame";
@@ -386,8 +405,8 @@ function show_modal_dialog(doc_link, filepath) {
 
     // Add the frame where the document will be displayed.
     const frame = document.createElement("iframe");
-    frame.src = document_link;
-    frame.title = document_link;
+    frame.src = doc_link;
+    frame.title = filepath;
     dialog.appendChild(frame);
     dialog.showModal();
 }
