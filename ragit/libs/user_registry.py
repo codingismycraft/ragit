@@ -141,8 +141,21 @@ class UserRegistry:
 
     @classmethod
     def set_rag_collection_name(cls, name):
-        """Sets the name of the RAG Collection."""
+        """Sets the name of the RAG Collection.
+
+        :param str name: The collection name to use. This name must match
+        the subdirectory where the documents are stored.
+        """
         cls._rag_collection_name = name
+
+    @classmethod
+    def get_rag_collection_name(cls):
+        """Sets the name of the RAG Collection.
+
+        :returns: The collection name that is assigned to the RagRegistry.
+        :rtype: str
+        """
+        return cls._rag_collection_name
 
     @classmethod
     @common.handle_exceptions
@@ -512,21 +525,42 @@ class UserRegistry:
                     cursor.close()
 
     @classmethod
-    def _shorten_file_path(cls, file_path, max_parents=4):
+    @common.handle_exceptions
+    def _shorten_file_path(cls, file_path):
         """Shortens the file path.
 
+        Since all the documents will live under the <collection-name>/documents
+        we are not removing the part of the path up to it and only return
+        what follows the document.
+
+        We consider valid the path that starts with:
+
+        /home/<user>/ragit-data/<collection-name>/documents
+
+        meaning that the five first subdirectories of the passed in filepath
+        must match the above logic.
+
         :param file_path: The original file path to be shortened.
-        :param int max_parents: Max Number of parents to retain.
 
         :return: A shortened path to the file path.
         :rtype: str
+
+        :raises MyGenAIException
         """
         if not file_path:
-            return "n/a"
-        components = file_path.split(os.sep)
+            raise ValueError("Invalid file path.")
 
-        if len(components) > max_parents:
-            return os.sep.join(['...'] + components[-max_parents:])
-        else:
-            return file_path
+        sub_dirs = file_path.split(os.sep)
+        if len(sub_dirs) < 6:
+            raise ValueError(f"Invalid file_path: {file_path}")
 
+        if sub_dirs[4] != "documents":
+            raise ValueError(f"Invalid file_path: {file_path}")
+
+        if sub_dirs[3] != cls.get_rag_collection_name():
+            raise ValueError(f"Invalid file_path: {file_path}")
+
+        tokens = sub_dirs[5:]
+        shortened_path = os.path.join(*tokens)
+
+        return shortened_path
