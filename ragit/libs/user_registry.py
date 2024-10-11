@@ -361,10 +361,15 @@ class UserRegistry:
                     msg_id = (query_info["msg_id"],)
                     matches = []
                     for row in cursor.execute(cls._SQL_SELECT_MATCHES, msg_id):
+                        try:
+                            sorten_path = cls._shorten_file_path(row[2])
+                        except common.MyGenAIException:
+                            sorten_path = 'n/a'
+
                         matches.append({
                             "txt": row[0],
                             "distance": row[1],
-                            "source": cls._shorten_file_path(row[2]),
+                            "source": sorten_path,
                             "page": row[3] or None
                         })
                     query_info["matches"] = matches
