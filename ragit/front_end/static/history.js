@@ -308,7 +308,7 @@ function display_document_link(doc_link) {
         if (file_ext === ".pdf") {
             show_pdf_modal_dialog(url);
         } else {
-            show_modal_dialog(url);
+            show_modal_dialog(url, doc_link);
         }
     }
     link.innerText = doc_link;
@@ -342,10 +342,31 @@ function show_pdf_modal_dialog(doc_link) {
     dialog.showModal();
 }
 
-function show_modal_dialog(document_link) {
+function show_modal_dialog(document_link, filepath) {
     const dialog = document.getElementById('editorDialog');
     dialog.innerHTML = '';
     dialog.className = "modal_editor";
+
+    // Add the top line div (to store close button and title).
+    const doc_info_div = document.createElement("div");
+    dialog.appendChild(doc_info_div);
+    doc_info_div.className = "title"
+
+    // Adds the close button.
+    const close_button = document.createElement("button");
+    close_button.innerText = "X";
+    close_button.onclick = function (){
+        const dialog = document.getElementById('editorDialog');
+        dialog.close();
+    }
+    doc_info_div.appendChild(close_button);
+
+    // Adds the title for the modal window.
+    const title = document.createElement("span");
+    title.innerText = filepath;
+    doc_info_div.appendChild(title);
+
+
     const frame = document.createElement("iframe");
     frame.src = document_link;
     frame.title = document_link;

@@ -190,6 +190,22 @@ h1, h2, h3 {
     width: 80%;
 }
 
+.modal_editor span {
+    background-color: #eeeeee;
+    margin-left: 12px;
+}
+.modal_editor::backdrop {
+    background-color: #231d14;
+    opacity: 0.4;
+}
+
+
+.modal_editor .title {
+    background-color: #eeeeee;
+    margin: 8px 0 12px 0;
+    padding: 8px;
+}
+
 .pdf-frame {
     width: 100%;
     height: calc(100% - 40px);
