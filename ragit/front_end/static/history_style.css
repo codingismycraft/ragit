@@ -181,3 +181,16 @@ h1, h2, h3 {
     margin-left: 12px;
     margin-right: 12px;
 }
+
+/*Styles for the modal editor.*/
+.modal_editor {
+    inset: 0.5rem;
+    margin: auto;
+    height: 80%;
+    width: 80%;
+}
+
+.pdf-frame {
+    width: 100%;
+    height: calc(100% - 40px);
+}
