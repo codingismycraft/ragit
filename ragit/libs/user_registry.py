@@ -554,13 +554,13 @@ class UserRegistry:
         if len(sub_dirs) < 6:
             raise ValueError(f"Invalid file_path: {file_path}")
 
-        if sub_dirs[4] != "documents":
+        if sub_dirs[5] != "documents":
             raise ValueError(f"Invalid file_path: {file_path}")
 
-        if sub_dirs[3] != cls.get_rag_collection_name():
+        if sub_dirs[4] != cls.get_rag_collection_name():
             raise ValueError(f"Invalid file_path: {file_path}")
 
-        tokens = sub_dirs[5:]
+        tokens = sub_dirs[6:]
         shortened_path = os.path.join(*tokens)
 
         return shortened_path

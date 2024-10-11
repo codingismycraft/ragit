@@ -141,7 +141,7 @@ class TestUserRegistry(unittest.TestCase):
         """Tests the _shorten_file_path static method."""
         collection_name = UserRegistry.get_rag_collection_name()
         self.assertIsInstance(collection_name, str)
-        fullpath = os.path.join(
+        fullpath = os.path.join("/"
             "home", "user", "ragit-data",
             collection_name, "documents", "pdfs", "a.pdf"
         )
