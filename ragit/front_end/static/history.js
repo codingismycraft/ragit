@@ -304,10 +304,11 @@ function display_document_link(doc_link) {
         // Evaluate the document type.
         const index = doc_link.lastIndexOf('.');
         const file_ext = doc_link.slice(index) ? doc_link.slice(index) : "";
+        const url = "/document/" + doc_link;
         if (file_ext === ".pdf") {
-            show_pdf_modal_dialog(doc_link);
+            show_pdf_modal_dialog(url);
         } else {
-            show_modal_dialog(doc_link);
+            show_modal_dialog(url);
         }
     }
     link.innerText = doc_link;
@@ -336,13 +337,24 @@ function show_pdf_modal_dialog(doc_link) {
     const embed = document.createElement("embed");
     embed.type = "application/pdf";
     embed.className = "pdf-frame";
-    embed.src = "/document/" + doc_link;
+    embed.src = doc_link;
     dialog.appendChild(embed);
     dialog.showModal();
 }
 
-
 function show_modal_dialog(document_link) {
+    const dialog = document.getElementById('editorDialog');
+    dialog.innerHTML = '';
+    dialog.className = "modal_editor";
+    const frame = document.createElement("iframe");
+    frame.src = document_link;
+    frame.title = document_link;
+    dialog.appendChild(frame);
+    dialog.showModal();
+}
+
+
+function show_python_modal_dialog(document_link) {
     const dialog = document.getElementById('editorDialog');
     dialog.innerHTML = '';
     const div = document.createElement("div");
@@ -361,7 +373,7 @@ function show_modal_dialog(document_link) {
 
     const editor = ace.edit("modal_editor");
     editor.setTheme("ace/theme/monokai");
-    editor.session.setMode("ace/mode/javascript");
+    editor.session.setMode("ace/mode/python");
     dialog.showModal();
     editor.resize();
 }

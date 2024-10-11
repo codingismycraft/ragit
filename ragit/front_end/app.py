@@ -25,13 +25,13 @@ import functools
 import logging
 import os
 import sys
-import tempfile
 import uuid
 
 import aiohttp
 import aiohttp.web as web
 import jinja2
 import jwt
+import markdown
 
 import ragit.libs.common as common
 import ragit.libs.dbutil as dbutil
@@ -446,6 +446,14 @@ class RagitHandler:
             return web.FileResponse(path=file_path, headers={
                 'Content-Type': 'application/pdf',
             })
+        elif file_path.endswith(".md"):
+            with open(file_path) as fin:
+                txt = fin.read()
+            md_text = markdown.markdown(txt)
+            return web.Response(
+                body=md_text,
+                content_type='text/html'
+            )
         else:
             with open(file_path) as fin:
                 txt = fin.read()
