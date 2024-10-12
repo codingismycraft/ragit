@@ -19,7 +19,7 @@
  * to memory and performance issues. Future enhancements will focus on making
  * data retrieval and management more dynamic to mitigate these issues.
  ******************************************************************************
-*/
+ */
 
 // Stores the retrieved queries in memory.
 let _historical_queries = null;
@@ -312,6 +312,8 @@ function display_document_link(filepath) {
         // Call the applicable function to display the document.
         if (file_ext === ".pdf") {
             show_pdf_modal_dialog(url, filepath);
+        } else if (file_ext === ".py") {
+            show_python_modal_dialog(url, filepath);
         } else {
             show_modal_dialog(url, filepath);
         }
@@ -412,26 +414,40 @@ function show_modal_dialog(doc_link, filepath) {
 }
 
 
-function show_python_modal_dialog(document_link) {
+function show_python_modal_dialog(document_link, filepath) {
     const dialog = document.getElementById('editorDialog');
     dialog.innerHTML = '';
-    const div = document.createElement("div");
-    div.id = "modal_editor";
-    div.className = "modal_editor";
-    div.innerText = 'function foo(items) { var x = "All this is syntax highlighted"; }';
+    dialog.className = "modal_editor";
 
-    const btn = document.createElement("button");
-    btn.innerText = "X";
-    btn.onclick = function () {
-        const dialog_to_close = document.getElementById('editorDialog');
-        dialog_to_close.close();
+    // Add the top line div (to store close button and title).
+    const doc_info_div = document.createElement("div");
+    dialog.appendChild(doc_info_div);
+    doc_info_div.className = "title"
+
+    // Adds the close button.
+    const close_button = document.createElement("button");
+    close_button.innerText = "X";
+    close_button.onclick = function () {
+        const dialog = document.getElementById('editorDialog');
+        dialog.close();
     }
-    dialog.appendChild(btn);
+    doc_info_div.appendChild(close_button);
+
+    // Adds the title for the modal window.
+    const title = document.createElement("span");
+    title.innerText = filepath;
+    doc_info_div.appendChild(title);
+
+    const div = document.createElement("div");
+    div.id = "modal_editor_holder";
+    div.className = "modal_editor";
+    div.innerText ='function foo(items) { var x = "All this is syntax highlighted"; }';
     dialog.appendChild(div);
 
-    const editor = ace.edit("modal_editor");
+    const editor = ace.edit("modal_editor_holder");
     editor.setTheme("ace/theme/monokai");
-    editor.session.setMode("ace/mode/python");
+    editor.session.setMode("ace/mode/javascript");
+
     dialog.showModal();
     editor.resize();
 }
