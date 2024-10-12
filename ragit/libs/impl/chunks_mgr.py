@@ -216,6 +216,21 @@ def save_chunks_to_db(db, fullpath, chunk_size=500, chunk_overlap=40):
             chunk = chunk.replace("'", "''")
             chunk = re.sub(r'[^\w\s]', '', chunk)
             chunk_index += 1
+
+            # Adds metadata.
+            if isinstance(metadata, dict):
+                if "source" not in metadata:
+                    metadata["source"] = fullpath
+
+                if "chunk_index" not in metadata:
+                    metadata["chunk_index"] = chunk_index
+
+                if "chunk_size" not in metadata:
+                    metadata["chunk_size"] = chunk_size
+
+                if "chunk_overlap" not in metadata:
+                    metadata["chunk_overlap"] = chunk_overlap
+
             meta = json.dumps(metadata)
             sql = _SQL_INSERT_CHUNK.format(
                 filepath=fullpath,
