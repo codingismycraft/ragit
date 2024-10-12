@@ -1,5 +1,6 @@
 """Tests the User Registry module."""
 import datetime
+import os.path
 import unittest
 
 import ragit.libs.common as common
@@ -135,3 +136,33 @@ class TestUserRegistry(unittest.TestCase):
         self.assertIsInstance(queries, list)
         for query_info in queries:
             self.assertIsInstance(query_info, dict)
+
+    def test_shorten_file_path(self):
+        """Tests the _shorten_file_path static method."""
+        collection_name = UserRegistry.get_rag_collection_name()
+        self.assertIsInstance(collection_name, str)
+        fullpath = os.path.join("/"
+            "home", "user", "ragit-data",
+            collection_name, "documents", "pdfs", "a.pdf"
+        )
+        retrieved = UserRegistry._shorten_file_path(fullpath)
+        expected = os.path.join("pdfs", "a.pdf")
+        self.assertEqual(retrieved, expected)
+
+    def test_invalid_shorten_paths(self):
+        """Tests the exceptions that are raised from _shorten_file_path."""
+        invalid_paths = [
+            None,
+            "",
+            "/home/user",
+            "/home/user/ragit-data",
+            "/home/user/ragit-data/collection",
+            "/home/user/ragit-data/collection-name/otherdir/file.txt",
+            "/home/user/ragit-data/collection-name/docs/file.txt",
+            "/home/user/ragit-data/another-name/documents/file.txt",
+            "/home/user/ragit-data/wrong-collection/documents/file.txt",
+        ]
+
+        for invalid_path in invalid_paths:
+            with self.assertRaises(common.MyGenAIException):
+                UserRegistry._shorten_file_path(invalid_path)

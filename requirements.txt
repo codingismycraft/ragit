@@ -18,4 +18,4 @@ tiktoken==0.7.0
 unstructured==0.15.1
 chromadb==0.5.11
 chroma-hnswlib==0.7.6
-
+markdown==3.7

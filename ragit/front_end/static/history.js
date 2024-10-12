@@ -129,7 +129,7 @@ function display_query_details(msg_id) {
             );
 
             meta_container.appendChild(
-                display_value_in_span(chunk["source"])
+                display_document_link(chunk["source"])
             )
 
             const page = chunk["page"];
@@ -156,7 +156,6 @@ function display_query_details(msg_id) {
     $("#temperature_span").text(`temperature ${details.temperature}`);
     $("#max_tokens_span").text(`max tokens ${details.max_tokens}`);
     $("#matches_count_span").text(`matches ${details.count_matches}`);
-
 
 
     $("#delete_query_btn").removeClass().addClass("action_button");
@@ -294,6 +293,39 @@ function display_value_in_span(value) {
 }
 
 /**
+ * Displays the link to the document. When clicked it will open a modal window.
+ *
+ * @param {string} filepath - The relative file path to display in the title.
+ */
+function display_document_link(filepath) {
+    const span = document.createElement('span');
+    span.className = "value_container";
+    const link = document.createElement("a");
+    link.href = "#";
+    link.onclick = function () {
+        // Called when the user clicks on document link.
+        // Evaluate the document type.
+        const index = filepath.lastIndexOf('.');
+        const file_ext = filepath.slice(index) ? filepath.slice(index) : "";
+        const url = "/document/" + filepath;
+
+        // Call the applicable function to display the document.
+        if (file_ext === ".pdf") {
+            show_pdf_modal_dialog(url, filepath);
+        }
+        else if (file_ext === ".docx"){
+            alert(`File type ${docx} is not supported`)
+        }
+        else {
+            show_modal_dialog(url, filepath);
+        }
+    }
+    link.innerText = filepath;
+    span.appendChild(link);
+    return span;
+}
+
+/**
  * Displays a numeric value in a rectangle (up to two decimals).
  *
  */
@@ -302,4 +334,83 @@ function display_value_in_rect(value) {
     span.className = "value_rect";
     span.textContent = value.toFixed(2);
     return span;
+}
+
+/**
+ * Displays a pdf in a modal dialog.
+ *
+ * @param {string} doc_link - The link to the document to display.
+ * @param {string} filepath - The relative file path to display in the title.
+ *
+ */
+function show_pdf_modal_dialog(doc_link, filepath) {
+    const dialog = document.getElementById('editorDialog');
+    dialog.innerHTML = '';
+    dialog.className = "modal_editor";
+    const div = document.createElement("div");
+    div.id = "modal_editor";
+
+    // Add the top line div (to store close button and title).
+    const doc_info_div = document.createElement("div");
+    dialog.appendChild(doc_info_div);
+    doc_info_div.className = "title"
+
+    // Adds the close button.
+    const close_button = document.createElement("button");
+    close_button.innerText = "X";
+    close_button.onclick = function () {
+        const dialog = document.getElementById('editorDialog');
+        dialog.close();
+    }
+    doc_info_div.appendChild(close_button);
+
+    // Adds the title for the modal window.
+    const title = document.createElement("span");
+    title.innerText = filepath;
+    doc_info_div.appendChild(title);
+
+    const embed = document.createElement("embed");
+    embed.type = "application/pdf";
+    embed.className = "pdf-frame";
+    embed.src = doc_link;
+    dialog.appendChild(embed);
+    dialog.showModal();
+}
+
+/**
+ * Displays a modal dialog for text loaded using a link to the server.
+ *
+ * @param {string} doc_link - The link to the document to display.
+ * @param {string} filepath - The relative file path to display in the title.
+ */
+function show_modal_dialog(doc_link, filepath) {
+    const dialog = document.getElementById('editorDialog');
+    dialog.innerHTML = '';
+    dialog.className = "modal_editor";
+
+    // Add the top line div (to store close button and title).
+    const doc_info_div = document.createElement("div");
+    dialog.appendChild(doc_info_div);
+    doc_info_div.className = "title"
+
+    // Adds the close button.
+    const close_button = document.createElement("button");
+    close_button.innerText = "X";
+    close_button.onclick = function () {
+        const dialog = document.getElementById('editorDialog');
+        dialog.close();
+    }
+    doc_info_div.appendChild(close_button);
+
+    // Adds the title for the modal window.
+    const title = document.createElement("span");
+    title.innerText = filepath;
+    doc_info_div.appendChild(title);
+
+    // Add the frame where the document will be displayed.
+    const frame = document.createElement("iframe");
+    frame.src = doc_link;
+    frame.title = filepath;
+    dialog.appendChild(frame);
+    dialog.showModal();
 }

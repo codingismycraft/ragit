@@ -1,53 +1,56 @@
 {% extends "base.html" %}
 {% block content %}
 
+    <!-- Dialog element -->
+    <dialog id="editorDialog"></dialog>
+    <div class="main_content">
+        <div class="sidebar">
+            <button id="delete_query_btn" class="action_button disabled">
+                Click here to delete the current query
+            </button>
+            <ul id="question-list">
+                <!-- Questions will be populated here -->
+            </ul>
+        </div>
 
-<div class="main_content">
-    <div class="sidebar">
-        <button id="delete_query_btn" class="action_button disabled">
-            Click here to delete the current query
-        </button>
-        <ul id="question-list">
-            <!-- Questions will be populated here -->
-        </ul>
-    </div>
+        <div class="container">
+            <div class="section">
+                <div style="display: flex; margin-bottom: 12px">
+                    <h1>Query</h1>
+                    <span class="meta_data" id="time_ago_span">1 day ago </span>
+                    <span class="meta_data"
+                          id="temperature_span">Temperature </span>
+                    <span class="meta_data" id="matches_count_span">Matches count </span>
+                    <span class="meta_data"
+                          id="max_tokens_span">Maximum tokens </span>
 
-    <div class="container">
-        <div class="section">
-            <div style="display: flex; margin-bottom: 12px">
-                <h1>Query</h1>
-                <span class="meta_data" id="time_ago_span">1 day ago </span>
-                <span class="meta_data" id="temperature_span">Temperature </span>
-                <span class="meta_data" id="matches_count_span">Matches count </span>
-                <span class="meta_data" id="max_tokens_span">Maximum tokens </span>
-
+                </div>
+                <div class="query" id="query"></div>
             </div>
-            <div class="query" id="query"></div>
-        </div>
 
-        <div class="section">
-            <h2 id="response_label">Response</h2>
-            <div class="response" id="response"></div>
-        </div>
+            <div class="section">
+                <h2 id="response_label">Response</h2>
+                <div class="response" id="response"></div>
+            </div>
 
-        <div class="section chunks_section">
-            <hr style="border-top:8px solid black">
-            <h2>Relevant Chunks</h2>
-            <div id="chunks"></div>
-        </div>
+            <div class="section chunks_section">
+                <hr style="border-top:8px solid black">
+                <h2>Relevant Chunks</h2>
+                <div id="chunks"></div>
+            </div>
 
-        <div class="section">
-            <hr style="border-top:8px solid black">
-            <h2>Prompt</h2>
-            <div class="prompt" id="prompt"></div>
+            <div class="section">
+                <hr style="border-top:8px solid black">
+                <h2>Prompt</h2>
+                <div class="prompt" id="prompt"></div>
+            </div>
         </div>
     </div>
-</div>
 
-<script>
-    document.addEventListener("DOMContentLoaded", function () {
-        retrieve_queries();
-    });
-</script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            retrieve_queries();
+        });
+    </script>
 
 {% endblock %}

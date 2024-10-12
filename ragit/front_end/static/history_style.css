@@ -181,3 +181,37 @@ h1, h2, h3 {
     margin-left: 12px;
     margin-right: 12px;
 }
+
+/*Styles for the modal editor.*/
+.modal_editor {
+    inset: 0.5rem;
+    margin: auto;
+    height: 80%;
+    width: 80%;
+}
+
+.modal_editor span {
+    background-color: #eeeeee;
+    margin-left: 12px;
+}
+.modal_editor::backdrop {
+    background-color: #231d14;
+    opacity: 0.4;
+}
+
+
+.modal_editor .title {
+    background-color: #eeeeee;
+    margin: 8px 0 12px 0;
+    padding: 8px;
+}
+
+.pdf-frame {
+    width: 100%;
+    height: calc(100% - 40px);
+}
+
+iframe {
+    width: 100%;
+    height: 100%;
+}

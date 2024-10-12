@@ -25,13 +25,13 @@ import functools
 import logging
 import os
 import sys
-import tempfile
 import uuid
 
 import aiohttp
 import aiohttp.web as web
 import jinja2
 import jwt
+import markdown
 
 import ragit.libs.common as common
 import ragit.libs.dbutil as dbutil
@@ -417,6 +417,49 @@ class RagitHandler:
         return web.HTTPFound('/login')
 
     @web_handler
+    async def document_handler(self, request):
+        """Returns a document from the local file system.
+
+        :param request: The web request.
+        """
+        # Construct the full path to the file that is requested.
+        query_requests = str(request.rel_url)
+        if query_requests.startswith('/'):
+            query_requests = query_requests[1:]
+        tokens = query_requests .split("/")[1:]
+        collection_name = Globals.rag_manager.get_rag_collection_name()
+
+        file_path = os.path.join(
+            common.get_shared_directory(),
+            collection_name,
+            "documents",
+            *tokens
+        )
+
+        if not os.path.exists(file_path):
+            logger.error(f"Requested file {file_path} not found.")
+            return web.HTTPNotFound(reason="PDF file not found.")
+
+        logger.info(f"Serving file: {file_path}")
+
+        if file_path.endswith(".pdf"):
+            return web.FileResponse(path=file_path, headers={
+                'Content-Type': 'application/pdf',
+            })
+        elif file_path.endswith(".md"):
+            with open(file_path) as fin:
+                txt = fin.read()
+            md_text = markdown.markdown(txt)
+            return web.Response(
+                body=md_text,
+                content_type='text/html'
+            )
+        else:
+            with open(file_path) as fin:
+                txt = fin.read()
+            return web.Response(text=txt)
+
+    @web_handler
     async def signup_screen(self, request):
         """Displays the signupscreen.
 
@@ -583,7 +626,8 @@ def run():
             web.get('/queries', ragit_handler.get_all_queries),
             web.delete('/queries/{msg_id}', ragit_handler.delete_query),
             web.get('/admin', ragit_handler.admin_handler),
-            web.post('/admin', ragit_handler.upload_file)
+            web.post('/admin', ragit_handler.upload_file),
+            web.get('/document/{file_path:.*}', ragit_handler.document_handler)
         ]
     )
 
