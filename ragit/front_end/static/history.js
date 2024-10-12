@@ -312,9 +312,11 @@ function display_document_link(filepath) {
         // Call the applicable function to display the document.
         if (file_ext === ".pdf") {
             show_pdf_modal_dialog(url, filepath);
-        } else if (file_ext === ".py") {
-            show_python_modal_dialog(url, filepath);
-        } else {
+        }
+        else if (file_ext === ".docx"){
+            alert(`File type ${docx} is not supported`)
+        }
+        else {
             show_modal_dialog(url, filepath);
         }
     }
@@ -411,43 +413,4 @@ function show_modal_dialog(doc_link, filepath) {
     frame.title = filepath;
     dialog.appendChild(frame);
     dialog.showModal();
-}
-
-
-function show_python_modal_dialog(document_link, filepath) {
-    const dialog = document.getElementById('editorDialog');
-    dialog.innerHTML = '';
-    dialog.className = "modal_editor";
-
-    // Add the top line div (to store close button and title).
-    const doc_info_div = document.createElement("div");
-    dialog.appendChild(doc_info_div);
-    doc_info_div.className = "title"
-
-    // Adds the close button.
-    const close_button = document.createElement("button");
-    close_button.innerText = "X";
-    close_button.onclick = function () {
-        const dialog = document.getElementById('editorDialog');
-        dialog.close();
-    }
-    doc_info_div.appendChild(close_button);
-
-    // Adds the title for the modal window.
-    const title = document.createElement("span");
-    title.innerText = filepath;
-    doc_info_div.appendChild(title);
-
-    const div = document.createElement("div");
-    div.id = "modal_editor_holder";
-    div.className = "modal_editor";
-    div.innerText ='function foo(items) { var x = "All this is syntax highlighted"; }';
-    dialog.appendChild(div);
-
-    const editor = ace.edit("modal_editor_holder");
-    editor.setTheme("ace/theme/monokai");
-    editor.session.setMode("ace/mode/javascript");
-
-    dialog.showModal();
-    editor.resize();
 }
