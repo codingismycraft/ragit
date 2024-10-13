@@ -25,7 +25,7 @@ body {
 
 
 .search-box {
-    width: 650px;
+    width: 90%;
     padding: 10px;
     border: 1px solid #ccc;
     border-radius: 5px;
@@ -114,6 +114,7 @@ body {
 .search_section {
     display: flex;
     margin-bottom: 8px;
+    width: 95%;
 }
 
 .control_container {

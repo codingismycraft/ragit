@@ -39,7 +39,7 @@ function make_query() {
         dataType: "json",
         contentType: "application/json; charset=utf-8",
         success: function (response, status) {
-            conversationHistory.unshift(
+            conversationHistory.push(
                 {
                     question: userQuery,
                     answer: response.response,
@@ -153,12 +153,14 @@ function create_audio_tag(msg_id){
  * populates it with chat items based on the `conversationHistory` array.
  */
 function update_history_list() {
-    const historyListElement = document.getElementById("historyList");
-    historyListElement.innerHTML = "";
+    const history_list = document.getElementById("historyList");
+    history_list.innerHTML = "";
     for (const item of conversationHistory) {
         const historyItem = make_chat_item(item);
-        historyListElement.appendChild(historyItem);
+        history_list.appendChild(historyItem);
     }
+    // Scroll to the bottom
+    history_list.scrollTop = history_list.scrollHeight;
 }
 
 /**
