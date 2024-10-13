@@ -5,6 +5,7 @@ import os
 import re
 
 import bcrypt
+import gtts
 import sqlite3
 
 import ragit.libs.common as common
@@ -129,6 +130,10 @@ class UserRegistry:
         FROM matches 
         WHERE msg_id=? 
         ORDER BY distance DESC
+    """
+
+    _SQL_SELECT_MSG = """
+        SELECT question, response FROM messages WHERE msg_id=?
     """
 
     _SQL_DELETE_QUERY = """ DELETE FROM messages where msg_id=? """
@@ -462,6 +467,44 @@ class UserRegistry:
         if not os.path.isdir(base_dir):
             raise NotADirectoryError
         cls._base_dir = base_dir
+
+    @classmethod
+    @common.handle_exceptions
+    def get_path_to_audio_recoding(cls, msg_id):
+        """Returns the path containing the audio for the passed in message id.
+
+        If the recording does not exist it will be created. The full path to
+        the file holding the recording will be created
+
+        :param msg_id: The message id to return the recording for.
+
+        :returns: The full path to the mp3 file containing the recording for
+        the passed in message id.
+
+        :rtype: str
+        """
+        file_path = os.path.join(
+            common.get_shared_directory(),
+            cls.get_rag_collection_name(),
+            "audio",
+            f"recording-{msg_id}.mp3"
+        )
+
+        if not os.path.exists(file_path):
+            with sqlite3.connect(cls._get_full_path_to_db()) as conn:
+                cursor = None
+                try:
+                    cursor = conn.cursor()
+                    for row in cursor.execute(cls._SQL_SELECT_MSG, (msg_id,)):
+                        question = row[0]
+                        response = row[1]
+                        tts = gtts.gTTS(response, lang="en")
+                        tts.save(file_path)
+                finally:
+                    if cursor:
+                        cursor.close()
+
+        return file_path
 
     @classmethod
     def _get_full_path_to_db(cls):
