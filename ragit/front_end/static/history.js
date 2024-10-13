@@ -108,6 +108,11 @@ function display_query_details(msg_id) {
     document.getElementById("query").innerText = details.question;
     document.getElementById("response").innerText = details.response;
 
+    const br = document.createElement("br")
+    document.getElementById("response").appendChild(br);
+
+    document.getElementById("response").appendChild(create_audio_tag(msg_id));
+
     let label = "Response";
     if (details["thumps_up"] === 1) {
         label = "👍" + label;

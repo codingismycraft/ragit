@@ -87,13 +87,11 @@ function make_chat_item(item) {
     const question_div = document.createElement("div");
     question_div.className = "chat_question";
 
-
     question_div.innerText = item.question;
     chat_div.appendChild(question_div);
 
     const answer_div = document.createElement("div");
     answer_div.className = "chat_answer";
-
 
     if (item.vote === 1) {
         answer_div.className = "chat_answer chat_vote_up";
@@ -105,7 +103,7 @@ function make_chat_item(item) {
 
     answer_div.innerHTML = marked.parse(item.answer);
     chat_div.appendChild(answer_div);
-
+    chat_div.appendChild(create_audio_tag(item.message_id));
     const user_vote_div = document.createElement("div");
     user_vote_div.className = "chat_vote";
 
@@ -127,10 +125,27 @@ function make_chat_item(item) {
     }
     user_vote_div.appendChild(thumps_down_img);
     chat_div.appendChild(user_vote_div);
-
     return chat_div;
 
 }
+
+function create_audio_tag(msg_id){
+    const audioTag = document.createElement('audio');
+    audioTag.controls = true;
+
+    audioTag.appendChild(document.createElement('source'));
+    audioTag.lastElementChild.src = `/speechify/${msg_id}`;
+    audioTag.lastElementChild.type = 'audio/mpeg';
+
+    const fallbackMessage = document.createTextNode(
+        'Your browser does not support the audio element.'
+    );
+
+    audioTag.appendChild(fallbackMessage);
+
+    return audioTag;
+}
+
 /**
  * Updates the conversation history list on the webpage.
  *

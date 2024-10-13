@@ -341,6 +341,20 @@ class RagitHandler:
         return web.json_response(all_queries)
 
     @web_handler
+    async def speechify_handler(self, request):
+        """Returns the recording for a message's response."""
+        query_requests = str(request.rel_url)
+        if query_requests.startswith('/'):
+            query_requests = query_requests[1:]
+        tokens = query_requests .split("/")[1:]
+        msg_id = tokens[-1]
+        file_path = UserRegistry.get_path_to_audio_recoding(msg_id)
+        return web.FileResponse(path=file_path, headers={
+            'Content-Type': 'audio/mpeg',
+        })
+
+
+    @web_handler
     async def delete_query(self, request):
         """Deletes a query using the passed in msg_id."""
         try:
@@ -416,6 +430,7 @@ class RagitHandler:
         """Redirects to login."""
         return web.HTTPFound('/login')
 
+
     @web_handler
     async def document_handler(self, request):
         """Returns a document from the local file system.
@@ -437,8 +452,9 @@ class RagitHandler:
         )
 
         if not os.path.exists(file_path):
-            logger.error(f"Requested file {file_path} not found.")
-            return web.HTTPNotFound(reason="PDF file not found.")
+            error_desc = f"Requested file {file_path} not found."
+            logger.error(error_desc)
+            return web.HTTPNotFound(reason=error_desc)
 
         logger.info(f"Serving file: {file_path}")
 
@@ -627,7 +643,8 @@ def run():
             web.delete('/queries/{msg_id}', ragit_handler.delete_query),
             web.get('/admin', ragit_handler.admin_handler),
             web.post('/admin', ragit_handler.upload_file),
-            web.get('/document/{file_path:.*}', ragit_handler.document_handler)
+            web.get('/document/{file_path:.*}', ragit_handler.document_handler),
+            web.get('/speechify/{file_path:.*}', ragit_handler.speechify_handler)
         ]
     )
 
