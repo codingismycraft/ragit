@@ -111,25 +111,20 @@ function make_chat_item(item) {
     const chat_div = document.createElement("div");
     chat_div.className = "chat_message";
 
-    const question_div = document.createElement("div");
-    question_div.className = "chat_question";
 
-    const question_span = document.createElement("span");
+    const template = document.getElementById('side_by_side_template');
 
-    const question_mark_img = document.createElement("img");
-    question_mark_img.src = "/static/question_mark.png";
-    question_mark_img.className = "question_mark_img";
-    question_span.appendChild(question_mark_img);
-
-    question_span.innerHTML += item.question;
-    question_div.appendChild(question_span);
+    const question_div = template.content.cloneNode(true);
+    question_div.querySelector('img').src = "/static/question_mark.png";
+    question_div.querySelector('p').innerHTML = item.question;
     chat_div.appendChild(question_div);
 
-    const answer_div = document.createElement("div");
-    answer_div.className = "chat_answer";
 
-    answer_div.innerHTML = marked.parse(item.answer);
+    const answer_div = template.content.cloneNode(true);
+    answer_div.querySelector('img').src = "/static/star.png";
+    answer_div.querySelector('p').innerHTML = marked.parse(item.answer);
     chat_div.appendChild(answer_div);
+
 
     // chat_div.appendChild(create_audio_tag(item.message_id));
     const user_vote_div = document.createElement("div");
@@ -138,8 +133,8 @@ function make_chat_item(item) {
     const thumps_up_img = document.createElement("img");
     thumps_up_img.title = "Thumps Up Voting";
     thumps_up_img.src = "/static/thumps-up.png";
-    thumps_up_img.width = 20;
-    thumps_up_img.height = 20;
+    thumps_up_img.width = 16;
+    thumps_up_img.height = 16;
     thumps_up_img.onclick = function () {
         user_vote(item.message_id, 1);
     }
@@ -156,8 +151,8 @@ function make_chat_item(item) {
     thumps_down_img.title = "Thumps Down Voting";
     thumps_down_img.className = "user_input_button";
     thumps_down_img.src = "/static/thumps-down.png";
-    thumps_down_img.width = 20;
-    thumps_down_img.height = 20;
+    thumps_down_img.width = 16;
+    thumps_down_img.height = 16;
     thumps_down_img.onclick = function () {
         user_vote(item.message_id, 0);
     }
@@ -174,8 +169,8 @@ function make_chat_item(item) {
     copy_question_img.title = "Copy to Clipboard";
     copy_question_img.className = "user_input_button";
     copy_question_img.src = "/static/copy.png";
-    copy_question_img.width = 30;
-    copy_question_img.height = 30;
+    copy_question_img.width = 16;
+    copy_question_img.height = 16;
     copy_question_img.text_to_copy = `Question: ${item.question} Answer: ${item.answer}`;
     copy_question_img.onclick = function () {
         navigator.clipboard.writeText(this.text_to_copy);
@@ -183,11 +178,11 @@ function make_chat_item(item) {
     user_vote_div.appendChild(copy_question_img);
 
     const delete_img = document.createElement("img")
-    delete_img.title = "Remove Conversation from UI.";
+    delete_img.title = "Delete message";
     delete_img.className = "user_input_button";
     delete_img.src = "/static/delete.png";
-    delete_img.width = 30;
-    delete_img.height = 30;
+    delete_img.width = 16;
+    delete_img.height = 16;
     delete_img.onclick = function () {
         delete_conversation_from_ui_and_db(item.message_id);
     }
