@@ -144,10 +144,9 @@ function make_chat_item(item) {
         user_vote(item.message_id, 1);
     }
 
-    if (item.vote === 1){
+    if (item.vote === 1) {
         thumps_up_img.className = "user_input_button selected_button";
-    }
-    else {
+    } else {
         thumps_up_img.className = "user_input_button";
     }
 
@@ -163,10 +162,9 @@ function make_chat_item(item) {
         user_vote(item.message_id, 0);
     }
 
-    if (item.vote === 0){
+    if (item.vote === 0) {
         thumps_down_img.className = "user_input_button selected_button";
-    }
-    else {
+    } else {
         thumps_down_img.className = "user_input_button";
     }
 
@@ -183,9 +181,48 @@ function make_chat_item(item) {
         navigator.clipboard.writeText(this.text_to_copy);
     }
     user_vote_div.appendChild(copy_question_img);
+
+    const delete_img = document.createElement("img")
+    delete_img.title = "Remove Conversation from UI.";
+    delete_img.className = "user_input_button";
+    delete_img.src = "/static/delete.png";
+    delete_img.width = 30;
+    delete_img.height = 30;
+    delete_img.onclick = function () {
+        delete_conversation_from_ui_and_db(item.message_id);
+    }
+    user_vote_div.appendChild(delete_img);
+
     chat_div.appendChild(user_vote_div);
 
     return chat_div;
+}
+
+
+function delete_conversation_from_ui_and_db(msg_id) {
+    if (!confirm('Are you sure you want to delete the query?')){
+        return
+    }
+    document.body.style.cursor = 'wait';
+    const url = `/queries/${msg_id}`;
+    $.ajax({
+            url: url,
+            type: "DELETE",
+            dataType: 'json',
+            success: function (data) {
+                document.body.style.cursor = 'default';
+                conversationHistory = conversationHistory.filter(
+                    item => item.message_id !== msg_id
+                );
+                update_history_list();
+            },
+            error: function (request, status, error) {
+                document.body.style.cursor = 'default';
+                console.error(error)
+                alert(request.responseText);
+            }
+        }
+    )
 }
 
 function create_audio_tag(msg_id) {
