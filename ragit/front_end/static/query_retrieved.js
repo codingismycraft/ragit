@@ -125,11 +125,13 @@ function make_chat_item(item) {
     question_div.appendChild(question_span);
     chat_div.appendChild(question_div);
 
-    const answer_div = document.createElement("div");
-    answer_div.className = "chat_answer";
 
-    answer_div.innerHTML = marked.parse(item.answer);
+    const template = document.getElementById('query_answer_template');
+    const answer_div = template.content.cloneNode(true);
+
+    answer_div.querySelector('p').innerHTML = marked.parse(item.answer);
     chat_div.appendChild(answer_div);
+
 
     // chat_div.appendChild(create_audio_tag(item.message_id));
     const user_vote_div = document.createElement("div");
