@@ -130,7 +130,8 @@ function make_chat_item(item) {
 
     answer_div.innerHTML = marked.parse(item.answer);
     chat_div.appendChild(answer_div);
-    chat_div.appendChild(create_audio_tag(item.message_id));
+
+    // chat_div.appendChild(create_audio_tag(item.message_id));
     const user_vote_div = document.createElement("div");
     user_vote_div.className = "chat_vote";
 
@@ -152,6 +153,10 @@ function make_chat_item(item) {
     }
     user_vote_div.appendChild(thumps_down_img);
     chat_div.appendChild(user_vote_div);
+
+    const hr = document.createElement("hr");
+    chat_div.appendChild(hr);
+
     return chat_div;
 
 }

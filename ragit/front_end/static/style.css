@@ -15,15 +15,6 @@ body {
     border-width: 2px;
 }
 
-.history {
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    padding: 10px;
-    max-height: 900px;
-    overflow-y: scroll;
-}
-
-
 .search-box {
     width: 90%;
     padding: 10px;
@@ -49,11 +40,6 @@ body {
     border-radius: 5px;
 }
 
-#historyList {
-    width: 90%;
-    height: 900px;
-    margin-bottom: 1em;
-}
 
 .history_qa {
     margin-bottom: .4em;
@@ -79,14 +65,33 @@ body {
     margin-bottom: 2em;
 }
 
+.history {
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 10px;
+    max-height: 900px;
+    overflow-y: scroll;
+    background-color: whitesmoke;
+}
+
+#historyList {
+    width: 90%;
+    height: 900px;
+    margin-bottom: 1em;
+}
 .chat_message {
     border: 0;
-    margin: 0.2em 0.2em 1em 0.2em;
+    margin: 2em 0.2em 3em 2em;
+    padding: 0.1em 0.2em 0.1em 0.2em;
 }
 
 .chat_question {
     padding: 0.2em;
     background-color: whitesmoke;
+    text-align: right;
+    margin-bottom: 1em;
+    padding-top: 1em;
+    padding-bottom: 1em;
 }
 
 .chat_answer {
@@ -95,7 +100,6 @@ body {
 
 .chat_vote {
     padding: 0.8px;
-    background-color: #dddddd;
     margin-top: 6px;
     padding-top: 6px;
     padding-left: 6px;
