@@ -260,9 +260,11 @@ form {
 }
 
 .two_div_container .left_div{
-    flex: 1;
+    margin-right: 16px;
+    flex: 0 0 auto;
 }
 
  .two_div_container .right_div{
      text-align: left;
+     flex: 0 0 auto;
 }
