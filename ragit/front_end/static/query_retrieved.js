@@ -136,6 +136,8 @@ function make_chat_item(item) {
     user_vote_div.className = "chat_vote";
 
     const thumps_up_img = document.createElement("img");
+    thumps_up_img.title = "Thumps Up Voting";
+    thumps_up_img.className = "user_input_button";
     thumps_up_img.src = "/static/thumps-up.png";
     thumps_up_img.width = 20;
     thumps_up_img.height = 20;
@@ -145,6 +147,8 @@ function make_chat_item(item) {
     user_vote_div.appendChild(thumps_up_img);
 
     const thumps_down_img = document.createElement("img")
+    thumps_down_img.title = "Thumps Down Voting";
+    thumps_down_img.className = "user_input_button";
     thumps_down_img.src = "/static/thumps-down.png";
     thumps_down_img.width = 20;
     thumps_down_img.height = 20;
@@ -152,6 +156,22 @@ function make_chat_item(item) {
         user_vote(item.message_id, 0);
     }
     user_vote_div.appendChild(thumps_down_img);
+
+
+    const copy_question_img = document.createElement("img")
+    copy_question_img.title = "Copy to Clipboard";
+    copy_question_img.className = "user_input_button";
+    copy_question_img.src = "/static/copy.png";
+    copy_question_img.width = 20;
+    copy_question_img.height = 20;
+    copy_question_img.text_to_copy = `Question: ${item.question} Answer: ${item.answer}`;
+    copy_question_img.onclick = function () {
+        navigator.clipboard.writeText(this.text_to_copy);
+    }
+    user_vote_div.appendChild(copy_question_img);
+
+
+
     chat_div.appendChild(user_vote_div);
 
     const hr = document.createElement("hr");

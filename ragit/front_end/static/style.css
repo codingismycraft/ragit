@@ -178,6 +178,10 @@ input[type="number"] {
     background-color: #3e8e41;
 }
 
+.user_input_button {
+   margin: 12px;
+}
+
 /* Styles for the navigation bar. */
 
 .navigation_container {
