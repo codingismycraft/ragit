@@ -35,6 +35,7 @@ class UserRegistry:
     _MAX_USER_NAME_LENGTH = 32
     _MAX_EMAIL_ADDRESS_LENGTH = 64
     _MAX_PASSWORD_LENGTH = 32
+    _DEFAULT_MOST_RECENT_CHAT_COUNT = 10
 
     _EMAIL_VALIDATOR = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,7}\b'
     _NAME_VALIDATOR = r"^[a-zA-Z][a-zA-Z0-9_]*$"
@@ -137,6 +138,14 @@ class UserRegistry:
     """
 
     _SQL_DELETE_QUERY = """ DELETE FROM messages where msg_id=? """
+
+    _SQL_SELECT_RECENT_QUERIES_BY_USER = """
+        SELECT msg_id, question, response, thumps_up 
+        FROM messages
+        WHERE user_id = ?
+        ORDER BY received_at 
+        DESC LIMIT ?
+    """
 
     _THUMPS_UP_FLAG = 1
     _THUMPS_DOWN_FLAG = 0
@@ -432,6 +441,51 @@ class UserRegistry:
                 if cursor:
                     cursor.close()
         raise ValueError(f"User {user_name} not found.")
+
+    @classmethod
+    @common.handle_exceptions
+    def get_recent_chats(cls, user_name, count=None):
+        """Returns the most recent chats for the user.
+
+        :param str user_name: The user to return the email for.
+
+        :param int count: The number of chats to return; if None then
+        the default value will be used.
+
+        :returns: A json like dict containing the most recent questions asked
+        for the passed in user.
+
+        :raises: MyGenAIException
+        """
+        count = count or cls._DEFAULT_MOST_RECENT_CHAT_COUNT
+        with sqlite3.connect(cls._get_full_path_to_db()) as conn:
+            cursor = None
+            try:
+                cursor = conn.cursor()
+                user_id = None
+                for row in cursor.execute(cls._SQL_GET_USER_ID, (user_name,)):
+                    user_id = row[0]
+                    break
+
+                if user_id is None:
+                    return []
+
+                matching_queries = []
+
+                for row in cursor.execute(
+                        cls._SQL_SELECT_RECENT_QUERIES_BY_USER, (user_id, count)):
+                    matching_queries.append(
+                        {
+                            "msg_id": row[0],
+                            "query": row[1],
+                            "respose": row[2],
+                            "thumps_up": row[3]
+                        }
+                    )
+                return list(reversed(matching_queries))
+            finally:
+                if cursor:
+                    cursor.close()
 
     @classmethod
     @common.handle_exceptions

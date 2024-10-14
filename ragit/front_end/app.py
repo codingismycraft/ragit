@@ -341,18 +341,35 @@ class RagitHandler:
         return web.json_response(all_queries)
 
     @web_handler
+    async def recent_chats_handler(self, request):
+        """Returns the last chats for the user.
+
+        Used to load the chatbox with the last conversations that were
+        asked; meant to be called every time the use re-visits the chatbox.
+        """
+        try:
+            auth_token = request.cookies.get('ragit_auth_token')
+            user_name = request.cookies.get('user_name')
+            Globals.validate_token(auth_token, user_name)
+        except AuthenticationError:
+            return web.HTTPFound('/login')
+
+        count = int(request.match_info['count'])
+        recent_chats = UserRegistry.get_recent_chats(user_name, count)
+        return web.json_response(recent_chats)
+
+    @web_handler
     async def speechify_handler(self, request):
         """Returns the recording for a message's response."""
         query_requests = str(request.rel_url)
         if query_requests.startswith('/'):
             query_requests = query_requests[1:]
-        tokens = query_requests .split("/")[1:]
+        tokens = query_requests.split("/")[1:]
         msg_id = tokens[-1]
         file_path = UserRegistry.get_path_to_audio_recoding(msg_id)
         return web.FileResponse(path=file_path, headers={
             'Content-Type': 'audio/mpeg',
         })
-
 
     @web_handler
     async def delete_query(self, request):
@@ -430,7 +447,6 @@ class RagitHandler:
         """Redirects to login."""
         return web.HTTPFound('/login')
 
-
     @web_handler
     async def document_handler(self, request):
         """Returns a document from the local file system.
@@ -441,7 +457,7 @@ class RagitHandler:
         query_requests = str(request.rel_url)
         if query_requests.startswith('/'):
             query_requests = query_requests[1:]
-        tokens = query_requests .split("/")[1:]
+        tokens = query_requests.split("/")[1:]
         collection_name = Globals.rag_manager.get_rag_collection_name()
 
         file_path = os.path.join(
@@ -644,7 +660,9 @@ def run():
             web.get('/admin', ragit_handler.admin_handler),
             web.post('/admin', ragit_handler.upload_file),
             web.get('/document/{file_path:.*}', ragit_handler.document_handler),
-            web.get('/speechify/{file_path:.*}', ragit_handler.speechify_handler)
+            web.get('/speechify/{file_path:.*}',
+                    ragit_handler.speechify_handler),
+            web.get('/recentchats/{count}', ragit_handler.recent_chats_handler),
         ]
     )
 
