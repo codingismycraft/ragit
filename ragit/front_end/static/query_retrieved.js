@@ -118,8 +118,6 @@ function make_chat_item(item) {
 
     const question_mark_img = document.createElement("img");
     question_mark_img.src = "/static/question_mark.png";
-    question_mark_img.width = 30;
-    question_mark_img.height = 30;
     question_mark_img.className = "question_mark_img";
     question_span.appendChild(question_mark_img);
 

@@ -56,6 +56,8 @@ body {
     margin-right: 1.2em;
     border-radius: 50%;
     background-color: #e9eef6;
+    width: 50px;
+    height: 50px;
 }
 
 .top_bar {
@@ -99,7 +101,7 @@ body {
 
 .chat_question {
     padding: 0.2em;
-    text-align: right;
+    text-align: left;
     margin-bottom: 1em;
     padding-top: 1em;
     padding-bottom: 1em;
