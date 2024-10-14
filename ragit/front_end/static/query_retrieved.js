@@ -58,6 +58,34 @@ function make_query() {
     });
 }
 
+function load_recent_chats() {
+    document.body.style.cursor = 'wait';
+    $.ajax({
+        url: "/recentchats/10",
+        type: "GET",
+        dataType: 'json',
+        success: function (data, status) {
+            debugger;
+            document.body.style.cursor = 'default';
+            for (let i = 0; i < data.length; i++) {
+                conversationHistory.push(
+                    {
+                        question: data[i]["query"],
+                        answer: data[i]["response"],
+                        message_id: data[i]["msg_id"],
+                        vote: data[i]["thumps_up"]
+                    }
+                );
+            }
+            update_history_list();
+            document.getElementById("userQuery").value = "";
+        },
+        error: function (request, status, error) {
+            alert(request.responseText);
+        }
+    });
+}
+
 /**
  * Creates a chat item element based on the provided data.
  *
@@ -74,7 +102,7 @@ function make_query() {
  *
  * @param {number} item.vote - The vote state of the answer (1 for upvote, 0
  * for downvote, else neutral).
- * 
+ *
  * @param {string} item.message_id - The unique identifier for the message.
  *
  * @returns {HTMLDivElement} The constructed chat item element.
@@ -129,7 +157,7 @@ function make_chat_item(item) {
 
 }
 
-function create_audio_tag(msg_id){
+function create_audio_tag(msg_id) {
     const audioTag = document.createElement('audio');
     audioTag.controls = true;
 

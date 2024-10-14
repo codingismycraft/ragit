@@ -478,7 +478,7 @@ class UserRegistry:
                         {
                             "msg_id": row[0],
                             "query": row[1],
-                            "respose": row[2],
+                            "response": row[2],
                             "thumps_up": row[3]
                         }
                     )
