@@ -52,6 +52,12 @@ body {
     padding: 0.5em;
 }
 
+.question_mark_img {
+    margin-right: 1.2em;
+    border-radius: 50%;
+    background-color: #e9eef6;
+}
+
 .top_bar {
     background-color: #CBC7C1;
     /*clear: left;*/
@@ -109,14 +115,6 @@ body {
     margin-top: 6px;
     padding-top: 6px;
     padding-left: 6px;
-}
-
-.chat_vote_up {
-    background-color: #daebda;
-}
-
-.chat_vote_down {
-    background-color: #edd2d2
 }
 
 .search_section {

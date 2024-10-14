@@ -114,19 +114,21 @@ function make_chat_item(item) {
     const question_div = document.createElement("div");
     question_div.className = "chat_question";
 
-    question_div.innerText = item.question;
+    const question_span = document.createElement("span");
+
+    const question_mark_img = document.createElement("img");
+    question_mark_img.src = "/static/question_mark.png";
+    question_mark_img.width = 30;
+    question_mark_img.height = 30;
+    question_mark_img.className = "question_mark_img";
+    question_span.appendChild(question_mark_img);
+
+    question_span.innerHTML += item.question;
+    question_div.appendChild(question_span);
     chat_div.appendChild(question_div);
 
     const answer_div = document.createElement("div");
     answer_div.className = "chat_answer";
-
-    // if (item.vote === 1) {
-    //     answer_div.className = "chat_answer chat_vote_up";
-    // } else if (item.vote === 0) {
-    //     answer_div.className = "chat_answer chat_vote_down";
-    // } else {
-    //     answer_div.className = "chat_answer";
-    // }
 
     answer_div.innerHTML = marked.parse(item.answer);
     chat_div.appendChild(answer_div);
@@ -163,7 +165,6 @@ function make_chat_item(item) {
         user_vote(item.message_id, 0);
     }
 
-
     if (item.vote === 0){
         thumps_down_img.className = "user_input_button selected_button";
     }
@@ -171,31 +172,22 @@ function make_chat_item(item) {
         thumps_down_img.className = "user_input_button";
     }
 
-
     user_vote_div.appendChild(thumps_down_img);
-
 
     const copy_question_img = document.createElement("img")
     copy_question_img.title = "Copy to Clipboard";
     copy_question_img.className = "user_input_button";
     copy_question_img.src = "/static/copy.png";
-    copy_question_img.width = 20;
-    copy_question_img.height = 20;
+    copy_question_img.width = 30;
+    copy_question_img.height = 30;
     copy_question_img.text_to_copy = `Question: ${item.question} Answer: ${item.answer}`;
     copy_question_img.onclick = function () {
         navigator.clipboard.writeText(this.text_to_copy);
     }
     user_vote_div.appendChild(copy_question_img);
-
-
-
     chat_div.appendChild(user_vote_div);
 
-    const hr = document.createElement("hr");
-    chat_div.appendChild(hr);
-
     return chat_div;
-
 }
 
 function create_audio_tag(msg_id) {
@@ -279,4 +271,3 @@ function logout() {
     $.removeCookie('ragit_auth_token', {path: '/'});
     location.reload();
 }
-
