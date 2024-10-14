@@ -120,13 +120,13 @@ function make_chat_item(item) {
     const answer_div = document.createElement("div");
     answer_div.className = "chat_answer";
 
-    if (item.vote === 1) {
-        answer_div.className = "chat_answer chat_vote_up";
-    } else if (item.vote === 0) {
-        answer_div.className = "chat_answer chat_vote_down";
-    } else {
-        answer_div.className = "chat_answer";
-    }
+    // if (item.vote === 1) {
+    //     answer_div.className = "chat_answer chat_vote_up";
+    // } else if (item.vote === 0) {
+    //     answer_div.className = "chat_answer chat_vote_down";
+    // } else {
+    //     answer_div.className = "chat_answer";
+    // }
 
     answer_div.innerHTML = marked.parse(item.answer);
     chat_div.appendChild(answer_div);
@@ -137,13 +137,20 @@ function make_chat_item(item) {
 
     const thumps_up_img = document.createElement("img");
     thumps_up_img.title = "Thumps Up Voting";
-    thumps_up_img.className = "user_input_button";
     thumps_up_img.src = "/static/thumps-up.png";
     thumps_up_img.width = 20;
     thumps_up_img.height = 20;
     thumps_up_img.onclick = function () {
         user_vote(item.message_id, 1);
     }
+
+    if (item.vote === 1){
+        thumps_up_img.className = "user_input_button selected_button";
+    }
+    else {
+        thumps_up_img.className = "user_input_button";
+    }
+
     user_vote_div.appendChild(thumps_up_img);
 
     const thumps_down_img = document.createElement("img")
@@ -155,6 +162,16 @@ function make_chat_item(item) {
     thumps_down_img.onclick = function () {
         user_vote(item.message_id, 0);
     }
+
+
+    if (item.vote === 0){
+        thumps_down_img.className = "user_input_button selected_button";
+    }
+    else {
+        thumps_down_img.className = "user_input_button";
+    }
+
+
     user_vote_div.appendChild(thumps_down_img);
 
 
