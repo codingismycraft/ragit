@@ -117,6 +117,7 @@ body {
     margin-top: 6px;
     padding-top: 6px;
     padding-left: 6px;
+    margin-left: 55px;
 }
 
 .search_section {
@@ -192,8 +193,8 @@ input[type="number"] {
 }
 
 .selected_button {
-    height: 40px;
-    width: 40px;
+    height: 30px;
+    width: 30px;
 }
 
 /* Styles for the navigation bar. */
@@ -252,19 +253,20 @@ form {
    display: flex;
 }
 
-.star_img {
+.two_div_container .left_div{
+    margin-right: 16px;
+    flex: 0 0 auto;
+}
+
+.two_div_container .left_div img {
     width: 50px;
     height: 50px;
     margin: 0;
     padding: 0;
 }
 
-.two_div_container .left_div{
-    margin-right: 16px;
-    flex: 0 0 auto;
-}
-
  .two_div_container .right_div{
+     margin-left: 16px;
      text-align: left;
      flex: 0 0 auto;
 }
