@@ -1,7 +1,7 @@
 body {
     margin: 0 auto;
     padding: 20px;
-    width: 1400px;
+    width: 100%;
     font-family: Arial, sans-serif;
     font-size: larger;
 }
@@ -11,19 +11,21 @@ body {
     flex-direction: column;
     align-items: center;
     margin: 0 auto;
-    background-color: #f8f8f3;
     border-color: black;
     border-width: 2px;
+    width: 1400px;
 }
 
 .search-box {
     width: 90%;
     padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
+    border: none;
+    outline: none;
     font-size: 16px;
     margin-top: 0.6em;
     margin-left: 8px;
+    margin-bottom: 12px;
+    background-color: #e9eef6;
 }
 
 .search-button {
@@ -38,6 +40,8 @@ body {
     margin-top: 10px;
     margin-right: 10px;
     cursor: pointer;
+    border-radius: 5px;
+    margin-left: 10px;
     border-radius: 5px;
 }
 
@@ -55,6 +59,7 @@ body {
     height: 36px;
     position: relative;
     padding-top: 8px;
+    text-align: center;
 }
 
 
@@ -72,7 +77,6 @@ body {
     padding: 10px;
     max-height: 900px;
     overflow-y: scroll;
-    background-color: whitesmoke;
 }
 
 #historyList {
@@ -88,11 +92,11 @@ body {
 
 .chat_question {
     padding: 0.2em;
-    background-color: whitesmoke;
     text-align: right;
     margin-bottom: 1em;
     padding-top: 1em;
     padding-bottom: 1em;
+    padding-right: 2em;
 }
 
 .chat_answer {
@@ -118,13 +122,16 @@ body {
     display: flex;
     margin-bottom: 8px;
     width: 95%;
+    background-color: #e9eef6;
+    padding-top: 12px;
+    padding-bottom: 14px;
+    border-radius: 25px;
 }
 
 .control_container {
     display: flex;
     align-items: center;
-    gap: 20px; /* space between the elements */
-    background-color: #f8fcf8;
+    gap: 20px;
 }
 
 label {
