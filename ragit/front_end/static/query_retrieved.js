@@ -65,7 +65,6 @@ function load_recent_chats() {
         type: "GET",
         dataType: 'json',
         success: function (data, status) {
-            debugger;
             document.body.style.cursor = 'default';
             for (let i = 0; i < data.length; i++) {
                 conversationHistory.push(
