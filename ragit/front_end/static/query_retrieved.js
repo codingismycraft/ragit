@@ -39,7 +39,7 @@ function make_query() {
         dataType: "json",
         contentType: "application/json; charset=utf-8",
         success: function (response, status) {
-            conversationHistory.unshift(
+            conversationHistory.push(
                 {
                     question: userQuery,
                     answer: response.response,
@@ -53,6 +53,33 @@ function make_query() {
         },
         error: function (request, status, error) {
             document.body.style.cursor = 'default';
+            alert(request.responseText);
+        }
+    });
+}
+
+function load_recent_chats() {
+    document.body.style.cursor = 'wait';
+    $.ajax({
+        url: "/recentchats/10",
+        type: "GET",
+        dataType: 'json',
+        success: function (data, status) {
+            document.body.style.cursor = 'default';
+            for (let i = 0; i < data.length; i++) {
+                conversationHistory.push(
+                    {
+                        question: data[i]["query"],
+                        answer: data[i]["response"],
+                        message_id: data[i]["msg_id"],
+                        vote: data[i]["thumps_up"]
+                    }
+                );
+            }
+            update_history_list();
+            document.getElementById("userQuery").value = "";
+        },
+        error: function (request, status, error) {
             alert(request.responseText);
         }
     });
@@ -74,7 +101,7 @@ function make_query() {
  *
  * @param {number} item.vote - The vote state of the answer (1 for upvote, 0
  * for downvote, else neutral).
- * 
+ *
  * @param {string} item.message_id - The unique identifier for the message.
  *
  * @returns {HTMLDivElement} The constructed chat item element.
@@ -87,49 +114,118 @@ function make_chat_item(item) {
     const question_div = document.createElement("div");
     question_div.className = "chat_question";
 
-    question_div.innerText = item.question;
+    const question_span = document.createElement("span");
+
+    const question_mark_img = document.createElement("img");
+    question_mark_img.src = "/static/question_mark.png";
+    question_mark_img.className = "question_mark_img";
+    question_span.appendChild(question_mark_img);
+
+    question_span.innerHTML += item.question;
+    question_div.appendChild(question_span);
     chat_div.appendChild(question_div);
 
     const answer_div = document.createElement("div");
     answer_div.className = "chat_answer";
 
-    if (item.vote === 1) {
-        answer_div.className = "chat_answer chat_vote_up";
-    } else if (item.vote === 0) {
-        answer_div.className = "chat_answer chat_vote_down";
-    } else {
-        answer_div.className = "chat_answer";
-    }
-
     answer_div.innerHTML = marked.parse(item.answer);
     chat_div.appendChild(answer_div);
-    chat_div.appendChild(create_audio_tag(item.message_id));
+
+    // chat_div.appendChild(create_audio_tag(item.message_id));
     const user_vote_div = document.createElement("div");
     user_vote_div.className = "chat_vote";
 
     const thumps_up_img = document.createElement("img");
+    thumps_up_img.title = "Thumps Up Voting";
     thumps_up_img.src = "/static/thumps-up.png";
     thumps_up_img.width = 20;
     thumps_up_img.height = 20;
     thumps_up_img.onclick = function () {
         user_vote(item.message_id, 1);
     }
+
+    if (item.vote === 1) {
+        thumps_up_img.className = "user_input_button selected_button";
+    } else {
+        thumps_up_img.className = "user_input_button";
+    }
+
     user_vote_div.appendChild(thumps_up_img);
 
     const thumps_down_img = document.createElement("img")
+    thumps_down_img.title = "Thumps Down Voting";
+    thumps_down_img.className = "user_input_button";
     thumps_down_img.src = "/static/thumps-down.png";
     thumps_down_img.width = 20;
     thumps_down_img.height = 20;
     thumps_down_img.onclick = function () {
         user_vote(item.message_id, 0);
     }
-    user_vote_div.appendChild(thumps_down_img);
-    chat_div.appendChild(user_vote_div);
-    return chat_div;
 
+    if (item.vote === 0) {
+        thumps_down_img.className = "user_input_button selected_button";
+    } else {
+        thumps_down_img.className = "user_input_button";
+    }
+
+    user_vote_div.appendChild(thumps_down_img);
+
+    const copy_question_img = document.createElement("img")
+    copy_question_img.title = "Copy to Clipboard";
+    copy_question_img.className = "user_input_button";
+    copy_question_img.src = "/static/copy.png";
+    copy_question_img.width = 30;
+    copy_question_img.height = 30;
+    copy_question_img.text_to_copy = `Question: ${item.question} Answer: ${item.answer}`;
+    copy_question_img.onclick = function () {
+        navigator.clipboard.writeText(this.text_to_copy);
+    }
+    user_vote_div.appendChild(copy_question_img);
+
+    const delete_img = document.createElement("img")
+    delete_img.title = "Remove Conversation from UI.";
+    delete_img.className = "user_input_button";
+    delete_img.src = "/static/delete.png";
+    delete_img.width = 30;
+    delete_img.height = 30;
+    delete_img.onclick = function () {
+        delete_conversation_from_ui_and_db(item.message_id);
+    }
+    user_vote_div.appendChild(delete_img);
+
+    chat_div.appendChild(user_vote_div);
+
+    return chat_div;
 }
 
-function create_audio_tag(msg_id){
+
+function delete_conversation_from_ui_and_db(msg_id) {
+    if (!confirm('Are you sure you want to delete the query?')){
+        return
+    }
+    document.body.style.cursor = 'wait';
+    const url = `/queries/${msg_id}`;
+    $.ajax({
+            url: url,
+            type: "DELETE",
+            dataType: 'json',
+            success: function (data) {
+                document.body.style.cursor = 'default';
+                conversationHistory = conversationHistory.filter(
+                    item => item.message_id !== msg_id
+                );
+                update_history_list();
+            },
+            error: function (request, status, error) {
+                document.body.style.cursor = 'default';
+                console.error(error)
+                alert(request.responseText);
+            }
+        }
+    )
+}
+
+function create_audio_tag(msg_id) {
     const audioTag = document.createElement('audio');
     audioTag.controls = true;
 
@@ -153,12 +249,14 @@ function create_audio_tag(msg_id){
  * populates it with chat items based on the `conversationHistory` array.
  */
 function update_history_list() {
-    const historyListElement = document.getElementById("historyList");
-    historyListElement.innerHTML = "";
+    const history_list = document.getElementById("historyList");
+    history_list.innerHTML = "";
     for (const item of conversationHistory) {
         const historyItem = make_chat_item(item);
-        historyListElement.appendChild(historyItem);
+        history_list.appendChild(historyItem);
     }
+    // Scroll to the bottom
+    history_list.scrollTop = history_list.scrollHeight;
 }
 
 /**
@@ -208,4 +306,3 @@ function logout() {
     $.removeCookie('ragit_auth_token', {path: '/'});
     location.reload();
 }
-
