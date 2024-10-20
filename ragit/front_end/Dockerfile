@@ -23,7 +23,10 @@ run pip3 install --trusted-host pypi.org --trusted-host pypi.python.org --truste
 run pip3 install --trusted-host pypi.org --trusted-host pypi.python.org --trusted-host files.pythonhosted.org scikit-learn==1.5.1
 run pip3 install --trusted-host pypi.org --trusted-host pypi.python.org --trusted-host files.pythonhosted.org tiktoken==0.7.0
 run pip3 install --trusted-host pypi.org --trusted-host pypi.python.org --trusted-host files.pythonhosted.org unstructured==0.15.1
-
+run pip3 install --trusted-host pypi.org --trusted-host pypi.python.org --trusted-host files.pythonhosted.org chromadb==0.5.11
+run pip3 install --trusted-host pypi.org --trusted-host pypi.python.org --trusted-host files.pythonhosted.org chroma-hnswlib==0.7.6
+run pip3 install --trusted-host pypi.org --trusted-host pypi.python.org --trusted-host files.pythonhosted.org markdown==3.0.0
+run pip3 install --trusted-host pypi.org --trusted-host pypi.python.org --trusted-host files.pythonhosted.org gTTS==2.5.3
 
 EXPOSE 13131/tcp
 ENV PYTHONPATH="/"
