@@ -25,7 +25,15 @@ class ChromaVectorDb(abstract_vector_db.AbstractVectorDb):
         assert self.get_dimension() == dimension
 
         fullpath = self.get_fullpath()
-        self._chroma_client = chromadb.PersistentClient(path=fullpath)
+
+        client_settings = chromadb.config.Settings(
+            anonymized_telemetry=False
+        )
+
+        self._chroma_client = chromadb.PersistentClient(
+            path=fullpath,
+            settings=client_settings
+        )
 
     def close(self):
         """Closes the milvus vector db."""
